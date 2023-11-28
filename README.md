@@ -1,11 +1,8 @@
-# Project Name
-
-This is a sample README.md file for a Node.js Express project.
-
+# Scholarnetics
 
 ## Description
 
-This project is a Node.js Express application designed to handle HTTP requests and serve a web application or a mobile app.
+This project is a Node.js Express server designed to power the Scholarnetics platform.
 
 
 ## Features
@@ -17,6 +14,7 @@ This project is a Node.js Express application designed to handle HTTP requests a
 - **Error handling**: centralized error handling mechanism
 - **Environment variables**: using [dotenv](https://github.com/motdotla/dotenv) and [cross-env](https://github.com/kentcdodds/cross-env#readme)
 - **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
+- More coming soon...
 
 
 ## Installation
@@ -100,7 +98,7 @@ For collaborating on this project, please follow these steps:
 
 8. **Create a Pull Request**: Go to the GitHub repository page and create a pull request for your branch. Provide a clear description of the changes you made.
 
-9. **Review and Merge**: Collaborators or project maintainers will review your pull request. They may suggest changes or discuss the modifications before merging your code into the main branch.
+9. **Review and Merge**: The person you report to will review your pull request. They may suggest changes or discuss the modifications. After it has been reviewed, they will merge your code into the main branch.
 
 10. **Sync with the Main Branch**: Regularly sync your branch with the main branch to incorporate any new changes. Use the following commands:
     ```
@@ -109,19 +107,3 @@ For collaborating on this project, please follow these steps:
     git checkout <branch_name>
     git merge main
     ```
-
-
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-
-## Additional Information
-
-For additional information and documentation, refer to the [project wiki](https://github.com/yourusername/project/wiki).
-
-
-## Contact
-
-For any inquiries or support, please contact [project maintainers](mailto:maintainer@example.com).
