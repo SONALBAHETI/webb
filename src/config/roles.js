@@ -7,6 +7,6 @@ const allRoles = {
 };
 
 const roles = Object.keys(allRoles);
-const roleRights = new Map(Object.entries(allRoles));
+const roleRights = new Map(Object.entries(allRoles)); // Usage: roleRights.get("admin")
 
 export { roles, roleRights };

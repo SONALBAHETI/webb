@@ -1,7 +1,9 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
-import { getUserByEmail } from "./user.service.js";
-
+import { getUserByEmail, getUserById } from "./user.service.js";
+import { generateAuthTokens, verifyToken } from "./token.service.js";
+import { tokenTypes } from "../config/tokens.js";
+import Token from "../models/token.model.js";
 
 /**
  * Authenticates a user with their email and password.
@@ -18,4 +20,40 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
-export { loginUserWithEmailAndPassword };
+/**
+ * Refresh auth tokens
+ * @param {string} refreshToken
+ * @returns {Promise<Object>}
+ */
+const refreshAuth = async (refreshToken) => {
+  try {
+    const refreshTokenDoc = await verifyToken(refreshToken, tokenTypes.REFRESH);
+    const user = await getUserById(refreshTokenDoc.user);
+    if (!user) {
+      throw new Error();
+    }
+    await Token.findOneAndDelete({ token: refreshTokenDoc.token });
+    return generateAuthTokens(user);
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
+  }
+};
+
+/**
+ * Logout
+ * @param {string} refreshToken
+ * @returns {Promise}
+ */
+const logout = async (refreshToken) => {
+  const refreshTokenDoc = await Token.findOne({
+    token: refreshToken,
+    type: tokenTypes.REFRESH,
+    blacklisted: false,
+  });
+  if (!refreshTokenDoc) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Session Not found");
+  }
+  await Token.findOneAndDelete({ token: refreshTokenDoc.token });
+};
+
+export { loginUserWithEmailAndPassword, refreshAuth, logout };

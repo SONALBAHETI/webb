@@ -1,7 +1,8 @@
 import express from "express";
-import { authValidation } from "../../validation/index.js"; // import validation schema
-import { authController } from "../../controllers/index.js"; // import auth controller
-import validate from "../../middlewares/validate.js"; // import validate middleware
+import { authValidation } from "../../validation/index.js";
+import { authController } from "../../controllers/index.js";
+import validate from "../../middlewares/validate.js";
+import auth from "../../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -18,5 +19,18 @@ router.post(
   validate(authValidation.loginWithEmailAndPassword),
   authController.loginWithEmailAndPassword
 );
+
+// refresh auth tokens
+router.post(
+  "/refresh-tokens",
+  validate(authValidation.refreshTokens),
+  authController.refreshTokens
+);
+
+// verify authentication
+router.get("/verify-auth", auth(), authController.verifyAuth);
+
+// logout users
+router.post("/logout", authController.logout);
 
 export default router;

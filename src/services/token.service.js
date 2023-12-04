@@ -52,7 +52,7 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  *
  * @param {string} token - The token to be verified.
  * @param {string} type - The type of token.
- * @return {Promise<object>} The token document if it is valid.
+ * @return {Promise<Token>} The token document if it is valid.
  */
 const verifyToken = async (token, type) => {
   const payload = jwt.verify(token, config.jwt.secret);
@@ -76,7 +76,7 @@ const verifyToken = async (token, type) => {
  */
 const generateAuthTokens = async (user) => {
   const accessTokenExpires = moment().add(
-    config.jwt.accessTokenExpires,
+    config.jwt.accessExpirationMinutes,
     "minutes"
   );
   const accessToken = generateToken(
@@ -86,7 +86,7 @@ const generateAuthTokens = async (user) => {
   );
 
   const refreshTokenExpires = moment().add(
-    config.jwt.refreshTokenExpires,
+    config.jwt.refreshExpirationDays,
     "days"
   );
 

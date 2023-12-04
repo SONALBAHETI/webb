@@ -17,4 +17,10 @@ const loginWithEmailAndPassword = {
   }),
 };
 
-export default { register, loginWithEmailAndPassword };
+const refreshTokens = {
+  body: Joi.object().keys({
+    refreshToken: Joi.string().required(),
+  }),
+};
+
+export default { register, loginWithEmailAndPassword, refreshTokens };

@@ -9,7 +9,7 @@ import ApiError from "../utils/ApiError.js";
  */
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+    throw new ApiError(httpStatus.CONFLICT, "Email already taken");
   }
   return User.create(userBody);
 };
@@ -23,4 +23,13 @@ const getUserByEmail = async (email) => {
   return User.findOne({ email });
 };
 
-export { createUser, getUserByEmail };
+/**
+ * Get user by id
+ * @param {ObjectId} id
+ * @returns {Promise<User>}
+ */
+const getUserById = async (id) => {
+  return User.findById(id);
+};
+
+export { createUser, getUserByEmail, getUserById };
