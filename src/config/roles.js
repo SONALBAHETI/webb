@@ -1,7 +1,7 @@
 // define roles and permissions for access control
 const allRoles = {
   user: [],
-  learner: [],
+  learner: ["getUser", "updateUser"],
   mentor: [],
   admin: ["getUsers", "manageUsers"],
 };

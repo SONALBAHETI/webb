@@ -17,4 +17,11 @@ const password = (value, helpers) => {
   return value;
 };
 
-export { password };
+const objectId = (value, helpers) => {
+  if (!value.match(/^[0-9a-fA-F]{24}$/)) {
+    return helpers.message("{{#label}} must be a valid id");
+  }
+  return value;
+};
+
+export { password, objectId };

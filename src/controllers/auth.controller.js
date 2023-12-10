@@ -49,7 +49,17 @@ const clearCookies = (res) => {
 
 // register a user
 const register = catchAsync(async (req, res) => {
-  const user = await createUser(req.body);
+  const { firstName, lastName, email, password } = req.body;
+  const newUser = {
+    profile: {
+      firstName,
+      lastName,
+    },
+    name: `${firstName} ${lastName}`,
+    email,
+    password,
+  };
+  const user = await createUser(newUser);
   // generate auth token and send it to client
   const tokens = await generateAuthTokens(user);
   setCookies(res, tokens).status(httpStatus.CREATED).send({
@@ -71,7 +81,9 @@ const loginWithEmailAndPassword = catchAsync(async (req, res) => {
 
 // refresh access token
 const refreshTokens = catchAsync(async (req, res) => {
-  const tokens = await refreshAuth(req.body.refreshToken);
+  const tokens = await refreshAuth(
+    req.cookies["refreshToken"] || req.body.refreshToken
+  );
   setCookies(res, tokens).status(httpStatus.OK).send({ tokens });
 });
 

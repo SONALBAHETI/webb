@@ -1,8 +1,38 @@
 import mongoose from "mongoose";
-import validator from 'validator';
+import validator from "validator";
 import bcrypt from "bcrypt";
 import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
+import { Pronouns, Genders } from "../constants/index.js";
+
+const profileSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  pronouns: {
+    type: String,
+    trim: true,
+    enum: [
+      Pronouns.HE,
+      Pronouns.SHE,
+      Pronouns.THEY,
+      Pronouns.OTHER,
+      Pronouns.NONE,
+    ],
+  },
+  gender: {
+    type: String,
+    trim: true,
+    enum: [Genders.MALE, Genders.FEMALE, Genders.OTHER, Genders.NONE],
+  },
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -46,6 +76,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    profile: profileSchema,
+    specialisations: {
+      type: [String],
+      default: [],
+    },
+    interests: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
@@ -76,10 +115,10 @@ userSchema.methods.isPasswordMatch = async function (password) {
   return bcrypt.compare(password, user.password);
 };
 
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   const user = this;
   // if user's password was updated, hash it
-  if (user.isModified('password')) {
+  if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
   }
   next();
@@ -88,6 +127,6 @@ userSchema.pre('save', async function (next) {
 /**
  * @typedef User
  */
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

@@ -9,7 +9,7 @@ import ApiError from "../utils/ApiError.js";
  */
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.CONFLICT, "Email already taken");
+    throw new ApiError(httpStatus.CONFLICT, "Email is already taken!");
   }
   return User.create(userBody);
 };
@@ -32,4 +32,24 @@ const getUserById = async (id) => {
   return User.findById(id);
 };
 
-export { createUser, getUserByEmail, getUserById };
+/**
+ * Updates a user's information.
+ *
+ * @param {string} userId - The ID of the user to be updated.
+ * @param {Object} updateBody - The object containing the updated user information.
+ * @return {Promise<Object>} The updated user object.
+ */
+const updateUser = async (userId, updateBody) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+    throw new ApiError(httpStatus.CONFLICT, "Email already taken");
+  }
+  Object.assign(user, updateBody);
+  await user.save();
+  return user;
+};
+
+export { createUser, getUserByEmail, getUserById, updateUser };

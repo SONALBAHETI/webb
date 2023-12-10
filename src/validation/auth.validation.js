@@ -4,7 +4,8 @@ import { password } from "./custom.validation.js";
 
 const register = {
   body: Joi.object().keys({
-    name: Joi.string().required(),
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
   }),
@@ -18,9 +19,28 @@ const loginWithEmailAndPassword = {
 };
 
 const refreshTokens = {
-  body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
-  }),
+  body: Joi.object()
+    .keys({
+      refreshToken: Joi.string(),
+    })
+    .when("cookies", {
+      is: Joi.object().keys({
+        refreshToken: Joi.exist(),
+      }),
+      // if cookie.refreshToken doesn't exist, make this required
+      otherwise: Joi.object({ refreshToken: Joi.required() }).required(),
+    }),
+  cookies: Joi.object()
+    .keys({
+      refreshToken: Joi.string(),
+    })
+    .when("body", {
+      is: Joi.object().keys({
+        refreshToken: Joi.exist(),
+      }),
+      // if body.refreshToken doesn't exist, make this required
+      otherwise: Joi.object({ refreshToken: Joi.required() }).required(),
+    }),
 };
 
 export default { register, loginWithEmailAndPassword, refreshTokens };
