@@ -3,7 +3,6 @@ import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
 import { roleRights } from "../config/roles.js";
 
-
 /**
  * A function that verifies the callback by checking for any errors,
  * information, and the existence of a user. If there are any errors or
@@ -41,7 +40,7 @@ const verifyCallback =
   };
 
 /**
- * Generates an authentication middleware function 
+ * Generates an authentication middleware function
  * that checks if the user is authorized to access the route and has the required rights.
  *
  * @param {...string} requiredRights - The required rights that the user must have.

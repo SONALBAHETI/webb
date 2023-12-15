@@ -33,7 +33,8 @@ const refreshAuth = async (refreshToken) => {
       throw new Error();
     }
     await Token.findOneAndDelete({ token: refreshTokenDoc.token });
-    return generateAuthTokens(user);
+    const tokens = await generateAuthTokens(user);
+    return tokens;
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
   }
