@@ -35,7 +35,7 @@ const toJSON = (schema) => {
       // TODO: If some documents need createdAt and updatedAt, we may need to find a way to include them
       delete ret.createdAt;
       delete ret.updatedAt;
-      
+
       if (transform) {
         return transform(doc, ret, options);
       }

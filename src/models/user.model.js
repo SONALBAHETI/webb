@@ -5,7 +5,7 @@ import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 
-const profileSchema = new mongoose.Schema({
+const userProfileSchema = {
   firstName: {
     type: String,
     required: true,
@@ -32,7 +32,7 @@ const profileSchema = new mongoose.Schema({
     trim: true,
     enum: [Genders.MALE, Genders.FEMALE, Genders.OTHER, Genders.NONE],
   },
-});
+};
 
 const userSchema = new mongoose.Schema(
   {
@@ -76,7 +76,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    profile: profileSchema,
+    profile: userProfileSchema,
     specialisations: {
       type: [String],
       default: [],
@@ -84,6 +84,12 @@ const userSchema = new mongoose.Schema(
     interests: {
       type: [String],
       default: [],
+    },
+    sendbirdUserId: {
+      type: String,
+      trim: true,
+      unique: true,
+      private: true,
     },
   },
   {

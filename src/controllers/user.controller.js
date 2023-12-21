@@ -44,7 +44,7 @@ const updateUserDetailsFromOnboarding = catchAsync(async (req, res) => {
   };
 
   const user = await updateUser(req.params.userId, updateUserPayload);
-  res.status(httpStatus.OK).send({ user });
+  res.status(httpStatus.OK).send({ user }); // TODO: User.toJSON()
 });
 
 export { updateUserDetailsFromOnboarding };

@@ -33,6 +33,8 @@ const envVarsSchema = Joi.object()
     EMAIL_FROM: Joi.string().description(
       "the from field in the emails sent by the app"
     ),
+    SENDBIRD_APP_ID: Joi.string().description("Sendbird App ID"),
+    SENDBIRD_API_TOKEN: Joi.string().description("Sendbird API token"),
   })
   .unknown();
 
@@ -58,6 +60,10 @@ const config = {
     resetPasswordExpirationMinutes:
       envVars.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
     verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
+  },
+  sendBird: {
+    appId: envVars.SENDBIRD_APP_ID,
+    apiToken: envVars.SENDBIRD_API_TOKEN,
   },
 };
 
