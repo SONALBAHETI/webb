@@ -23,6 +23,10 @@ const getChatRequestById = async (chatId) => {
   return ChatRequest.findById(chatId);
 };
 
+const getChatRequestByIdAndPopulate = async (chatId, populate) => {
+  return ChatRequest.findById(chatId).populate(populate);
+};
+
 const createChatRequest = async (chatBody) => {
   // TODO: Validate the user ids in the chat request (from, to)
   // Create a new chat request
@@ -77,6 +81,7 @@ const enableChatForUser = async (userId) => {
 
 export {
   getChatRequestById,
+  getChatRequestByIdAndPopulate,
   updateChatRequest,
   createChatRequest,
   enableChatForUser,

@@ -74,8 +74,7 @@ const loginWithEmailAndPassword = catchAsync(async (req, res) => {
   const user = await loginUserWithEmailAndPassword(email, password);
   const tokens = await generateAuthTokens(user);
   setCookies(res, tokens).status(httpStatus.OK).send({
-    user,
-    tokens,
+    accessToken: tokens.access,
   });
 });
 
@@ -89,8 +88,7 @@ const refreshTokens = catchAsync(async (req, res) => {
 
 // verify authentication
 const verifyAuth = catchAsync(async (req, res) => {
-  const user = req.user;
-  res.status(httpStatus.OK).send({ user });
+  res.status(httpStatus.OK).send({});
 });
 
 // logout

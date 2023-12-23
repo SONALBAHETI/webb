@@ -9,12 +9,19 @@ const sendChatRequest = {
 };
 
 const acceptChatRequest = {
+  body: Joi.object().keys({
+    id: Joi.string().custom(objectId),
+  }),
+};
+
+const getChatRequest = {
   params: Joi.object().keys({
-    chatRequestId: Joi.string().custom(objectId),
+    id: Joi.string().custom(objectId),
   }),
 };
 
 export default {
   sendChatRequest,
   acceptChatRequest,
+  getChatRequest,
 };
