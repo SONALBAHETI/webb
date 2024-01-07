@@ -1,9 +1,9 @@
 // define roles and permissions for access control
 const allRoles = {
-  user: [],
-  learner: ["getUser", "updateUser"],
-  mentor: [],
-  admin: ["getUsers", "manageUsers"],
+  user: ['manageNotes', 'getNotes', 'updateNotes'], 
+  learner: ['getUser', 'updateUser', 'manageNotes','getNotes', 'updateNotes'], 
+  mentor: ['manageNotes', 'getNotes', 'updateNotes'], 
+  admin: ['getUsers', 'manageUsers', 'manageNotes', 'getNotes'], 
 };
 
 const roles = Object.keys(allRoles);
