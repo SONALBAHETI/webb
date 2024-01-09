@@ -1,16 +1,11 @@
-// routes/v1/index.js
 import express from "express";
 import config from "../../config/config.js";
 import authRoute from "./auth.route.js";
 import userRoute from "./user.route.js";
+import chatRoute from "./chat.route.js";
 import notesRoute from "./notes.route.js"; 
 
 const router = express.Router();
-
-// Add a route for the root path
-router.get("/", (req, res) => {
-  res.send("Hello from API!");
-});
 
 const defaultRoutes = [
   {
@@ -21,6 +16,11 @@ const defaultRoutes = [
     path: "/users",
     route: userRoute,
   },
+  {
+    path: "/chats",
+    route: chatRoute,
+  },
+  
   {
     path: "/notes", 
     route: notesRoute,

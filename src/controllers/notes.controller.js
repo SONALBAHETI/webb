@@ -1,6 +1,5 @@
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync.js';
-console.log
 import noteService from "../services/notes.service.js";
 
 const createNote = catchAsync(async (req, res) => {
