@@ -14,6 +14,12 @@ const acceptChatRequest = {
   }),
 };
 
+const rejectChatRequest = {
+  body: Joi.object().keys({
+    id: Joi.string().custom(objectId),
+  }),
+};
+
 const getChatRequest = {
   params: Joi.object().keys({
     id: Joi.string().custom(objectId),
@@ -23,5 +29,6 @@ const getChatRequest = {
 export default {
   sendChatRequest,
   acceptChatRequest,
+  rejectChatRequest,
   getChatRequest,
 };
