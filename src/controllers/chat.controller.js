@@ -58,6 +58,11 @@ const sendChatRequest = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
 });
 
+/**
+ * Accepts a chat request.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 const acceptChatRequest = catchAsync(async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
@@ -67,4 +72,24 @@ const acceptChatRequest = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
 });
 
-export { getChatRequest, listChatRequests, sendChatRequest, acceptChatRequest };
+/**
+ * Rejects a chat request
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+const rejectChatRequest = catchAsync(async (req, res) => {
+  const { id } = req.body;
+  const userId = req.user.id;
+  const chatRequest = await updateChatRequest(id, userId, {
+    status: "rejected",
+  });
+  res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
+});
+
+export {
+  getChatRequest,
+  listChatRequests,
+  sendChatRequest,
+  acceptChatRequest,
+  rejectChatRequest,
+};

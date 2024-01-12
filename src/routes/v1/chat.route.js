@@ -7,6 +7,7 @@ import {
   getChatRequest,
   sendChatRequest,
   acceptChatRequest,
+  rejectChatRequest,
 } from "../../controllers/chat.controller.js";
 
 const router = express.Router();
@@ -28,6 +29,13 @@ router.post(
   auth(),
   validate(chatValidation.acceptChatRequest),
   acceptChatRequest
+);
+
+router.post(
+  "/requests/reject",
+  auth(),
+  validate(chatValidation.rejectChatRequest),
+  rejectChatRequest
 );
 
 export default router;

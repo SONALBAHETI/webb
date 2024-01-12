@@ -75,7 +75,6 @@ const enableChatForUser = async (userId) => {
   const updatedUser = await updateUser(userId, {
     sendbirdUserId: sendbirdUser.user_id,
   });
-  console.log("updatedUser", updatedUser);
   return updatedUser;
 };
 

@@ -1,3 +1,4 @@
+import logger from "../../../config/logger.js";
 import SendbirdAPIHandler from "./api.js";
 
 class SendbirdUserHandler extends SendbirdAPIHandler {
@@ -6,7 +7,7 @@ class SendbirdUserHandler extends SendbirdAPIHandler {
       const response = await this.request.get(`/users`);
       return response.data;
     } catch (error) {
-      console.error("Error getting users:", error.response.data);
+      logger.error(`Error getting users: ${error.response.data}`);
       throw error;
     }
   }
@@ -16,7 +17,7 @@ class SendbirdUserHandler extends SendbirdAPIHandler {
       const response = await this.request.post(`/users`, userParams);
       return response.data;
     } catch (error) {
-      console.error("Error creating user:", error.response.data);
+      logger.error(`Error creating user: ${error.response.data}`);
       throw error;
     }
   }
