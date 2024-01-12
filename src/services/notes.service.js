@@ -1,4 +1,4 @@
-import Note from '../models/note.js';
+import Note from '../models/note.model.js';
 import httpStatus from 'http-status';
 import ApiError from '../utils/ApiError.js';
 

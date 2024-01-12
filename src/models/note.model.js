@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+import { toJSON } from "./plugins/index.js";
 
 const noteSchema = new mongoose.Schema(
   {
@@ -12,12 +13,12 @@ const noteSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     reference: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   },
   {
@@ -25,6 +26,9 @@ const noteSchema = new mongoose.Schema(
   }
 );
 
-const Note = mongoose.model('Note', noteSchema);
+// add plugin that converts mongoose to json
+noteSchema.plugin(toJSON);
+
+const Note = mongoose.model("Note", noteSchema);
 
 export default Note;
