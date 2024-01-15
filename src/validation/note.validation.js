@@ -1,9 +1,15 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 const createNote = {
   body: Joi.object().keys({
     title: Joi.string().required(),
     content: Joi.string().required(),
+  }),
+};
+
+const getNote = {
+  params: Joi.object().keys({
+    noteId: Joi.string().required(),
   }),
 };
 
@@ -25,6 +31,7 @@ const deleteNote = {
 
 export default {
   createNote,
+  getNote,
   updateNote,
   deleteNote,
 };

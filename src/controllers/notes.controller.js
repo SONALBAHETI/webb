@@ -14,6 +14,11 @@ const getNotes = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).json({ notes: notesJSON });
 });
 
+const getNote = catchAsync(async (req, res) => {
+  const note = await noteService.getNoteById(req.params.noteId);
+  res.status(httpStatus.OK).json({ note: note.toJSON() });
+});
+
 const updateNote = catchAsync(async (req, res) => {
   const note = await noteService.updateNoteById(req.params.noteId, req.body);
   res.status(httpStatus.OK).json({ note: note.toJSON() });
@@ -26,6 +31,7 @@ const deleteNote = catchAsync(async (req, res) => {
 
 export default {
   createNote,
+  getNote,
   getNotes,
   updateNote,
   deleteNote,
