@@ -11,15 +11,6 @@ import mongoSanitize from "express-mongo-sanitize";
 
 const app = express();
 
-// Middleware to log all incoming requests
-app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.path}`);
-  next();
-});
-
-app.get('/', (req, res) => {
-});
-
 // parse json request body
 app.use(express.json());
 
@@ -47,7 +38,6 @@ app.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
 
 // v1 api routes
-
 app.use("/api/v1", routes);
 
 // send back a 404 error for any unknown api request
