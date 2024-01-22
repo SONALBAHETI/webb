@@ -1,11 +1,13 @@
 import httpStatus from "http-status";
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
+import { Document } from "mongoose";
 
 /**
  * Create a user
  * @param {Object} userBody
- * @returns {Promise<User>}
+ * @throws {ApiError} If email already exists
+ * @returns {Promise<Document<User>>}
  */
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
@@ -17,7 +19,7 @@ const createUser = async (userBody) => {
 /**
  * Get user by email
  * @param {string} email
- * @returns {Promise<User>}
+ * @return {Promise<Document<User> | null>}
  */
 const getUserByEmail = async (email) => {
   return User.findOne({ email });
@@ -26,7 +28,7 @@ const getUserByEmail = async (email) => {
 /**
  * Get user by id
  * @param {ObjectId} id
- * @returns {Promise<User>}
+ * @return {Promise<Document<User> | null>} A promise that resolves to the user document.
  */
 const getUserById = async (id) => {
   return User.findById(id);
@@ -37,7 +39,8 @@ const getUserById = async (id) => {
  *
  * @param {string} userId - The ID of the user to be updated.
  * @param {Object} updateBody - The object containing the updated user information.
- * @return {Promise<Object>} The updated user object.
+ * @throws {ApiError} If the user is not found or if the email is already taken.
+ * @return The updated user object.
  */
 const updateUser = async (userId, updateBody) => {
   const user = await getUserById(userId);
@@ -52,4 +55,35 @@ const updateUser = async (userId, updateBody) => {
   return user;
 };
 
-export { createUser, getUserByEmail, getUserById, updateUser };
+/**
+ * Updates the OpenAI thread ID for a user.
+ *
+ * @param {string} userId - The ID of the user to update.
+ * @param {string} threadId - The new OpenAI thread ID.
+ * @throws {ApiError} If userId or threadId is missing.
+ * @returns The updated user object.
+ */
+const updateOpenAIThreadId = async (userId, threadId) => {
+  if (!userId || !threadId) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Missing userId or threadId"
+    );
+  }
+  const user = await updateUser(userId, {
+    integrations: {
+      openai: {
+        threadId: threadId,
+      },
+    },
+  });
+  return user;
+};
+
+export {
+  createUser,
+  getUserByEmail,
+  getUserById,
+  updateUser,
+  updateOpenAIThreadId,
+};

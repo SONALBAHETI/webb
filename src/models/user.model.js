@@ -5,7 +5,7 @@ import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 
-const userProfileSchema = {
+const profile = {
   firstName: {
     type: String,
     required: true,
@@ -31,6 +31,12 @@ const userProfileSchema = {
     type: String,
     trim: true,
     enum: [Genders.MALE, Genders.FEMALE, Genders.OTHER, Genders.NONE],
+  },
+};
+
+const integrations = {
+  openai: {
+    threadId: String,
   },
 };
 
@@ -76,7 +82,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    profile: userProfileSchema,
     specialisations: {
       type: [String],
       default: [],
@@ -91,6 +96,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
       private: true,
     },
+    profile,
+    integrations,
   },
   {
     timestamps: true,
@@ -100,25 +107,32 @@ const userSchema = new mongoose.Schema(
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
 
-/**
- * Check if email is taken
- * @param {string} email - The user's email
- * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
- * @returns {Promise<boolean>}
- */
-userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
-  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-  return !!user;
+userSchema.statics = {
+  /**
+   * Check if email is taken
+   * @param {string} email - The user's email
+   * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
+   * @returns {Promise<boolean>}
+   */
+  async isEmailTaken(email, excludeUserId) {
+    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+    return !!user;
+  },
 };
 
-/**
- * Check if password matches the user's password
- * @param {string} password
- * @returns {Promise<boolean>}
- */
-userSchema.methods.isPasswordMatch = async function (password) {
-  const user = this;
-  return bcrypt.compare(password, user.password);
+userSchema.methods = {
+  /**
+   * Check if password matches the user's password
+   * @param {string} password
+   * @returns {Promise<boolean>}
+   */
+  async isPasswordMatch(password) {
+    const user = this;
+    return bcrypt.compare(password, user.password);
+  },
+  getThreadId() {
+    return this.integrations?.openai?.threadId;
+  },
 };
 
 userSchema.pre("save", async function (next) {
