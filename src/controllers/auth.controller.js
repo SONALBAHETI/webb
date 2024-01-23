@@ -1,12 +1,10 @@
 import httpStatus from "http-status";
-import catchAsync from "../utils/catchAsync.js";
 import { createUser } from "../services/user.service.js";
 import { generateAuthTokens } from "../services/token.service.js";
 import {
   loginUserWithEmailAndPassword,
   refreshAuth,
   logout as logoutUser,
-  verifyGoogleIdToken,
   getOrCreateUserWithGoogle,
 } from "../services/auth.service.js";
 import express from "express";
@@ -51,7 +49,7 @@ const clearCookies = (res) => {
 };
 
 // register a user
-const register = catchAsync(async (req, res) => {
+const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const newUser = {
     profile: {
@@ -69,17 +67,17 @@ const register = catchAsync(async (req, res) => {
     user,
     tokens,
   });
-});
+};
 
 // login a user with email and password
-const loginWithEmailAndPassword = catchAsync(async (req, res) => {
+const loginWithEmailAndPassword = async (req, res) => {
   const { email, password } = req.body;
   const user = await loginUserWithEmailAndPassword(email, password);
   const tokens = await generateAuthTokens(user.id);
   setCookies(res, tokens).status(httpStatus.OK).send({
     accessToken: tokens.access,
   });
-});
+};
 
 /**
  * Registers or logs in a user with Google credentials.
@@ -97,24 +95,24 @@ const loginWithGoogle = async (req, res) => {
 };
 
 // refresh access token
-const refreshTokens = catchAsync(async (req, res) => {
+const refreshTokens = async (req, res) => {
   const tokens = await refreshAuth(
     req.cookies["refreshToken"] || req.body.refreshToken
   );
   setCookies(res, tokens).status(httpStatus.OK).send({ tokens });
-});
+};
 
 // verify authentication
-const verifyAuth = catchAsync(async (req, res) => {
+const verifyAuth = async (req, res) => {
   res.status(httpStatus.OK).send({});
-});
+};
 
 // logout
-const logout = catchAsync(async (req, res) => {
+const logout = async (req, res) => {
   const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
   await logoutUser(refreshToken);
   clearCookies(res).status(httpStatus.OK).send({});
-});
+};
 
 export default {
   register,
