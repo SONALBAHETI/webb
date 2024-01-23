@@ -20,6 +20,13 @@ router.post(
   authController.loginWithEmailAndPassword
 );
 
+// login or register user using Google credentials
+router.post(
+  "/login/google",
+  validate(authValidation.loginWithGoogle),
+  authController.loginWithGoogle
+);
+
 // refresh auth tokens
 router.post(
   "/refresh-tokens",

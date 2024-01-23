@@ -18,6 +18,12 @@ const loginWithEmailAndPassword = {
   }),
 };
 
+const loginWithGoogle = {
+  body: Joi.object().keys({
+    credential: Joi.string().required(),
+  }),
+};
+
 const refreshTokens = {
   body: Joi.object()
     .keys({
@@ -43,4 +49,9 @@ const refreshTokens = {
     }),
 };
 
-export default { register, loginWithEmailAndPassword, refreshTokens };
+export default {
+  register,
+  loginWithEmailAndPassword,
+  refreshTokens,
+  loginWithGoogle,
+};

@@ -1,9 +1,12 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
-import { getUserByEmail, getUserById } from "./user.service.js";
+import { createUser, getUserByEmail, getUserById } from "./user.service.js";
 import { generateAuthTokens, verifyToken } from "./token.service.js";
 import { tokenTypes } from "../config/tokens.js";
 import Token from "../models/token.model.js";
+import User from "../models/user.model.js";
+import { OAuth2Client } from "google-auth-library";
+import config from "../config/config.js";
 
 /**
  * Authenticates a user with their email and password.
@@ -21,6 +24,63 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 };
 
 /**
+ * Verifies a Google ID token.
+ *
+ * @param {string} idToken - The ID token to be verified.
+ * @return The verified ticket object.
+ */
+const verifyGoogleIdToken = async (idToken) => {
+  const client = new OAuth2Client();
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: config.providers.google.clientId,
+  });
+  return ticket;
+};
+
+/**
+ * Function to get or create a user using Google authentication.
+ *
+ * @param {string} idToken - The ID token from Google authentication
+ * @throws {ApiError} If some information is missing from the ID token
+ * @return {Promise<User>} The existing or newly created user
+ */
+const getOrCreateUserWithGoogle = async (idToken) => {
+  const ticket = await verifyGoogleIdToken(idToken);
+  const payload = ticket.getPayload();
+  const userId = ticket.getUserId();
+  if (!userId || !payload || !payload.email) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Something went wrong while logging in with Google"
+    );
+  }
+  const { name, email, given_name, family_name, picture } = payload;
+  // check for existing user
+  const user = await getUserByEmail(email);
+  if (user) {
+    return user;
+  }
+  // create a new user if it doesn't exist
+  const newUser = await createUser({
+    name,
+    email,
+    profile: {
+      firstName: given_name,
+      lastName: family_name,
+      picture,
+    },
+    isEmailVerified: true,
+    integrations: {
+      google: {
+        userId,
+      },
+    },
+  });
+  return newUser;
+};
+
+/**
  * Refresh auth tokens
  * @param {string} refreshToken
  * @returns {Promise<Object>}
@@ -33,7 +93,7 @@ const refreshAuth = async (refreshToken) => {
       throw new Error();
     }
     await Token.findOneAndDelete({ token: refreshTokenDoc.token });
-    const tokens = await generateAuthTokens(user);
+    const tokens = await generateAuthTokens(user.id);
     return tokens;
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
@@ -57,4 +117,10 @@ const logout = async (refreshToken) => {
   await Token.findOneAndDelete({ token: refreshTokenDoc.token });
 };
 
-export { loginUserWithEmailAndPassword, refreshAuth, logout };
+export {
+  loginUserWithEmailAndPassword,
+  refreshAuth,
+  logout,
+  verifyGoogleIdToken,
+  getOrCreateUserWithGoogle,
+};

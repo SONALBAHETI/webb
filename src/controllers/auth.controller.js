@@ -6,7 +6,10 @@ import {
   loginUserWithEmailAndPassword,
   refreshAuth,
   logout as logoutUser,
+  verifyGoogleIdToken,
+  getOrCreateUserWithGoogle,
 } from "../services/auth.service.js";
+import express from "express";
 
 /**
  * Sets the tokens as cookies in the response object.
@@ -61,7 +64,7 @@ const register = catchAsync(async (req, res) => {
   };
   const user = await createUser(newUser);
   // generate auth token and send it to client
-  const tokens = await generateAuthTokens(user);
+  const tokens = await generateAuthTokens(user.id);
   setCookies(res, tokens).status(httpStatus.CREATED).send({
     user,
     tokens,
@@ -72,11 +75,26 @@ const register = catchAsync(async (req, res) => {
 const loginWithEmailAndPassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await loginUserWithEmailAndPassword(email, password);
-  const tokens = await generateAuthTokens(user);
+  const tokens = await generateAuthTokens(user.id);
   setCookies(res, tokens).status(httpStatus.OK).send({
     accessToken: tokens.access,
   });
 });
+
+/**
+ * Registers or logs in a user with Google credentials.
+ *
+ * @param {express.Request} req
+ * @param {express.Response} res
+ */
+const loginWithGoogle = async (req, res) => {
+  const { credential } = req.body;
+  const user = await getOrCreateUserWithGoogle(credential);
+  const tokens = await generateAuthTokens(user.id);
+  setCookies(res, tokens).status(httpStatus.OK).send({
+    accessToken: tokens.access,
+  });
+};
 
 // refresh access token
 const refreshTokens = catchAsync(async (req, res) => {
@@ -104,4 +122,5 @@ export default {
   refreshTokens,
   verifyAuth,
   logout,
+  loginWithGoogle,
 };

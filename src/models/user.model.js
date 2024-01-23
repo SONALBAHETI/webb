@@ -16,6 +16,10 @@ const profile = {
     required: true,
     trim: true,
   },
+  picture: {
+    type: String,
+    trim: true,
+  },
   pronouns: {
     type: String,
     trim: true,
@@ -37,6 +41,9 @@ const profile = {
 const integrations = {
   openai: {
     threadId: String,
+  },
+  google: {
+    userId: String,
   },
 };
 
@@ -61,7 +68,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
       trim: true,
       minlength: 8,
       validate(value) {

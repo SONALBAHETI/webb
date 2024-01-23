@@ -33,12 +33,17 @@ const envVarsSchema = Joi.object()
     EMAIL_FROM: Joi.string().description(
       "the from field in the emails sent by the app"
     ),
-    SENDBIRD_APP_ID: Joi.string().description("Sendbird App ID"),
-    SENDBIRD_API_TOKEN: Joi.string().description("Sendbird API token"),
-    OPENAI_API_KEY: Joi.string().description("OpenAI API token"),
-    OPENAI_MENTOR_FINDER_ASSISTANT_ID: Joi.string().description(
-      "OpenAI Assistant ID"
-    ),
+    SENDBIRD_APP_ID: Joi.string().description("Sendbird App ID").required(),
+    SENDBIRD_API_TOKEN: Joi.string()
+      .description("Sendbird API token")
+      .required(),
+    OPENAI_API_KEY: Joi.string().description("OpenAI API token").required(),
+    OPENAI_MENTOR_FINDER_ASSISTANT_ID: Joi.string()
+      .description("OpenAI Assistant ID")
+      .required(),
+    GOOGLE_CLIENT_ID: Joi.string()
+      .description("Google OAuth client ID")
+      .required(),
   })
   .unknown();
 
@@ -72,6 +77,11 @@ const config = {
   openAI: {
     apiKey: envVars.OPENAI_API_KEY,
     mentorFinderAssistantId: envVars.OPENAI_MENTOR_FINDER_ASSISTANT_ID,
+  },
+  providers: {
+    google: {
+      clientId: envVars.GOOGLE_CLIENT_ID,
+    },
   },
 };
 

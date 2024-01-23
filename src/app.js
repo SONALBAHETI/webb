@@ -8,6 +8,8 @@ import passport from "passport";
 import { errorConverter, errorHandler } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
+import { OAuth2Client } from "google-auth-library";
+import config from "./config/config.js";
 
 const app = express();
 
