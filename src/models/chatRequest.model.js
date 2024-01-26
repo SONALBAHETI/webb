@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { toJSON, paginate } from "./plugins/index.js";
+import { toJSON } from "./plugins/index.js";
+import paginate from 'mongoose-paginate-v2';
 
 const chatRequestSchema = new mongoose.Schema(
   {

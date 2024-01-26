@@ -5,6 +5,7 @@ import userRoute from "./user.route.js";
 import chatRoute from "./chat.route.js";
 import notesRoute from "./notes.route.js";
 import chatbotRoute from "./chatbot.route.js";
+import notificationRoute from "./notification.route.js";
 
 const router = express.Router();
 
@@ -28,6 +29,10 @@ const defaultRoutes = [
   {
     path: "/chatbot",
     route: chatbotRoute,
+  },
+  {
+    path: "/notifications",
+    route: notificationRoute,
   },
 ];
 

@@ -8,7 +8,7 @@ import passport from "passport";
 import { errorConverter, errorHandler } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
-import { OAuth2Client } from "google-auth-library";
+import socketServer from "./config/socketServer.js";
 import config from "./config/config.js";
 
 const app = express();
@@ -30,7 +30,7 @@ app.use(cookieParser());
 // TODO: In production, change this to frontend origin
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: config.frontendBaseUrl,
     credentials: true,
   })
 );
@@ -38,6 +38,10 @@ app.use(
 // jwt authentication
 app.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
+
+socketServer(app).listen(3001, () => {
+  console.log("Socket server running on port 3001");
+});
 
 // v1 api routes
 app.use("/api/v1", routes);
