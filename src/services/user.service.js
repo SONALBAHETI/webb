@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import { Document } from "mongoose";
+import deepMerge from "../utils/deepMerge.js";
 
 /**
  * Create a user
@@ -50,7 +51,8 @@ const updateUser = async (userId, updateBody) => {
   if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.CONFLICT, "Email already taken");
   }
-  Object.assign(user, updateBody);
+
+  deepMerge(user, updateBody);
   await user.save();
   return user;
 };

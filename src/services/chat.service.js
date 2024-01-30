@@ -5,6 +5,7 @@ import config from "../config/config.js";
 import { v4 as uuidv4 } from "uuid";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
+import deepMerge from "../utils/deepMerge.js";
 
 const sendbirdUserHandler = new SendbirdUserHandler(
   config.sendBird.appId,
@@ -43,7 +44,7 @@ const updateChatRequest = async (chatId, userId, updateBody) => {
       "You're unauthorized to perform this action"
     );
   }
-  Object.assign(chatRequest, updateBody);
+  deepMerge(chatRequest, updateBody);
   return await chatRequest.save();
 };
 
@@ -53,11 +54,8 @@ const enableChatForUser = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (user.sendbirdUserId) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "Chat is already enabled"
-    );
+  if (user.integrations?.sendbird?.userId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Chat is already enabled");
   }
 
   // Create a new user in sendbird with a unique user_id
@@ -66,13 +64,17 @@ const enableChatForUser = async (userId) => {
     user_id: sendbirdUserId,
     nickname: user.name,
     issue_access_token: true,
-    profile_url: "",
+    profile_url: user.profile?.picture || "",
   });
   // TODO: save access token from sendbird?
 
   // Add sendbird user id reference in the User model in database
   const updatedUser = await updateUser(userId, {
-    sendbirdUserId: sendbirdUser.user_id,
+    integrations: {
+      sendbird: {
+        userId: sendbirdUser.user_id,
+      },
+    },
   });
   return updatedUser;
 };

@@ -7,8 +7,8 @@ const createNotification = async (notificationBody) => {
 /**
  * Query for notification
  * @param {Object} query - Mongo query
- * @param {import("../models/plugins/paginate.plugin.js").PaginationOptions} options - pagination options
- * @returns {Promise<import("../models/plugins/paginate.plugin.js").PaginationResult>}
+ * @param {PaginationOptions} options - pagination options
+ * @returns {Promise<PaginationResult>}
  */
 const queryNotifications = async (query, options) => {
   const result = await Notification.paginate(query, options);

@@ -1,6 +1,7 @@
 import Note from "../models/note.model.js";
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
+import deepMerge from "../utils/deepMerge.js";
 
 const createNote = async (noteBody, userId) => {
   return Note.create({ ...noteBody, createdBy: userId });
@@ -19,7 +20,7 @@ const updateNoteById = async (noteId, updateBody) => {
   if (!note) {
     throw new ApiError(httpStatus.NOT_FOUND, "Note not found");
   }
-  Object.assign(note, updateBody);
+  deepMerge(note, updateBody);
   await note.save();
   return note;
 };

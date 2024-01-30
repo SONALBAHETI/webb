@@ -5,7 +5,7 @@ import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 
-const profile = {
+const profileSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
@@ -36,16 +36,19 @@ const profile = {
     trim: true,
     enum: [Genders.MALE, Genders.FEMALE, Genders.OTHER, Genders.NONE],
   },
-};
+});
 
-const integrations = {
+const integrationsSchema = new mongoose.Schema({
   openai: {
     threadId: String,
   },
   google: {
     userId: String,
   },
-};
+  sendbird: {
+    userId: String,
+  },
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -96,14 +99,11 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    sendbirdUserId: {
-      type: String,
-      trim: true,
-      unique: true,
+    profile: profileSchema,
+    integrations: {
+      type: integrationsSchema,
       private: true,
     },
-    profile,
-    integrations,
   },
   {
     timestamps: true,

@@ -8,7 +8,7 @@ const openai = new OpenAI({
 /**
  * Creates a completion using the specified model.
  *
- * @param {string} model - The model to use for creating the completion.
+ * @param {Object} model - The model to use for creating the completion.
  * @return {Promise<string>} The completed message content.
  */
 const createCompletion = async (model) => {
