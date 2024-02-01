@@ -1,28 +1,50 @@
 import { createCompletion } from "../api.js";
-import { OPENAI_MODELS } from "../models.js";
 import { primaryInterestSuggestionModel } from "../prompts/primaryInterests.js";
-import logger from "../../../config/logger.js";
+import { aiResponseToJSON } from "../utils.js";
+import { expertiseAreasSuggestionModel } from "../prompts/expertiseAreas.js";
+import { practiceAreasSuggestionModel } from "../prompts/practiceAreas.js";
 
 /**
- * Asynchronously retrieves primary interest suggestions based on the provided search term.
+ * Generates primary interest suggestions based on the provided search term.
  *
  * @param {string} searchTerm - The term used to search for primary interest suggestions
  * @return {Promise<Array<String>>} An array of primary interest suggestions
  */
-const getPrimaryInterestSuggestions = async (searchTerm) => {
+const generatePrimaryInterestSuggestions = async (searchTerm) => {
   const suggestionsStr = await createCompletion(
-    primaryInterestSuggestionModel(OPENAI_MODELS.GPT_3_5_TURBO, searchTerm)
+    primaryInterestSuggestionModel({ searchTerm })
   );
-  let suggestions = [];
-  if (suggestionsStr) {
-    try {
-      suggestions = JSON.parse(suggestionsStr);
-    } catch (error) {
-      // log error and return empty array
-      logger.error(`Error parsing openai suggestions: ${error}`);
-    }
-  }
-  return suggestions;
+  return aiResponseToJSON(suggestionsStr) || [];
 };
 
-export { getPrimaryInterestSuggestions };
+/**
+ * Generates expertise areas suggestions based on the provided search term.
+ *
+ * @param {string} searchTerm - The term used to search for expertise areas suggestions
+ * @return {Promise<Array<String>>} An array of expertise areas suggestions
+ */
+const generateExpertiseAreasSuggestions = async (searchTerm) => {
+  const suggestionsStr = await createCompletion(
+    expertiseAreasSuggestionModel({ searchTerm })
+  );
+  return aiResponseToJSON(suggestionsStr) || [];
+};
+
+/**
+ * Generates practice areas suggestions based on the provided search term.
+ *
+ * @param {string} searchTerm - The term used to search for practice areas suggestions
+ * @return {Promise<Array<String>>} An array of practice areas suggestions
+ */
+const generatePracticeAreasSuggestions = async (searchTerm) => {
+  const suggestionsStr = await createCompletion(
+    practiceAreasSuggestionModel({ searchTerm })
+  );
+  return aiResponseToJSON(suggestionsStr) || [];
+};
+
+export {
+  generatePrimaryInterestSuggestions,
+  generateExpertiseAreasSuggestions,
+  generatePracticeAreasSuggestions,
+};

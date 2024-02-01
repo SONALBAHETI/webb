@@ -1,27 +1,59 @@
 import httpStatus from "http-status";
-import { getPrimaryInterestSuggestions } from "../providers/openai/services/suggestions.js";
 import {
+  generateExpertiseAreasSuggestions,
+  generatePrimaryInterestSuggestions,
+  generatePracticeAreasSuggestions,
+} from "../providers/openai/services/suggestions.js";
+import {
+  getExpertiseAreasBySearchTerm,
+  getPrimaryInterestsBySearchTerm,
+  getPracticeAreasBySearchTerm,
+  getExpertiseAreasByIds,
+  getPrimaryInterestsByIds,
+  getPracticeAreasByIds,
+  bulkUpsertExpertiseAreas,
   bulkUpsertPrimaryInterests,
-  queryPrimaryInterests,
-} from "../services/onboarding.service.js";
+  bulkUpsertPracticeAreas,
+  getOrUpdateSuggestionsHelper,
+} from "../services/suggestions.service.js";
 
-const getPrimaryInterests = async (req, res) => {
-  const { q, page = 1 } = req.query;
-  const query = {
-    title: { $regex: q, $options: "i" },
-    // $text: { $search: q }, // TODO: use this when we have a better index
-  };
-  const options = { page, limit: 10 };
-  let result = await queryPrimaryInterests(query, options);
-  if (result.totalDocs < 3) {
-    const aiGeneratedInterests = await getPrimaryInterestSuggestions(q);
-    if (aiGeneratedInterests.suggestions?.length > 0) {
-      // this prevents duplicate inserts
-      await bulkUpsertPrimaryInterests(aiGeneratedInterests.suggestions);
-      result = await queryPrimaryInterests(query, options);
-    }
-  }
-  res.status(httpStatus.OK).json(result);
+const getPrimaryInterestSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const result = await getOrUpdateSuggestionsHelper({
+    searchTerm: q,
+    getBySearchTermFn: getPrimaryInterestsBySearchTerm,
+    generateSuggestionsFn: generatePrimaryInterestSuggestions,
+    getByIdsFn: getPrimaryInterestsByIds,
+    bulkUpsertFn: bulkUpsertPrimaryInterests,
+  });
+  const suggestions = result.map((i) => i.title);
+  res.status(httpStatus.OK).json({ suggestions });
 };
 
-export { getPrimaryInterests };
+const getExpertiseAreaSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const result = await getOrUpdateSuggestionsHelper({
+    searchTerm: q,
+    getBySearchTermFn: getExpertiseAreasBySearchTerm,
+    generateSuggestionsFn: generateExpertiseAreasSuggestions,
+    getByIdsFn: getExpertiseAreasByIds,
+    bulkUpsertFn: bulkUpsertExpertiseAreas,
+  });
+  const suggestions = result.map((i) => i.title);
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+const getPracticeAreaSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const result = await getOrUpdateSuggestionsHelper({
+    searchTerm: q,
+    getBySearchTermFn: getPracticeAreasBySearchTerm,
+    generateSuggestionsFn: generatePracticeAreasSuggestions,
+    getByIdsFn: getPracticeAreasByIds,
+    bulkUpsertFn: bulkUpsertPracticeAreas,
+  });
+  const suggestions = result.map((i) => i.title);
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+export { getPrimaryInterestSuggestions, getExpertiseAreaSuggestions, getPracticeAreaSuggestions };
