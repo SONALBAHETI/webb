@@ -91,7 +91,7 @@ const loginWithGoogle = async (req, res) => {
   const user = await getOrCreateUserWithGoogle(credential);
   const tokens = await generateAuthTokens(user.id);
   setCookies(res, tokens).status(httpStatus.OK).send({
-    userId: user.id,
+    user: user.toJSON(),
     accessToken: tokens.access,
   });
 };

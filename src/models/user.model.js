@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
+import { UserOccupationValues } from "../constants/onboarding.js";
 
 const profileSchema = new mongoose.Schema({
   firstName: {
@@ -38,6 +39,27 @@ const profileSchema = new mongoose.Schema({
   },
 });
 
+const privateInfoSchema = new mongoose.Schema({
+  expertiseAreas: {
+    type: [String],
+    trim: true,
+    default: [],
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  primaryInterests: {
+    type: [String],
+    trim: true,
+    default: [],
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  practiceAreas: {
+    type: [String],
+    trim: true,
+    default: [],
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+});
+
 const integrationsSchema = new mongoose.Schema({
   openai: {
     threadId: String,
@@ -47,6 +69,17 @@ const integrationsSchema = new mongoose.Schema({
   },
   sendbird: {
     userId: String,
+  },
+});
+
+const stasusSchema = new mongoose.Schema({
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  isOnboarded: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -87,19 +120,16 @@ const userSchema = new mongoose.Schema(
       enum: roles,
       default: "user",
     },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
+    occupation: {
+      type: String,
+      enum: UserOccupationValues,
     },
-    specialisations: {
-      type: [String],
-      default: [],
-    },
-    interests: {
-      type: [String],
-      default: [],
-    },
+    accountStatus: stasusSchema,
     profile: profileSchema,
+    privateInfo: {
+      type: privateInfoSchema,
+      private: true,
+    },
     integrations: {
       type: integrationsSchema,
       private: true,

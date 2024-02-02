@@ -17,7 +17,7 @@ const deepMerge = (target, ...sources) => {
         target[key] !== null
       ) {
         // Recursively merge nested objects
-        target[key] = deepMerge(target[key], source[key]);
+        deepMerge(target[key], source[key]);
       } else {
         // Perform a shallow copy of the property
         target[key] = source[key];

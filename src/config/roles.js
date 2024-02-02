@@ -1,7 +1,14 @@
 // define roles and permissions for access control
+const ROLE = {
+  USER: "user",
+  MENTEE: "mentee",
+  MENTOR: "mentor",
+  ADMIN: "admin",
+}
+
 const allRoles = {
   user: ['manageNotes', 'getNotes', 'updateNotes'], 
-  learner: ['getUser', 'updateUser', 'manageNotes','getNotes', 'updateNotes'], 
+  mentee: ['getUser', 'updateUser', 'manageNotes','getNotes', 'updateNotes'], 
   mentor: ['manageNotes', 'getNotes', 'updateNotes'], 
   admin: ['getUsers', 'manageUsers', 'manageNotes', 'getNotes'], 
 };
@@ -9,4 +16,4 @@ const allRoles = {
 const roles = Object.keys(allRoles);
 const roleRights = new Map(Object.entries(allRoles)); // Usage: roleRights.get("admin")
 
-export { roles, roleRights };
+export { ROLE, roles, roleRights };
