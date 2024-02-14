@@ -215,7 +215,6 @@ const aggregateSearchMentors = async (regexSearchArray) => {
         count: { $sum: 1 },
         matchedTags: { $push: "$profile.tags" },
         user: { $first: "$$ROOT" }, // Store the entire user document in a field called 'user'
-        allTags: { $first: "$profile.tags" },
       },
     },
     // calculates the score based on the number of tags matched
@@ -247,7 +246,7 @@ const matchMentors = async (inquiry) => {
   if (!inquiry || Object.keys(inquiry).length === 0) {
     return [];
   }
-  
+
   // create an array of regular expressions for searching mentors
   const regexSearchArray = createRegexSearchArray(inquiry);
 
