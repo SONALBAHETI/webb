@@ -74,24 +74,47 @@ const retrieveThread = async (threadID) => {
  *
  * @param {string} threadID - The ID of the thread.
  * @param {string} message - The message to be added.
+ * @param {string} [role="user"] - The role of the message creator
  * @return The thread messages.
  */
-const addMessageToThread = async (threadID, message) => {
+const addMessageToThread = async (threadID, message, role = "user") => {
   const threadMessages = await openai.beta.threads.messages.create(threadID, {
-    role: "user",
+    role,
     content: message,
   });
   return threadMessages;
 };
 
 /**
+ * Modifies a message in a thread using the provided threadID, messageID, and metadata.
+ *
+ * @param {string} threadID - The ID of the thread where the message is located
+ * @param {string} messageID - The ID of the message to be modified
+ * @param {Object} metadata - The metadata to be updated in the message
+ * @return The updated message after modification
+ */
+const modifyMessage = async (threadID, messageID, metadata) => {
+  const updatedMessage = await openai.beta.threads.messages.update(
+    threadID,
+    messageID,
+    {
+      metadata,
+    }
+  );
+  return updatedMessage;
+};
+
+/**
  * Retrieves messages from a thread
  * @param {string} threadID - The ID of the thread to retrieve messages from
+ * @param {string} [limit=20] - A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.
  * @returns A promise that resolves with the messages from the thread
  */
-const retrieveMessagesFromThread = async (threadID) => {
+const retrieveMessagesFromThread = async (threadID, limit = 20) => {
   // Retrieve messages from the specified thread
-  const threadMessages = await openai.beta.threads.messages.list(threadID);
+  const threadMessages = await openai.beta.threads.messages.list(threadID, {
+    limit,
+  });
   return threadMessages;
 };
 
@@ -119,6 +142,18 @@ const createRun = async (threadID, assistantID) => {
 const retrieveRun = async (threadID, runID) => {
   const run = await openai.beta.threads.runs.retrieve(threadID, runID);
   return run;
+};
+
+/**
+ * Retrieves the steps of a specific run from a thread in the OpenAI beta API.
+ *
+ * @param {string} threadID - The ID of the thread containing the run.
+ * @param {string} runID - The ID of the run to retrieve.
+ * @return The retrieved run steps object.
+ */
+const listRunSteps = async (threadID, runID) => {
+  const runSteps = await openai.beta.threads.runs.steps.list(threadID, runID);
+  return runSteps;
 };
 
 /**
@@ -160,4 +195,6 @@ export {
   submitToolOutputs,
   retrieveThread,
   retrieveMessagesFromThread,
+  listRunSteps,
+  modifyMessage,
 };

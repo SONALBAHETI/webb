@@ -8,7 +8,7 @@ import deepMerge from "../utils/deepMerge.js";
  * Create a user
  * @param {Object} userBody
  * @throws {ApiError} If email already exists
- * @returns {Promise<Document<User>>}
+ * @return {Promise<Document<User>>}
  */
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {

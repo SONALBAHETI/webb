@@ -91,7 +91,7 @@ const submitOnboardingForm = async (req, res) => {
     primaryAreasOfPractice: practiceAreas,
     areasOfExpertise: expertiseAreas,
   } = req.body;
-  let role, privateInfo;
+  let role, profile;
 
   const isHealthcareStudent =
     userOccupation === UserOccupations.HEALTHCARE_STUDENT;
@@ -101,16 +101,16 @@ const submitOnboardingForm = async (req, res) => {
 
   if (isHealthcareStudent || (isHealthcareProfessional && isFindAMentor)) {
     role = ROLE.MENTEE;
-    privateInfo = { primaryInterests };
+    profile = { primaryInterests };
   } else {
     role = ROLE.MENTOR;
-    privateInfo = { practiceAreas, expertiseAreas };
+    profile = { practiceAreas, expertiseAreas };
   }
   await updateUser(req.user.id, {
     role,
     occupation: userOccupation,
     accountStatus: { isOnboarded: true },
-    privateInfo,
+    profile,
   });
   res.status(httpStatus.OK).json({ success: true });
 };

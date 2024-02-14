@@ -3,10 +3,10 @@ import {
   addMessageToThreadAndRun,
   retrieveRun,
   getMessagesFromThread,
-  submitMentorMatchOutput,
   transformOpenAIThreadMessages,
   retrieveOrCreateOpenAIThreadID,
   getMatchMentorsFunctionCall,
+  handleMatchMentorsFunctionCall,
 } from "../services/chatbot.service.js";
 import express from "express";
 
@@ -34,16 +34,20 @@ const sendMessage = async (req, res) => {
 const retrieveRunStatus = async (req, res) => {
   const threadId = req.user.getThreadId();
   const { id: runId } = req.params;
+  // retrieve the run
   let run = await retrieveRun(threadId, runId);
+  // check if run requires action
   if (run.status === "requires_action") {
+    // check if match_mentors function is called
     const matchMentorsFunctionCall = getMatchMentorsFunctionCall(run);
     if (matchMentorsFunctionCall) {
-      run = await submitMentorMatchOutput({
+      // handle match mentors function call
+      run = await handleMatchMentorsFunctionCall(
+        matchMentorsFunctionCall,
+        req.user.id,
         threadId,
-        runId,
-        toolCallId: matchMentorsFunctionCall.id,
-        output: `{"success": true, "details": "Tell the user that some mentors have been found."}}`, // TODO: this message is temporary
-      });
+        runId
+      );
     }
   }
   res.status(httpStatus.OK).send({ id: run.id, status: run.status });

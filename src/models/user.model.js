@@ -6,6 +6,103 @@ import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
 
+const degreeSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    index: true,
+    trim: true,
+  },
+  institution: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  year: {
+    type: Number,
+    required: true,
+  },
+});
+
+const certificateSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  dateOfIssue: {
+    type: Date,
+    required: true,
+  },
+  expirationDate: {
+    type: Date,
+    required: true,
+  },
+});
+
+const educationSchema = new mongoose.Schema({
+  degrees: {
+    type: [degreeSchema],
+    default: [],
+  },
+  ceritificates: {
+    type: [certificateSchema],
+    default: [],
+  },
+  isResidencyTrained: {
+    type: Boolean,
+  },
+  isFellowshipTrained: {
+    type: Boolean,
+  },
+  residencyPrograms: {
+    type: [String],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  fellowshipPrograms: {
+    type: [String],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+});
+
+const expertiseSchema = new mongoose.Schema({
+  yearsInClinicalPractice: {
+    type: Number,
+    required: true,
+  },
+  commonlyTreatedDiagnoses: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  boardSpecialties: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  expertiseAreas: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  primaryInterests: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  practiceAreas: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+});
+
 const profileSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -19,11 +116,15 @@ const profileSchema = new mongoose.Schema({
   },
   picture: {
     type: String,
-    trim: true,
+  },
+  bio: {
+    type: String,
+  },
+  primaryRole: {
+    type: String,
   },
   pronouns: {
     type: String,
-    trim: true,
     enum: [
       Pronouns.HE,
       Pronouns.SHE,
@@ -35,27 +136,28 @@ const profileSchema = new mongoose.Schema({
   gender: {
     type: String,
     trim: true,
-    enum: [Genders.MALE, Genders.FEMALE, Genders.OTHER, Genders.NONE],
+    enum: Object.values(Genders),
   },
-});
-
-const privateInfoSchema = new mongoose.Schema({
-  expertiseAreas: {
+  identity: String,
+  ethnicity: String,
+  personalInterests: {
     type: [String],
-    trim: true,
     default: [],
+    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
-  primaryInterests: {
+  religiousAffiliations: {
     type: [String],
-    trim: true,
     default: [],
+    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
-  practiceAreas: {
+  education: educationSchema,
+  expertise: expertiseSchema,
+  tags: {
     type: [String],
-    trim: true,
     default: [],
+    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
@@ -104,7 +206,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      trim: true,
       minlength: 8,
       validate(value) {
         if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
@@ -126,10 +227,6 @@ const userSchema = new mongoose.Schema(
     },
     accountStatus: stasusSchema,
     profile: profileSchema,
-    privateInfo: {
-      type: privateInfoSchema,
-      private: true,
-    },
     integrations: {
       type: integrationsSchema,
       private: true,
@@ -166,8 +263,59 @@ userSchema.methods = {
     const user = this;
     return bcrypt.compare(password, user.password);
   },
+  getProfilePicture() {
+    return this.profile?.picture;
+  },
   getThreadId() {
     return this.integrations?.openai?.threadId;
+  },
+  getDegrees() {
+    return this.profile?.education?.degrees || [];
+  },
+  getPrimaryRole() {
+    return this.profile?.primaryRole;
+  },
+  getGender() {
+    return this.profile?.gender;
+  },
+  getPronouns() {
+    return this.profile?.pronouns;
+  },
+  getEthnicity() {
+    return this.profile?.ethnicity;
+  },
+  getReligiousAffiliations() {
+    return this.profile?.religiousAffiliations || [];
+  },
+  getCertifications() {
+    return this.profile?.education?.certificates || [];
+  },
+  getCommonlyTreatedDiagnoses() {
+    return this.profile?.expertise?.commonlyTreatedDiagnoses || [];
+  },
+  getBoardSpecialties() {
+    return this.profile?.expertise?.boardSpecialties || [];
+  },
+  getExpertiseAreas() {
+    return this.profile?.expertise?.expertiseAreas || [];
+  },
+  getPracticeAreas() {
+    return this.profile?.expertise?.practiceAreas || [];
+  },
+  getPrimaryInterests() {
+    return this.profile?.expertise?.primaryInterests || [];
+  },
+  getPersonalInterests() {
+    return this.profile?.personalInterests;
+  },
+  getYearsInClinicalPractice() {
+    return this.profile?.expertise?.yearsInClinicalPractice;
+  },
+  isResidencyTrained() {
+    return this.profile?.education?.isResidencyTrained;
+  },
+  isFellowshipTrained() {
+    return this.profile?.education?.isFellowshipTrained;
   },
 };
 
