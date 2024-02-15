@@ -5,6 +5,7 @@ import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
+import { generateTags, isTagFieldModified } from "../services/user.service.js";
 
 const degreeSchema = new mongoose.Schema({
   name: {
@@ -284,6 +285,9 @@ userSchema.methods = {
   getEthnicity() {
     return this.profile?.ethnicity;
   },
+  getIdentity() {
+    return this.profile?.identity;
+  },
   getReligiousAffiliations() {
     return this.profile?.religiousAffiliations || [];
   },
@@ -306,16 +310,16 @@ userSchema.methods = {
     return this.profile?.expertise?.primaryInterests || [];
   },
   getPersonalInterests() {
-    return this.profile?.personalInterests;
+    return this.profile?.personalInterests || [];
   },
   getYearsInClinicalPractice() {
     return this.profile?.expertise?.yearsInClinicalPractice;
   },
   isResidencyTrained() {
-    return this.profile?.education?.isResidencyTrained;
+    return this.profile?.education?.isResidencyTrained || false;
   },
   isFellowshipTrained() {
-    return this.profile?.education?.isFellowshipTrained;
+    return this.profile?.education?.isFellowshipTrained || false;
   },
 };
 
@@ -324,6 +328,10 @@ userSchema.pre("save", async function (next) {
   // if user's password was updated, hash it
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
+  }
+  // if any of the tag fields have been modified, generate new tags
+  if (user.isNew || isTagFieldModified(user)) {
+    user.profile.tags = generateTags(user);
   }
   next();
 });

@@ -130,6 +130,13 @@ export const scoreMentorsByInquiry = (mentors, inquiry) => {
       inquiry.pronouns,
       mentor.getPronouns(),
       WEIGHTS.PRONOUNS
+    );
+
+    // calculate score based on identity
+    score += getStringMatchScore(
+      inquiry.identity,
+      mentor.getIdentity(),
+      WEIGHTS.IDENTITY
     )
 
     return { mentor, score };
@@ -147,48 +154,38 @@ export const scoreMentorsByInquiry = (mentors, inquiry) => {
 const createRegexSearchArray = (inquiry) => {
   const regexSearchArray = [];
 
-  // add ethnicity to search array
-  if (inquiry.ethnicity) {
-    regexSearchArray.push(createMatchRegex(inquiry.ethnicity));
-  }
+  // add non-array string fields - gender, ethnicity, primary role, identiy, and pronouns 
+  // to search array
+  [
+    inquiry.gender,
+    inquiry.ethnicity,
+    inquiry.primaryRole,
+    inquiry.pronouns,
+    inquiry.identity,
+  ].forEach((field) => {
+    if (field) {
+      regexSearchArray.push(createMatchRegex(field));
+    }
+  });
 
-  // add degrees to search array
-  inquiry.degrees?.forEach((degree) =>
-    regexSearchArray.push(createMatchRegex(degree))
-  );
-
-  // add certificates to search array
-  inquiry.certificates?.forEach((certificate) =>
-    regexSearchArray.push(createMatchRegex(certificate))
-  );
-
-  // add personal interests to search array
-  inquiry.personalInterests?.forEach((personalInterest) =>
-    regexSearchArray.push(createMatchRegex(personalInterest))
-  );
-
-  // add boardSpecialties to search array
-  inquiry.boardSpecialties?.forEach((boardSpecialty) =>
-    regexSearchArray.push(createMatchRegex(boardSpecialty))
-  );
-
-  // add areas of interest to search array
-  inquiry.areasOfInterest?.forEach((areaOfInterest) =>
-    regexSearchArray.push(createMatchRegex(areaOfInterest))
-  );
-
-  // add areas of expertise to search array
-  inquiry.areasOfExpertise?.forEach((areaOfExpertise) =>
-    regexSearchArray.push(createMatchRegex(areaOfExpertise))
-  );
-
-  // add commonly treated diagnoses to search array
-  inquiry.commonlyTreatedDiagnoses?.forEach((commonlyTreatedDiagnosis) =>
-    regexSearchArray.push(createMatchRegex(commonlyTreatedDiagnosis))
-  );
-
-  // add tags to search array
-  inquiry.tags?.forEach((tag) => regexSearchArray.push(createMatchRegex(tag)));
+  // add string array fields - degrees, certificates, personal interests, board specialities, areas of interest, 
+  // areas of expertise, commonly treated diagnoses, tags, and religious affiliations 
+  // to search array
+  [
+    inquiry.degrees,
+    inquiry.certificates,
+    inquiry.personalInterests,
+    inquiry.boardSpecialties,
+    inquiry.areasOfInterest,
+    inquiry.areasOfExpertise,
+    inquiry.commonlyTreatedDiagnoses,
+    inquiry.religiousAffiliations,
+    inquiry.tags,
+  ].forEach((field) => {
+    field?.forEach((item) => {
+      regexSearchArray.push(createMatchRegex(item));
+    });
+  });
 
   return regexSearchArray;
 };

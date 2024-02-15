@@ -1,0 +1,15 @@
+export const USER_TAG_FIELDS = {
+  DEGREES: "profile.education.degrees",
+  BOARD_SPECIALTIES: "profile.expertise.boardSpecialties",
+  CERTIFICATES: "profile.education.certificates",
+  PRIMARY_AREAS_OF_PRACTICE: "profile.expertise.practiceAreas",
+  PRIMARY_ROLE: "profile.primaryRole",
+  AREAS_OF_EXPERTISE: "profile.expertise.expertiseAreas",
+  COMMONLY_TREATED_DIAGNOSES: "profile.expertise.commonlyTreatedDiagnoses",
+  PERSONAL_INTERESTS: "profile.personalInterests",
+  GENDER: "profile.gender",
+  IDENTITY: "profile.identity",
+  ETHNICITY: "profile.ethnicity",
+  PRONOUNS: "profile.pronouns",
+  RELIGIOUS_AFFILIATIONS: "profile.religiousAffiliations",
+}

@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import { Document } from "mongoose";
 import deepMerge from "../utils/deepMerge.js";
+import { USER_TAG_FIELDS } from "../constants/userTagFields.js";
 
 /**
  * Create a user
@@ -82,10 +83,80 @@ const updateOpenAIThreadId = async (userId, threadId) => {
   return user;
 };
 
+/**
+ * Generates tags based on user information.
+ *
+ * @param {import("mongoose").Document<User>} user - the user object containing information
+ * @return {Array<string>} the array of unique tags generated from the user information
+ */
+const generateTags = (user) => {
+  const degrees = user.getDegrees().map((degree) => degree.name);
+  const occupation = user.occupation;
+  const primaryRole = user.getPrimaryRole();
+  const gender = user.getGender();
+  const ethnicity = user.getEthnicity();
+  const identity = user.getIdentity();
+  const pronouns = user.getPronouns();
+  const religiousAffiliations = user.getReligiousAffiliations();
+  const certificates = user
+    .getCertifications()
+    .map((certificate) => certificate.name);
+  const commonlyTreatedDiagnoses = user.getCommonlyTreatedDiagnoses();
+  const boardSpecialties = user.getBoardSpecialties();
+  const expertiseAreas = user.getExpertiseAreas();
+  const areasOfPractice = user.getPracticeAreas();
+  const areasOfInterest = user.getPrimaryInterests();
+  const personalInterests = user.getPersonalInterests();
+
+  const tags = new Set([
+    ...degrees,
+    occupation,
+    primaryRole,
+    gender,
+    identity,
+    pronouns,
+    ethnicity,
+    ...religiousAffiliations,
+    ...certificates,
+    ...commonlyTreatedDiagnoses,
+    ...boardSpecialties,
+    ...expertiseAreas,
+    ...areasOfPractice,
+    ...areasOfInterest,
+    ...personalInterests,
+  ]);
+
+  // Remove null and undefined values from the set
+  tags.forEach((value) => {
+    if (value === null || value === undefined) {
+      tags.delete(value);
+    }
+  });
+
+  return Array.from(tags);
+};
+
+/**
+ * Checks if any of the tag fields in the user object has been modified.
+ *
+ * @param {import("mongoose").Document} user - the user object to check
+ * @return {boolean} true if any tag field has been modified, false otherwise
+ */
+const isTagFieldModified = (user) => {
+  for (const field of Object.values(USER_TAG_FIELDS)) {
+    if (user.isModified(field)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 export {
   createUser,
   getUserByEmail,
   getUserById,
   updateUser,
   updateOpenAIThreadId,
+  generateTags,
+  isTagFieldModified,
 };
