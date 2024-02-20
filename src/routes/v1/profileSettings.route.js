@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   "/form/submit",
-  // auth(),
+  auth(),
   validate(profileValidation.submitProfileForm),
   catchAsync(submitMyInformation)
 );
