@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import { updateUser } from "../services/user.service.js";
+import pick from "../utils/pick.js";
 
 /**
  * Submit My information form and update user details.
@@ -24,22 +25,24 @@ const submitMyInformation = async (req, res) => {
     expertise,
   } = req.body;
 
-  const profile = {
-    firstName,
-    lastName,
-    picture,
-    bio,
-    primaryRole,
-    pronouns,
-    gender,
-    identity,
-    ethnicity,
-    personalInterests,
-    religiousAffiliations,
-    education,
-    expertise,
-  };
-  const userId = "65d344307df1c00481aa93f8"; // Replace with actual user ID
+  const profile = pick(req.body, [
+    "firstName",
+    "lastName",
+    "picture",
+    "bio",
+    "primaryRole",
+    "pronouns",
+    "gender",
+    "identity",
+    "ethnicity",
+    "personalInterests",
+    "religiousAffiliations",
+    "education",
+    "expertise",
+  ]);
+
+  const userId = req.user.id;
+
   await updateUser(userId, { profile: profile });
   return res.status(httpStatus.OK).json({
     success: true,

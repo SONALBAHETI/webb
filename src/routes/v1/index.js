@@ -7,7 +7,8 @@ import notesRoute from "./notes.route.js";
 import chatbotRoute from "./chatbot.route.js";
 import notificationRoute from "./notification.route.js";
 import onboardingRoute from "./onboarding.route.js";
-import profileRoute from "./profile.route.js"
+import profileRoute from "./profile.route.js";
+import userMatchRoute from "./userMatch.route.js";
 const router = express.Router();
 
 const defaultRoutes = [
@@ -40,13 +41,13 @@ const defaultRoutes = [
     route: onboardingRoute,
   },
   {
-    path: "/profile",
+    path: "/settings/profile",
     route: profileRoute,
   },
-  // {
-  //   path: "/usermatch",
-  //   route: userMatchRoute,
-  // }
+  {
+    path: "/usermatch",
+    route: userMatchRoute,
+  },
 ];
 
 // TODO: Add a docs route only for dev mode

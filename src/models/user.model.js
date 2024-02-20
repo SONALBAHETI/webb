@@ -58,10 +58,12 @@ const educationSchema = new mongoose.Schema({
   residencyPrograms: {
     type: [String],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
   fellowshipPrograms: {
     type: [String],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
 
@@ -74,29 +76,33 @@ const expertiseSchema = new mongoose.Schema({
     type: [String],
     default: [],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
   boardSpecialties: {
     type: [String],
     default: [],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
   expertiseAreas: {
     type: [String],
     default: [],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
   primaryInterests: {
     type: [String],
     default: [],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
   practiceAreas: {
     type: [String],
     default: [],
     index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
-
 
 const profileSchema = new mongoose.Schema({
   firstName: {
