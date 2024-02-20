@@ -173,6 +173,10 @@ const integrationsSchema = new mongoose.Schema({
   sendbird: {
     userId: String,
   },
+  sheerId: {
+    verificationId: String,
+    currentStep: String,
+  },
 });
 
 const stasusSchema = new mongoose.Schema({
@@ -269,6 +273,9 @@ userSchema.methods = {
   },
   getThreadId() {
     return this.integrations?.openai?.threadId;
+  },
+  getSheerIdStatus() {
+    return this.integrations?.sheerId;
   },
   getDegrees() {
     return this.profile?.education?.degrees || [];
