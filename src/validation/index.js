@@ -3,5 +3,13 @@ import userValidation from "./user.validation.js";
 import chatValidation from "./chat.validation.js";
 import chatbotValidation from "./chatbot.validation.js";
 import onboardingValidation from "./onboarding.validation.js";
+import mentorVerificationValidation from "./mentorVerification.validation.js";
 
-export { authValidation, userValidation, chatValidation, chatbotValidation, onboardingValidation };
+export {
+  authValidation,
+  userValidation,
+  chatValidation,
+  chatbotValidation,
+  onboardingValidation,
+  mentorVerificationValidation,
+};

@@ -45,6 +45,12 @@ const envVarsSchema = Joi.object()
     GOOGLE_CLIENT_ID: Joi.string()
       .description("Google OAuth client ID")
       .required(),
+    SHEER_ID_ACCESS_TOKEN: Joi.string()
+      .description("Sheer ID Access Token")
+      .required(),
+    SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID: Joi.string()
+      .description("Sheer ID Mentor Verification Program ID")
+      .required(),
   })
   .unknown();
 
@@ -84,6 +90,11 @@ const config = {
     google: {
       clientId: envVars.GOOGLE_CLIENT_ID,
     },
+  },
+  sheerId: {
+    accessToken: envVars.SHEER_ID_ACCESS_TOKEN,
+    mentorVerificationProgramId:
+      envVars.SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID,
   },
 };
 
