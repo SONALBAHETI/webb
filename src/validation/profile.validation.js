@@ -1,5 +1,13 @@
 import Joi from "joi";
 
+
+const getSuggestions = {
+  query: Joi.object().keys({
+    q: Joi.string().required(),
+  }),
+};
+
+
 // Define schemas for nested structures
 const degreeSchema = Joi.object({
   name: Joi.string().required(),
@@ -56,4 +64,4 @@ const submitProfileForm = {
   }),
 };
 
-export default { submitProfileForm };
+export default { submitProfileForm , getSuggestions };

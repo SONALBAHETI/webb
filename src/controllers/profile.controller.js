@@ -3,6 +3,30 @@ import { updateUser } from "../services/user.service.js";
 import pick from "../utils/pick.js";
 
 /**
+ * Get Suggestions for Commonly Diagnoses based on search type
+ * @param {import("express").Request}req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @return The suggestions
+ */
+
+const getCommonlyDiagnoses = async (req, res) => {
+  // Function Pending
+  //TODO: Similar to the approach used in the onboarding process
+};
+
+/**
+ * Get Suggestions for Board Specialties based on search type
+ * @param {import("express").Request}req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @return The suggestions
+ */
+
+const getBoardSpecialties = async (req, res) => {
+  // Function Pending
+  //TODO: Similar to the approach used in the onboarding process
+};
+
+/**
  * Submit My information form and update user details.
  * @param {import("express").Request} req - The request object
  * @param {import("express").Response} res - The response object
@@ -41,7 +65,7 @@ const submitMyInformation = async (req, res) => {
     "expertise",
   ]);
 
-  const userId = req.user.id;
+  const userId = "65d344307df1c00481aa93f8";
 
   await updateUser(userId, { profile: profile });
   return res.status(httpStatus.OK).json({
@@ -50,4 +74,4 @@ const submitMyInformation = async (req, res) => {
   });
 };
 
-export { submitMyInformation };
+export { submitMyInformation , getCommonlyDiagnoses , getBoardSpecialties};
