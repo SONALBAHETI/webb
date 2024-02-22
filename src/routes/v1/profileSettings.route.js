@@ -3,32 +3,51 @@ import auth from "../../middlewares/auth.js";
 import catchAsync from "../../utils/catchAsync.js";
 import validate from "../../middlewares/validate.js";
 import {
-  getBoardSpecialties,
-  getCommonlyDiagnoses,
-  submitMyInformation,
-} from "../../controllers/profile.controller.js";
-import profileValidation from "../../validation/profile.validation.js";
+  getPersonalInterestsSuggestions,
+  getBoardSpecialtiesSuggestions,
+  getCommonlyTreatedDiagnosesSuggestions,
+  submitIdentityInformation,
+  getUserProfile,
+  getReligiousAffiliationsSuggestions,
+} from "../../controllers/profileSettings.controller.js";
+import profileValidation from "../../validation/profileSettings.validation.js";
 const router = express.Router();
 
+router.get("/user-profile", auth(), catchAsync(getUserProfile));
+
 router.post(
-  "/form/submit",
+  "/form/identity-info/submit",
   auth(),
-  validate(profileValidation.submitProfileForm),
-  catchAsync(submitMyInformation)
+  validate(profileValidation.submitIdentityInfo),
+  catchAsync(submitIdentityInformation)
 );
 
 router.get(
-  "/suggestions/commonlydiagnoses",
+  "/suggestions/personal-interests",
   auth(),
   validate(profileValidation.getSuggestions),
-  catchAsync(getCommonlyDiagnoses)
+  catchAsync(getPersonalInterestsSuggestions)
 );
 
 router.get(
-  "/suggestions/boardSpecialties",
+  "/suggestions/religious-affiliations",
   auth(),
   validate(profileValidation.getSuggestions),
-  catchAsync(getBoardSpecialties)
+  catchAsync(getReligiousAffiliationsSuggestions)
+);
+
+router.get(
+  "/suggestions/commonly-treated-diagnoses",
+  auth(),
+  validate(profileValidation.getSuggestions),
+  catchAsync(getCommonlyTreatedDiagnosesSuggestions)
+);
+
+router.get(
+  "/suggestions/board-specialties",
+  auth(),
+  validate(profileValidation.getSuggestions),
+  catchAsync(getBoardSpecialtiesSuggestions)
 );
 
 export default router;

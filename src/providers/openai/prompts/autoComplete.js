@@ -18,12 +18,12 @@ export const autoCompleteSystemPrompt = ({
 }) =>
   promptArrayToString([
     aboutUsPrompt,
-    `Your job is to provide auto-complete suggestions for an input field. `,
-    `The input field is called '${fieldName}' and the ${filledBy} will fill it to help us ${purpose}. `,
-    `The values of this field will be related to '${fieldName}' only. `,
-    `If the user types anything unrelated apart from spelling mistakes, return an empty array. `,
-    `You must return the response in JSON format. `,
-    `The format and a few example values of the JSON response is as follows: `,
+    `Your job is to provide auto-complete suggestions for an input field`,
+    `The input field is called '${fieldName}' and the ${filledBy} will fill it to help us ${purpose}`,
+    `The values of this field will be related to '${fieldName}' only and will include the search term`,
+    `If the user types anything unrelated apart from spelling mistakes, return an empty array`,
+    `You must return the response in JSON format`,
+    `The format and a few example values of the JSON response is as follows:`,
     `${JSON.stringify(jsonFormat)}`,
     `You will return around 5 - 10 suggestions.`,
   ]);
@@ -34,7 +34,7 @@ export const autoCompleteSystemPrompt = ({
  * @returns {string} The user prompt for auto-complete suggestions.
  */
 export const autoCompleteUserPrompt = (searchTerm) => {
-  return `Provide auto-complete suggestions for '${searchTerm}'`;
+  return `Provide auto-complete suggestions for search term: '${searchTerm}'`;
 };
 
 /**

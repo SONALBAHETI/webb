@@ -138,7 +138,12 @@ const profileSchema = new mongoose.Schema({
     type: String,
     trim: true,
     enum: Object.values(Genders),
+    set: (value) => value?.toLowerCase(),
   },
+  dateOfBirth: Date,
+  state: String,
+  postalCode: String,
+  funFact: String,
   identity: String,
   ethnicity: String,
   personalInterests: {
@@ -159,9 +164,12 @@ const profileSchema = new mongoose.Schema({
     type: [String],
     default: [],
     index: true,
+    private: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
+
+profileSchema.plugin(toJSON);
 
 const integrationsSchema = new mongoose.Schema({
   openai: {

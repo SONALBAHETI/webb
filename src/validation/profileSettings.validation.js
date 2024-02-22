@@ -1,12 +1,10 @@
 import Joi from "joi";
 
-
 const getSuggestions = {
   query: Joi.object().keys({
     q: Joi.string().required(),
   }),
 };
-
 
 // Define schemas for nested structures
 const degreeSchema = Joi.object({
@@ -44,24 +42,24 @@ const expertiseSchema = Joi.object({
 /**
  * Schema for submitting profile form
  */
-const submitProfileForm = {
+const submitIdentityInfo = {
   body: Joi.object().keys({
+    // picture: Joi.string().optional(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
-    picture: Joi.string().optional(),
-    bio: Joi.string().optional(),
-    primaryRole: Joi.string().optional(),
+    email: Joi.string().email().required(),
     pronouns: Joi.string().required(),
     gender: Joi.string().required(),
-    identity: Joi.string().optional(),
-    ethnicity: Joi.string().optional(),
-    personalInterests: Joi.array().items(Joi.string().lowercase()).default([]),
-    religiousAffiliations: Joi.array()
-      .items(Joi.string().lowercase())
-      .default([]),
-    education: educationSchema,
-    expertise: expertiseSchema,
+    dateOfBirth: Joi.date().required(),
+    state: Joi.string().required(),
+    postalCode: Joi.string().required(),
+    bio: Joi.string().required(),
+    funFact: Joi.string().optional().allow(""),
+    personalInterests: Joi.array().items(Joi.string()).default([]),
+    identity: Joi.string().optional().allow(""),
+    ethnicity: Joi.string().optional().allow(""),
+    religiousAffiliations: Joi.array().items(Joi.string()).default([]),
   }),
 };
 
-export default { submitProfileForm , getSuggestions };
+export default { submitIdentityInfo, getSuggestions };
