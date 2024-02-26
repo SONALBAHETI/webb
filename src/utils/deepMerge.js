@@ -7,6 +7,9 @@
 const deepMerge = (target, ...sources) => {
   // Iterate over all source objects
   for (const source of sources) {
+    if (!source || typeof source !== "object") {
+      continue; // Skip invalid source
+    }
     // Iterate over all properties in the current source object
     Object.keys(source).forEach((key) => {
       // Check if the current property is an object and needs further merging
@@ -14,7 +17,8 @@ const deepMerge = (target, ...sources) => {
         typeof source[key] === "object" &&
         source[key] !== null &&
         typeof target[key] === "object" &&
-        target[key] !== null
+        target[key] !== null &&
+        !Array.isArray(source[key])
       ) {
         // Recursively merge nested objects
         deepMerge(target[key], source[key]);
@@ -24,6 +28,6 @@ const deepMerge = (target, ...sources) => {
       }
     });
   }
-}
+};
 
 export default deepMerge;

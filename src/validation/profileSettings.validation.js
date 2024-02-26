@@ -10,7 +10,7 @@ const getSuggestions = {
 const degreeSchema = Joi.object({
   name: Joi.string().required(),
   institution: Joi.string().required(),
-  year: Joi.number().required(),
+  dateOfCompletion: Joi.date().required(),
 });
 
 const certificateSchema = Joi.object({
@@ -62,4 +62,20 @@ const submitIdentityInfo = {
   }),
 };
 
-export default { submitIdentityInfo, getSuggestions };
+const addNewDegree = {
+  body: Joi.object().keys({
+    degreeName: Joi.string().required(),
+    universityName: Joi.string().required(),
+    dateOfCompletion: Joi.date().required(),
+  }),
+};
+
+const addNewCertificate = {
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    dateOfIssue: Joi.date().required(),
+    expirationDate: Joi.date().required(),
+  }),
+};
+
+export default { submitIdentityInfo, getSuggestions, addNewDegree, addNewCertificate };

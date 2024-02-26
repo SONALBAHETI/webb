@@ -52,7 +52,6 @@ const updateUser = async (userId, updateBody) => {
   if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.CONFLICT, "Email already taken");
   }
-
   deepMerge(user, updateBody);
   await user.save();
   return user;
@@ -81,6 +80,47 @@ const updateOpenAIThreadId = async (userId, threadId) => {
     },
   });
   return user;
+};
+
+/**
+ * Adds a degree to the user's education profile.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {import("../models/user.model.js").Degree} degree - The degree to be added to the user's education profile.
+ * @return A Promise that resolves to the updated user object.
+ */
+const addDegree = async (userId, degree) => {
+  const user = await getUserById(userId);
+
+  return await updateUser(userId, {
+    profile: {
+      education: {
+        degrees: [...(user.profile?.education?.degrees || []), degree],
+      },
+    },
+  });
+};
+
+/**
+ * Adds a certificate to the user's education profile.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {import("../models/user.model.js").Certificate} certificate - The certificate to be added to the user's education profile.
+ * @return A Promise that resolves to the updated user object.
+ */
+const addCertificate = async (userId, certificate) => {
+  const user = await getUserById(userId);
+
+  return await updateUser(userId, {
+    profile: {
+      education: {
+        certificates: [
+          ...(user.profile?.education?.certificates || []),
+          certificate,
+        ],
+      },
+    },
+  });
 };
 
 /**
@@ -159,4 +199,6 @@ export {
   updateOpenAIThreadId,
   generateTags,
   isTagFieldModified,
+  addDegree,
+  addCertificate,
 };

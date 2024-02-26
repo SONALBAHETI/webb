@@ -1,11 +1,17 @@
 import httpStatus from "http-status";
-import { updateUser } from "../services/user.service.js";
+import {
+  addDegree,
+  addCertificate,
+  updateUser,
+} from "../services/user.service.js";
 import pick from "../utils/pick.js";
 import { getOrUpdateSuggestionsHelper } from "../services/suggestion.service.js";
 import {
   generatePersonalInterestsSuggestions,
   generateReligiousAffiliationSuggestions,
 } from "../providers/openai/services/suggestions.js";
+import { physicalTherapyDegrees } from "../constants/degrees.js";
+import { physicalTherapyUniversities } from "../constants/universities.js";
 
 /**
  * Get Suggestions for Personal Interests based on search term
@@ -38,6 +44,36 @@ const getReligiousAffiliationsSuggestions = async (req, res) => {
     generateSuggestionsFn: generateReligiousAffiliationSuggestions,
   });
   const suggestions = result.map((i) => i.title);
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+/**
+ * Retrieves degree suggestions based on the query parameter.
+ *
+ * @param {import("express").Request} req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @returns an object containing the suggestions
+ */
+const getDegreeSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const suggestions = physicalTherapyDegrees.filter((i) =>
+    i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
+  );
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+/**
+ * Retrieves university suggestions based on the query parameter.
+ *
+ * @param {import("express").Request} req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @returns an object containing the suggestions
+ */
+const getUniversitySuggestions = async (req, res) => {
+  const { q } = req.query;
+  const suggestions = physicalTherapyUniversities.filter((i) =>
+    i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
+  );
   res.status(httpStatus.OK).json({ suggestions });
 };
 
@@ -106,6 +142,42 @@ const submitIdentityInformation = async (req, res) => {
   });
 };
 
+/**
+ * Adds a new degree to the user's profile.
+ *
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const addNewDegree = async (req, res) => {
+  const { degreeName, universityName, dateOfCompletion } = req.body;
+  await addDegree(req.user.id, {
+    name: degreeName,
+    institution: universityName,
+    dateOfCompletion,
+  });
+  return res.status(httpStatus.OK).json({
+    success: true,
+  });
+};
+
+/**
+ * Adds a new certificate to the user's profile.
+ *
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const addNewCertificate = async (req, res) => {
+  const { name, dateOfIssue, expirationDate } = req.body;
+  await addCertificate(req.user.id, {
+    name,
+    dateOfIssue,
+    expirationDate,
+  });
+  return res.status(httpStatus.OK).json({
+    success: true,
+  });
+};
+
 export {
   submitIdentityInformation,
   getPersonalInterestsSuggestions,
@@ -113,4 +185,8 @@ export {
   getBoardSpecialtiesSuggestions,
   getUserProfile,
   getReligiousAffiliationsSuggestions,
+  getDegreeSuggestions,
+  getUniversitySuggestions,
+  addNewDegree,
+  addNewCertificate,
 };
