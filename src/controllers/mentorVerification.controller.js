@@ -67,15 +67,25 @@ const getOrganizations = async (req, res) => {
  * @return The current step of the verification process
  */
 const getVerificationStep = async (req, res) => {
-  const verificationId = req.user.getSheerIdStatus()?.verificationId;
-  if (!verificationId) {
-    return res.status(httpStatus.OK).send({ currentStep: "notStarted" });
+  const sheerID = req.user.getSheerIdStatus();
+  let currentStep = sheerID?.currentStep || "notStarted";
+  if (currentStep !== "success" && sheerID?.verificationId) {
+    try {
+      const verificationStatus =
+        await mentorVerificationService.getVerificationStatus(
+          sheerID.verificationId
+        );
+      currentStep = verificationStatus.currentStep;
+      await mentorVerificationService.updateVerificationStatusOfUser({
+        userId: req.user.id,
+        verificationId: verificationStatus.verificationId,
+        currentStep,
+      });
+    } catch (error) {
+      // TODO: handle error
+    }
   }
-  const verificationStatus =
-    await mentorVerificationService.getVerificationStatus(verificationId);
-  res
-    .status(httpStatus.OK)
-    .send({ currentStep: verificationStatus.currentStep });
+  res.status(httpStatus.OK).send({ currentStep });
 };
 
 export {

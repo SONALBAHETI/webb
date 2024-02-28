@@ -8,6 +8,7 @@ import { getOrUpdateSuggestionsHelper } from "../services/suggestion.service.js"
 import { updateUser } from "../services/user.service.js";
 import { UserObjectives, UserOccupations } from "../constants/onboarding.js";
 import { ROLE } from "../config/roles.js";
+import { SuggestionTypes } from "../models/suggestion.model.js";
 
 /**
  * Get suggestions for primary areas of interest based on search term.
@@ -19,7 +20,7 @@ const getPrimaryInterestSuggestions = async (req, res) => {
   const { q } = req.query;
   const result = await getOrUpdateSuggestionsHelper({
     searchTerm: q,
-    type: "primaryInterest",
+    type: SuggestionTypes.PrimaryInterest,
     generateSuggestionsFn: generatePrimaryInterestSuggestions,
   });
   const suggestions = result.map((i) => i.title);
@@ -36,7 +37,7 @@ const getExpertiseAreaSuggestions = async (req, res) => {
   const { q } = req.query;
   const result = await getOrUpdateSuggestionsHelper({
     searchTerm: q,
-    type: "expertiseArea",
+    type: SuggestionTypes.ExpertiseArea,
     generateSuggestionsFn: generateExpertiseAreasSuggestions,
   });
   const suggestions = result.map((i) => i.title);
@@ -53,7 +54,7 @@ const getPracticeAreaSuggestions = async (req, res) => {
   const { q } = req.query;
   const result = await getOrUpdateSuggestionsHelper({
     searchTerm: q,
-    type: "practiceArea",
+    type: SuggestionTypes.PracticeArea,
     generateSuggestionsFn: generatePracticeAreasSuggestions,
   });
   const suggestions = result.map((i) => i.title);

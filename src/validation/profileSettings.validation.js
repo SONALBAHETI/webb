@@ -6,39 +6,6 @@ const getSuggestions = {
   }),
 };
 
-// Define schemas for nested structures
-const degreeSchema = Joi.object({
-  name: Joi.string().required(),
-  institution: Joi.string().required(),
-  dateOfCompletion: Joi.date().required(),
-});
-
-const certificateSchema = Joi.object({
-  name: Joi.string().required(),
-  dateOfIssue: Joi.date().required(),
-  expirationDate: Joi.date().required(),
-});
-
-const educationSchema = Joi.object({
-  degrees: Joi.array().items(degreeSchema).default([]),
-  certificates: Joi.array().items(certificateSchema).default([]),
-  isResidencyTrained: Joi.boolean().optional(),
-  isFellowshipTrained: Joi.boolean().optional(),
-  residencyPrograms: Joi.array().items(Joi.string().lowercase()).default([]),
-  fellowshipPrograms: Joi.array().items(Joi.string().lowercase()).default([]),
-});
-
-const expertiseSchema = Joi.object({
-  yearsInClinicalPractice: Joi.number().required(),
-  commonlyTreatedDiagnoses: Joi.array()
-    .items(Joi.string().lowercase())
-    .default([]),
-  boardSpecialties: Joi.array().items(Joi.string().lowercase()).default([]),
-  expertiseAreas: Joi.array().items(Joi.string().lowercase()).default([]),
-  primaryInterests: Joi.array().items(Joi.string().lowercase()).default([]),
-  practiceAreas: Joi.array().items(Joi.string().lowercase()).default([]),
-});
-
 /**
  * Schema for submitting profile form
  */
@@ -78,4 +45,41 @@ const addNewCertificate = {
   }),
 };
 
-export default { submitIdentityInfo, getSuggestions, addNewDegree, addNewCertificate };
+const educationForm = {
+  body: Joi.object().keys({
+    isResidencyTrained: Joi.boolean().optional(),
+    isFellowshipTrained: Joi.boolean().optional(),
+    residencyPrograms: Joi.when("isResidencyTrained", {
+      is: true,
+      then: Joi.array().items(Joi.string()).min(1),
+      otherwise: Joi.array().items(Joi.string()).default([]),
+    }),
+    fellowshipPrograms: Joi.when("isFellowshipTrained", {
+      is: true,
+      then: Joi.array().items(Joi.string()).min(1),
+      otherwise: Joi.array().items(Joi.string()).default([]),
+    }),
+  }),
+};
+
+const expertiseForm = Joi.object({
+  yearsInClinicalPractice: Joi.number().min(0).required(),
+  commonlyTreatedDiagnoses: Joi.array()
+    .items(Joi.string())
+    .min(1)
+    .max(7)
+    .default([]),
+  boardSpecialties: Joi.array().items(Joi.string()).min(1).max(7).default([]),
+  expertiseAreas: Joi.array().items(Joi.string()).min(1).max(7).default([]),
+  primaryInterests: Joi.array().items(Joi.string()).min(1).max(7).default([]),
+  practiceAreas: Joi.array().items(Joi.string()).min(1).max(7).default([]),
+});
+
+export default {
+  submitIdentityInfo,
+  getSuggestions,
+  addNewDegree,
+  addNewCertificate,
+  educationForm,
+  expertiseForm,
+};

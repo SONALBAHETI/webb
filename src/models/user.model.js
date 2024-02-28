@@ -161,19 +161,12 @@ const profileSchema = new mongoose.Schema({
   primaryRole: String,
   pronouns: {
     type: String,
-    enum: [
-      Pronouns.HE,
-      Pronouns.SHE,
-      Pronouns.THEY,
-      Pronouns.OTHER,
-      Pronouns.NONE,
-    ],
+    enum: Object.values(Pronouns),
   },
   gender: {
     type: String,
     trim: true,
     enum: Object.values(Genders),
-    set: (value) => value?.toLowerCase(),
   },
   dateOfBirth: Date,
   state: String,
@@ -212,6 +205,30 @@ const profileSchema = new mongoose.Schema({
 
 profileSchema.plugin(toJSON);
 
+/**
+ * @typedef {Object} OpenAIIntegration
+ * @property {string} [threadId] - The OpenAI thread ID
+ */
+/**
+ * @typedef {Object} GoogleIntegration
+ * @property {string} [userId] - The Google user ID
+ */
+/**
+ * @typedef {Object} SendbirdIntegration
+ * @property {string} [userId] - The Sendbird user ID
+ */
+/**
+ * @typedef {Object} SheerIDIntegration
+ * @property {string} [verificationId] - The SheerID verification ID
+ * @property {string} [currentStep] - The current step of the verification
+ */
+/**
+ * @typedef {Object} Integrations
+ * @property {OpenAIIntegration} [openai] - The OpenAI integration
+ * @property {GoogleIntegration} [google] - The Google integration
+ * @property {SendbirdIntegration} [sendbird] - The Sendbird integration
+ * @property {SheerIDIntegration} [sheerId] - The SheerID integration
+ */
 const integrationsSchema = new mongoose.Schema({
   openai: {
     threadId: String,
@@ -339,6 +356,9 @@ userSchema.methods = {
   getThreadId() {
     return this.integrations?.openai?.threadId;
   },
+  /**
+   * @returns {SheerIDIntegration} The SheerID integration
+   */
   getSheerIdStatus() {
     return this.integrations?.sheerId;
   },

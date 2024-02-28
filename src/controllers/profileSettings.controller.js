@@ -9,9 +9,16 @@ import { getOrUpdateSuggestionsHelper } from "../services/suggestion.service.js"
 import {
   generatePersonalInterestsSuggestions,
   generateReligiousAffiliationSuggestions,
+  generateCommonlyTreatedDiagnosesSuggestions,
 } from "../providers/openai/services/suggestions.js";
 import { physicalTherapyDegrees } from "../constants/degrees.js";
 import { physicalTherapyUniversities } from "../constants/universities.js";
+import {
+  fellowshipPrograms,
+  residencyPrograms,
+} from "../constants/residencyAndFellowshipPrograms.js";
+import { SuggestionTypes } from "../models/suggestion.model.js";
+import { boardSpecialties } from "../constants/boardSpecialties.js";
 
 /**
  * Get Suggestions for Personal Interests based on search term
@@ -23,7 +30,7 @@ const getPersonalInterestsSuggestions = async (req, res) => {
   const { q } = req.query;
   const result = await getOrUpdateSuggestionsHelper({
     searchTerm: q,
-    type: "personalInterest",
+    type: SuggestionTypes.PersonalInterest,
     generateSuggestionsFn: generatePersonalInterestsSuggestions,
   });
   const suggestions = result.map((i) => i.title);
@@ -40,7 +47,7 @@ const getReligiousAffiliationsSuggestions = async (req, res) => {
   const { q } = req.query;
   const result = await getOrUpdateSuggestionsHelper({
     searchTerm: q,
-    type: "religiousAffiliation",
+    type: SuggestionTypes.ReligiousAffiliation,
     generateSuggestionsFn: generateReligiousAffiliationSuggestions,
   });
   const suggestions = result.map((i) => i.title);
@@ -57,6 +64,36 @@ const getReligiousAffiliationsSuggestions = async (req, res) => {
 const getDegreeSuggestions = async (req, res) => {
   const { q } = req.query;
   const suggestions = physicalTherapyDegrees.filter((i) =>
+    i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
+  );
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+/**
+ * Retrieves residency program suggestions based on the query parameter.
+ *
+ * @param {import("express").Request} req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @returns an object containing the suggestions
+ */
+const getResidencyProgramSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const suggestions = residencyPrograms.filter((i) =>
+    i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
+  );
+  res.status(httpStatus.OK).json({ suggestions });
+};
+
+/**
+ * Retrieves fellowship program suggestions based on the query parameter.
+ *
+ * @param {import("express").Request} req  - The request object
+ * @param {import("express").Response} res - The response object
+ * @returns an object containing the suggestions
+ */
+const getFellowshipProgramSuggestions = async (req, res) => {
+  const { q } = req.query;
+  const suggestions = fellowshipPrograms.filter((i) =>
     i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
   );
   res.status(httpStatus.OK).json({ suggestions });
@@ -84,7 +121,14 @@ const getUniversitySuggestions = async (req, res) => {
  * @return The suggestions
  */
 const getCommonlyTreatedDiagnosesSuggestions = async (req, res) => {
-  // TODO:
+  const { q } = req.query;
+  const result = await getOrUpdateSuggestionsHelper({
+    searchTerm: q,
+    type: SuggestionTypes.CommonlyTreatedDiagnosis,
+    generateSuggestionsFn: generateCommonlyTreatedDiagnosesSuggestions,
+  });
+  const suggestions = result.map((i) => i.title);
+  res.status(httpStatus.OK).json({ suggestions });
 };
 
 /**
@@ -94,8 +138,11 @@ const getCommonlyTreatedDiagnosesSuggestions = async (req, res) => {
  * @return The suggestions
  */
 const getBoardSpecialtiesSuggestions = async (req, res) => {
-  // Function Pending
-  //TODO: Similar to the approach used in the onboarding process
+  const { q } = req.query;
+  const suggestions = boardSpecialties.filter((i) =>
+    i.toLocaleLowerCase().includes(q.toLocaleLowerCase())
+  );
+  res.status(httpStatus.OK).json({ suggestions });
 };
 
 /**
@@ -132,13 +179,49 @@ const submitIdentityInformation = async (req, res) => {
     "religiousAffiliations",
   ]);
 
-  const { email } = req.body;
-
-  await updateUser(req.user.id, { profile, email });
-
+  await updateUser(req.user.id, { profile, email: req.body.email });
   return res.status(httpStatus.OK).json({
     success: true,
-    message: "User information updated successfully",
+  });
+};
+
+/**
+ * Updates the user's education information.
+ *
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const submitEducationForm = async (req, res) => {
+  const education = pick(req.body, [
+    "isResidencyTrained",
+    "isFellowshipTrained",
+    "residencyPrograms",
+    "fellowshipPrograms",
+  ]);
+  await updateUser(req.user.id, { profile: { education } });
+  return res.status(httpStatus.OK).json({
+    success: true,
+  });
+};
+
+/**
+ * Updates the user's expertise information.
+ *
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const submitExpertiseForm = async (req, res) => {
+  const expertise = pick(req.body, [
+    "yearsInClinicalPractice",
+    "commonlyTreatedDiagnoses",
+    "boardSpecialties",
+    "expertiseAreas",
+    "primaryInterests",
+    "practiceAreas",
+  ]);
+  await updateUser(req.user.id, { profile: { expertise } });
+  return res.status(httpStatus.OK).json({
+    success: true,
   });
 };
 
@@ -189,4 +272,8 @@ export {
   getUniversitySuggestions,
   addNewDegree,
   addNewCertificate,
+  getResidencyProgramSuggestions,
+  getFellowshipProgramSuggestions,
+  submitEducationForm,
+  submitExpertiseForm,
 };

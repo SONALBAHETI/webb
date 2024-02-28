@@ -13,6 +13,10 @@ import {
   getUniversitySuggestions,
   addNewDegree,
   addNewCertificate,
+  getResidencyProgramSuggestions,
+  getFellowshipProgramSuggestions,
+  submitEducationForm,
+  submitExpertiseForm,
 } from "../../controllers/profileSettings.controller.js";
 import profileValidation from "../../validation/profileSettings.validation.js";
 const router = express.Router();
@@ -61,11 +65,32 @@ router.get(
   catchAsync(getBoardSpecialtiesSuggestions)
 );
 
+router.get(
+  "/suggestions/residency-programs",
+  auth(),
+  validate(profileValidation.getSuggestions),
+  catchAsync(getResidencyProgramSuggestions)
+);
+
+router.get(
+  "/suggestions/fellowship-programs",
+  auth(),
+  validate(profileValidation.getSuggestions),
+  catchAsync(getFellowshipProgramSuggestions)
+);
+
 router.post(
   "/identity-info",
   auth(),
   validate(profileValidation.submitIdentityInfo),
   catchAsync(submitIdentityInformation)
+);
+
+router.post(
+  "/education",
+  auth(),
+  validate(profileValidation.educationForm),
+  catchAsync(submitEducationForm)
 );
 
 router.post(
@@ -80,6 +105,13 @@ router.post(
   auth(),
   validate(profileValidation.addNewCertificate),
   catchAsync(addNewCertificate)
+);
+
+router.post(
+  "/expertise",
+  auth(),
+  validate(profileValidation.expertiseForm),
+  catchAsync(submitExpertiseForm)
 );
 
 export default router;
