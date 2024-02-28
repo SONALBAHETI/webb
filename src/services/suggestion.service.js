@@ -59,7 +59,7 @@ const getSuggestionsByIds = async (ids, type) => {
 /**
  * @typedef {import("../types.js").FlattenMapsResult} FlattenMapsResult
  * @typedef {import("../types.js").BulkWriteResult} BulkWriteResult
- * @typedef {import("../types.js").SuggestionType} SuggestionType
+ * @typedef {import("../models/suggestion.model.js").SuggestionType} SuggestionType
  */
 
 /**

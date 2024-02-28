@@ -10,8 +10,6 @@ import mongodb from "mongodb";
  * @typedef {mongoose.FlattenMaps<mongoose.Document<any, any, any>> & { _id: mongoose.Types.ObjectId; }} FlattenMapsResult
  * BulkWriteResult
  * @typedef {mongodb.BulkWriteResult} BulkWriteResult
- * Suggestion types
- * @typedef {"primaryInterest" | "expertiseArea" | "practiceArea" | "personalInterest" | "religiousAffiliation"} SuggestionType
  */
 
 export default {};

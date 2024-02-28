@@ -20,6 +20,9 @@ suggestionSchema.index({ title: "text", type: "text" }, { unique: true });
 
 const Suggestion = mongoose.model("Suggestion", suggestionSchema);
 
+/**
+ * @typedef {"university" | "boardSpecialty" | "residencyProgram" | "commonlyTreatedDiagnosis" | "primaryInterest" | "expertiseArea" | "practiceArea" | "personalInterest" | "religiousAffiliation"} SuggestionType
+ */
 export const SuggestionTypes = {
   University: "university",
   BoardSpecialty: "boardSpecialty",
