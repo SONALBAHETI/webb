@@ -7,6 +7,12 @@ import { Pronouns, Genders } from "../constants/index.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
 import { generateTags, isTagFieldModified } from "../services/user.service.js";
 
+/**
+ * @typedef {Object} Degree
+ * @property {string} name - The name of the degree
+ * @property {string} institution - The name of the institution
+ * @property {Date} dateOfCompletion - The date of completion
+ */
 const degreeSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -19,12 +25,18 @@ const degreeSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  year: {
-    type: Number,
+  dateOfCompletion: {
+    type: Date,
     required: true,
   },
 });
 
+/**
+ * @typedef {Object} Certificate
+ * @property {string} name - The name of the certificate
+ * @property {Date} dateOfIssue - The date of issue
+ * @property {Date} [expirationDate] - The expiration date
+ */
 const certificateSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -36,16 +48,24 @@ const certificateSchema = new mongoose.Schema({
   },
   expirationDate: {
     type: Date,
-    required: true,
   },
 });
 
+/**
+ * @typedef {Object} Education
+ * @property {Array<Degree>} [degrees] - The list of degrees
+ * @property {Array<Certificate>} [certificates] - The list of certificates
+ * @property {boolean} [isResidencyTrained] - Whether the user has trained for a residency
+ * @property {boolean} [isFellowshipTrained] - Whether the user has trained for a fellowship
+ * @property {Array<string>} [residencyPrograms] - The list of residency programs
+ * @property {Array<string>} [fellowshipPrograms] - The list of fellowship programs
+ */
 const educationSchema = new mongoose.Schema({
   degrees: {
     type: [degreeSchema],
     default: [],
   },
-  ceritificates: {
+  certificates: {
     type: [certificateSchema],
     default: [],
   },
@@ -67,11 +87,16 @@ const educationSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * @typedef {Object} Expertise
+ * @property {number} [yearsInClinicalPractice] - The number of years in clinical practice
+ * @property {Array<string>} [commonlyTreatedDiagnoses] - The list of commonly treated diagnoses
+ * @property {Array<string>} [boardSpecialties] - The list of board specialties
+ * @property {Array<string>} [expertiseAreas] - The list of expertise areas
+ * @property {Array<string>} [practiceAreas] - The list of practice areas
+ */
 const expertiseSchema = new mongoose.Schema({
-  yearsInClinicalPractice: {
-    type: Number,
-    required: true,
-  },
+  yearsInClinicalPractice: Number,
   commonlyTreatedDiagnoses: {
     type: [String],
     default: [],
@@ -90,12 +115,6 @@ const expertiseSchema = new mongoose.Schema({
     index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
-  primaryInterests: {
-    type: [String],
-    default: [],
-    index: true,
-    set: (value) => value?.map((i) => i.toLowerCase()),
-  },
   practiceAreas: {
     type: [String],
     default: [],
@@ -104,6 +123,28 @@ const expertiseSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * @typedef {Object} Profile
+ * @property {string} firstName - The user's first name
+ * @property {string} lastName - The user's last name
+ * @property {string} [picture] - The user's picture
+ * @property {string} [bio] - The user's bio
+ * @property {string} [primaryRole] - The user's primary role
+ * @property {string} [pronouns] - The user's pronouns
+ * @property {string} [gender] - The user's gender
+ * @property {Date} [dateOfBirth] - The user's date of birth
+ * @property {string} [state] - The user's state
+ * @property {string} [postalCode] - The user's postal code
+ * @property {string} [funFact] - The user's fun fact
+ * @property {string} [identity] - The user's identity
+ * @property {string} [ethnicity] - The user's ethnicity
+ * @property {Array<string>} [personalInterests] - The user's personal interests
+ * @property {Array<string>} [primaryInterests] - The user's primary interests
+ * @property {Array<string>} [religiousAffiliations] - The user's religious affiliations
+ * @property {Education} [education] - The user's education
+ * @property {Expertise} [expertise] - The user's expertise
+ * @property {Array<string>} [tags] - tags
+ */
 const profileSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -115,33 +156,31 @@ const profileSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  picture: {
-    type: String,
-  },
-  bio: {
-    type: String,
-  },
-  primaryRole: {
-    type: String,
-  },
+  picture: String,
+  bio: String,
+  primaryRole: String,
   pronouns: {
     type: String,
-    enum: [
-      Pronouns.HE,
-      Pronouns.SHE,
-      Pronouns.THEY,
-      Pronouns.OTHER,
-      Pronouns.NONE,
-    ],
+    enum: Object.values(Pronouns),
   },
   gender: {
     type: String,
     trim: true,
     enum: Object.values(Genders),
   },
+  dateOfBirth: Date,
+  state: String,
+  postalCode: String,
+  funFact: String,
   identity: String,
   ethnicity: String,
   personalInterests: {
+    type: [String],
+    default: [],
+    index: true,
+    set: (value) => value?.map((i) => i.toLowerCase()),
+  },
+  primaryInterests: {
     type: [String],
     default: [],
     index: true,
@@ -159,10 +198,37 @@ const profileSchema = new mongoose.Schema({
     type: [String],
     default: [],
     index: true,
+    private: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
 
+profileSchema.plugin(toJSON);
+
+/**
+ * @typedef {Object} OpenAIIntegration
+ * @property {string} [threadId] - The OpenAI thread ID
+ */
+/**
+ * @typedef {Object} GoogleIntegration
+ * @property {string} [userId] - The Google user ID
+ */
+/**
+ * @typedef {Object} SendbirdIntegration
+ * @property {string} [userId] - The Sendbird user ID
+ */
+/**
+ * @typedef {Object} SheerIDIntegration
+ * @property {string} [verificationId] - The SheerID verification ID
+ * @property {string} [currentStep] - The current step of the verification
+ */
+/**
+ * @typedef {Object} Integrations
+ * @property {OpenAIIntegration} [openai] - The OpenAI integration
+ * @property {GoogleIntegration} [google] - The Google integration
+ * @property {SendbirdIntegration} [sendbird] - The Sendbird integration
+ * @property {SheerIDIntegration} [sheerId] - The SheerID integration
+ */
 const integrationsSchema = new mongoose.Schema({
   openai: {
     threadId: String,
@@ -179,6 +245,11 @@ const integrationsSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * @typedef {Object} AccountStatus
+ * @property {boolean} [isEmailVerified] - Whether the user's email has been verified
+ * @property {boolean} [isOnboarded] - Whether the user has been onboarded
+ */
 const stasusSchema = new mongoose.Schema({
   isEmailVerified: {
     type: Boolean,
@@ -190,6 +261,17 @@ const stasusSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * @typedef {Object} User
+ * @property {string} name - The user's name
+ * @property {string} email - The user's email
+ * @property {string} [password] - The user's password
+ * @property {string} [role] - The user's role
+ * @property {string} [occupation] - The user's occupation
+ * @property {AccountStatus} [accountStatus] - The user's account status
+ * @property {Profile} [profile] - The user's profile
+ * @property {Object} [integrations] - The user's integrations
+ */
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -274,6 +356,9 @@ userSchema.methods = {
   getThreadId() {
     return this.integrations?.openai?.threadId;
   },
+  /**
+   * @returns {SheerIDIntegration} The SheerID integration
+   */
   getSheerIdStatus() {
     return this.integrations?.sheerId;
   },
@@ -343,9 +428,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-/**
- * @typedef User
- */
 const User = mongoose.model("User", userSchema);
 
 export default User;
