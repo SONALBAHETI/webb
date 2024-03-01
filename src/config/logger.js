@@ -1,5 +1,6 @@
-import winston from 'winston';
+import winston from "winston";
 import config from "./config.js";
+import path from "path";
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info instanceof Error) {
@@ -8,17 +9,40 @@ const enumerateErrorFormat = winston.format((info) => {
   return info;
 });
 
+const printf = (prettify) =>
+  winston.format.printf(
+    ({ level, message, label, timestamp, metadata }) =>
+      `${timestamp} ${level} [${label}]: ${message} ${
+        Object.keys(metadata).length
+          ? JSON.stringify(metadata, null, prettify ? 2 : undefined)
+          : ""
+      }`
+  );
+
 const logger = winston.createLogger({
-  level: config.env === 'development' ? 'debug' : 'info',
+  level: config.env === "development" ? "debug" : "info",
   format: winston.format.combine(
     enumerateErrorFormat(),
-    config.env === 'development' ? winston.format.colorize() : winston.format.uncolorize(),
+    winston.format.label({
+      label: path.basename(new URL(import.meta.url).pathname),
+    }),
+    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    config.env === "development"
+      ? winston.format.colorize()
+      : winston.format.uncolorize(),
     winston.format.splat(),
-    winston.format.printf(({ level, message }) => `${level}: ${message}`)
+    winston.format.metadata({
+      fillExcept: ["message", "level", "timestamp", "label"],
+    })
   ),
   transports: [
     new winston.transports.Console({
-      stderrLevels: ['error'],
+      stderrLevels: ["error"],
+      format: winston.format.combine(winston.format.colorize(), printf(true)),
+    }),
+    new winston.transports.File({
+      filename: "./logs/combined.log",
+      format: winston.format.combine(winston.format.uncolorize(), printf()),
     }),
   ],
 });
