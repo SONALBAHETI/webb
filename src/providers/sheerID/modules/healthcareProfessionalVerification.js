@@ -15,7 +15,7 @@ import SheerIDVerificationHandler from "./verification.js";
  * @property {DocumentUploadStatus} status - The status of the document
  * @property {string} mimeType - The MIME type of the file to be uploaded
  * @property {number} fileSize - The size in bytes of the file to be uploaded
- * @property {string} [uploadUrl] - The URL to use to upload the file (using PUT with a multipart/form-data request). Only present if the document status is PENDING_UPLOAD.
+ * @property {string} [uploadUrl] - The URL to use to upload the file (using PUT). Only present if the document status is PENDING_UPLOAD.
  * @property {Array<DocumentUploadError>} errors - Any errors that were encountered
  */
 

@@ -22,7 +22,18 @@ const getOrganizations = {
   }),
 };
 
+const docUpload = {
+  file: Joi.object({
+    originalname: Joi.string().required(),
+    mimetype: Joi.string()
+      .valid("application/pdf", "image/jpeg", "image/png", "image/jpg")
+      .required(),
+    size: Joi.number().max(1000000).required(),
+  }).required(),
+};
+
 export default {
   submitData,
   getOrganizations,
+  docUpload,
 };
