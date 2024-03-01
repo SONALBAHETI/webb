@@ -1,7 +1,14 @@
+import httpStatus from "http-status";
 import config from "../config/config.js";
+import SheerIDDocUploadHandler from "../providers/sheerID/modules/docUpload.js";
 import SheerIDHealthcareProfessionalVerificationHandler from "../providers/sheerID/modules/healthcareProfessionalVerification.js";
 import SheerIDOrganizationsHandler from "../providers/sheerID/modules/organizations.js";
+import ApiError from "../utils/ApiError.js";
 import { updateUser } from "./user.service.js";
+
+/**
+ * @typedef {import("../providers/sheerID/modules/healthcareProfessionalVerification.js").SubmitDataAgainstProgramParams} SubmitDataAgainstProgramParams
+ */
 
 const verificationHandler =
   new SheerIDHealthcareProfessionalVerificationHandler(
@@ -11,6 +18,9 @@ const verificationHandler =
 const organizationsHandler = new SheerIDOrganizationsHandler(
   config.sheerId.accessToken,
   config.sheerId.mentorVerificationProgramId
+);
+const docUploadHandler = new SheerIDDocUploadHandler(
+  config.sheerId.accessToken
 );
 
 /**
@@ -22,6 +32,43 @@ const organizationsHandler = new SheerIDOrganizationsHandler(
 const submitVerificationData = async (data) => {
   const response = await verificationHandler.submitDataAgainstProgram(data);
   return response;
+};
+
+/**
+ * Uploads documents using the docUploadHandler.
+ *
+ * @param {string} verificationId - The ID of the verification
+ * @param {Array<import("../providers/sheerID/modules/docUpload.js").SheerIDFile>} documents - The documents to be uploaded
+ * @return The response from the document upload handler
+ */
+const uploadDocuments = async (verificationId, files) => {
+  const formattedDocs = files.map((file) => convertFileToDocUploadFormat(file));
+  // initiate the document upload process
+  const initiateDocUploadResponse = await docUploadHandler.initiateDocUpload(
+    verificationId,
+    formattedDocs
+  );
+  // upload each document one by one
+  for (const doc of initiateDocUploadResponse.documents || []) {
+    // find the file that matches the MIME type and size from the response
+    const fileToUpload = files.find(
+      (file) => file.mimetype === doc.mimeType && file.size === doc.fileSize
+    );
+    if (fileToUpload) {
+      // upload file
+      await docUploadHandler.docUpload(doc.uploadUrl, fileToUpload);
+    } else {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong while uploading documents"
+      );
+    }
+  }
+  // complete the document upload process
+  const completeDocUploadResponse = await docUploadHandler.completeDocUpload(
+    initiateDocUploadResponse.submissionUrl
+  );
+  return completeDocUploadResponse;
 };
 
 /**
@@ -63,19 +110,30 @@ const getVerificationStatus = async (verificationId) => {
 };
 
 /**
+ * Convert a file to a document upload format for SheerID.
+ *
+ * @param {Object} file - the file to be converted
+ * @return {Object} the converted file information
+ */
+const convertFileToDocUploadFormat = (file) => {
+  return {
+    fileName: file.originalname,
+    mimeType: file.mimetype,
+    fileSize: file.size,
+  };
+};
+
+/**
  * Updates the verification status of a user.
  *
  * @param {Object} options - The options object containing userId, verificationId, and currentStep.
  * @param {string} options.userId - The ID of the user to update.
- * @param {string} options.verificationId - The ID of the verification.
- * @param {string} options.currentStep - The current step of the verification.
- * @return A Promise that resolves to the updated user object.
+ * @param {string} [options.sheerIdData] - The sheerID response data.
+ *
+ * @returns A Promise that resolves to the updated user object.
  */
-const updateVerificationStatusOfUser = async ({
-  userId,
-  verificationId,
-  currentStep,
-}) => {
+const updateSheerIDVerificationDataOfUser = async ({ userId, sheerIdData }) => {
+  const { verificationId, currentStep } = sheerIdData;
   return await updateUser(userId, {
     integrations: {
       sheerId: {
@@ -91,9 +149,7 @@ export default {
   getOrgSearchUrl,
   getOrganizations,
   getVerificationStatus,
-  updateVerificationStatusOfUser,
+  updateSheerIDVerificationDataOfUser,
+  uploadDocuments,
+  convertFileToDocUploadFormat,
 };
-
-/**
- * @typedef {import("../providers/sheerID/modules/healthcareProfessionalVerification.js").SubmitDataAgainstProgramParams} SubmitDataAgainstProgramParams
- */

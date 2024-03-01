@@ -7,8 +7,10 @@ import {
   getOrganizations,
   getOrgSearchUrl,
   getVerificationStep,
+  uploadDocuments,
 } from "../../controllers/mentorVerification.controller.js";
 import auth from "../../middlewares/auth.js";
+import multer from "multer";
 
 const router = express.Router();
 
@@ -19,6 +21,14 @@ router.post(
   auth(),
   validate(mentorVerificationValidation.submitData),
   catchAsync(submitVerificationData)
+);
+
+router.post(
+  "/doc-upload",
+  auth(),
+  multer().single("file"),
+  validate(mentorVerificationValidation.docUpload),
+  catchAsync(uploadDocuments)
 );
 
 router.get("/organizations/search-url", catchAsync(getOrgSearchUrl));

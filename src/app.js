@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import socketServer from "./config/socketServer.js";
 import config from "./config/config.js";
+import logger from "./config/logger.js";
 
 const app = express();
 
@@ -40,7 +41,7 @@ app.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
 
 socketServer(app).listen(3001, () => {
-  console.log("Socket server running on port 3001");
+  logger.info("Socket server running on port 3001");
 });
 
 // v1 api routes
