@@ -124,6 +124,21 @@ const addCertificate = async (userId, certificate) => {
 };
 
 /**
+ * Updates the user's profile picture with the provided picture.
+ *
+ * @param {string} userId - The ID of the user
+ * @param {string} picture - The new profile picture
+ * @return A Promise that resolves to the updated user object
+ */
+const changeProfilePicture = async (userId, picture) => {
+  return await updateUser(userId, {
+    profile: {
+      picture,
+    },
+  });
+};
+
+/**
  * Generates tags based on user information.
  *
  * @param {import("mongoose").Document<User>} user - the user object containing information
@@ -201,4 +216,5 @@ export {
   isTagFieldModified,
   addDegree,
   addCertificate,
+  changeProfilePicture,
 };

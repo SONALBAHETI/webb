@@ -3,6 +3,7 @@ import {
   addDegree,
   addCertificate,
   updateUser,
+  changeProfilePicture,
 } from "../services/user.service.js";
 import pick from "../utils/pick.js";
 import { getOrUpdateSuggestionsHelper } from "../services/suggestion.service.js";
@@ -19,12 +20,34 @@ import {
 } from "../constants/residencyAndFellowshipPrograms.js";
 import { SuggestionTypes } from "../models/suggestion.model.js";
 import { boardSpecialties } from "../constants/boardSpecialties.js";
+import storageService from "../services/storage.service.js";
+
+/**
+ * Handles the upload of user's profile picture.
+ *
+ * @param {import("express").Request} req  - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const uploadProfilePicture = async (req, res) => {
+  if (!req.file) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ error: "No file uploaded" });
+  }
+  const result = await storageService.uploadFile(req.file, {
+    public_id: req.user.id,
+    folder: "profile-pics",
+    resource_type: "image",
+  });
+  await changeProfilePicture(req.user.id, result.secure_url);
+  return res.status(httpStatus.OK).json({ url: result.secure_url });
+};
 
 /**
  * Get Suggestions for Personal Interests based on search term
  * @param {import("express").Request} req  - The request object
  * @param {import("express").Response} res - The response object
- * @return The suggestions
+ * @returns The suggestions
  */
 const getPersonalInterestsSuggestions = async (req, res) => {
   const { q } = req.query;
@@ -41,7 +64,7 @@ const getPersonalInterestsSuggestions = async (req, res) => {
  * Get Suggestions for Personal Interests based on search term
  * @param {import("express").Request} req  - The request object
  * @param {import("express").Response} res - The response object
- * @return The suggestions
+ * @returns The suggestions
  */
 const getReligiousAffiliationsSuggestions = async (req, res) => {
   const { q } = req.query;
@@ -276,4 +299,5 @@ export {
   getFellowshipProgramSuggestions,
   submitEducationForm,
   submitExpertiseForm,
+  uploadProfilePicture,
 };

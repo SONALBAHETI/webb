@@ -75,6 +75,17 @@ const expertiseForm = Joi.object({
   practiceAreas: Joi.array().items(Joi.string()).min(1).max(7).default([]),
 });
 
+const uploadProfilePicture = {
+  image: Joi.object({
+    originalname: Joi.string().required(),
+    mimetype: Joi.string()
+      .valid("image/jpeg", "image/png", "image/jpg")
+      .required(),
+    size: Joi.number().max(200000).required(),
+    path: Joi.string().required(),
+  }).required(),
+};
+
 export default {
   submitIdentityInfo,
   getSuggestions,
@@ -82,4 +93,5 @@ export default {
   addNewCertificate,
   educationForm,
   expertiseForm,
+  uploadProfilePicture,
 };
