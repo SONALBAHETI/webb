@@ -51,6 +51,15 @@ const envVarsSchema = Joi.object()
     SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID: Joi.string()
       .description("Sheer ID Mentor Verification Program ID")
       .required(),
+    CLOUDINARY_CLOUD_NAME: Joi.string()
+      .description("Cloudinary Cloud Name")
+      .required(),
+    CLOUDINARY_API_KEY: Joi.string()
+      .description("Cloudinary API Key")
+      .required(),
+    CLOUDINARY_API_SECRET: Joi.string()
+      .description("Cloudinary API Secret")
+      .required(),
   })
   .unknown();
 
@@ -96,6 +105,11 @@ const config = {
     mentorVerificationProgramId:
       envVars.SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID,
   },
+  cloudinary: {
+    cloudName: envVars.CLOUDINARY_CLOUD_NAME,
+    apiKey: envVars.CLOUDINARY_API_KEY,
+    apiSecret: envVars.CLOUDINARY_API_SECRET,
+  }
 };
 
 export default config;
