@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
 import routes from "./routes/v1/index.js";
-import ApiError from "./utils/ApiError.js";
-import httpStatus from "http-status";
+import webhooks from "./webhooks/index.js";
 import { jwtStrategy } from "./config/passport.js";
 import passport from "passport";
 import { errorConverter, errorHandler } from "./middlewares/error.js";
@@ -13,6 +12,9 @@ import config from "./config/config.js";
 import logger from "./config/logger.js";
 
 const app = express();
+
+// webhook routes
+app.use("/webhooks", webhooks);
 
 // parse json request body
 app.use(express.json());
@@ -46,11 +48,6 @@ socketServer(app).listen(3001, () => {
 
 // v1 api routes
 app.use("/api/v1", routes);
-
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, "Resource Not found"));
-});
 
 // convert error to ApiError, if needed
 app.use(errorConverter);

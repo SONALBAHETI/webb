@@ -6,7 +6,7 @@ import {
   getPrimaryInterestSuggestions,
   submitOnboardingForm,
 } from "../../controllers/onboarding.controller.js";
-import catchAsync from "../../utils/catchAsync.js";
+import responseHandler from "../../utils/responseHandler.js";
 import { onboardingValidation } from "../../validation/index.js";
 import validate from "../../middlewares/validate.js";
 
@@ -16,28 +16,28 @@ router.get(
   "/suggestions/primaryinterests",
   auth(),
   validate(onboardingValidation.getSuggestions),
-  catchAsync(getPrimaryInterestSuggestions)
+  responseHandler(getPrimaryInterestSuggestions)
 );
 
 router.get(
   "/suggestions/expertiseareas",
   auth(),
   validate(onboardingValidation.getSuggestions),
-  catchAsync(getExpertiseAreaSuggestions)
+  responseHandler(getExpertiseAreaSuggestions)
 );
 
 router.get(
   "/suggestions/practiceareas",
   auth(),
   validate(onboardingValidation.getSuggestions),
-  catchAsync(getPracticeAreaSuggestions)
+  responseHandler(getPracticeAreaSuggestions)
 );
 
 router.post(
   "/form/submit",
   auth(),
   validate(onboardingValidation.submitOnboardingForm),
-  catchAsync(submitOnboardingForm)
+  responseHandler(submitOnboardingForm)
 );
 
 export default router;

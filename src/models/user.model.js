@@ -124,6 +124,89 @@ const expertiseSchema = new mongoose.Schema({
 });
 
 /**
+ * @typedef {Object} Badge
+ * @property {string} name - The name of the badge
+ * @property {string} description - The description of the badge
+ * @property {string} icon - The icon of the badge
+ */
+const badgeSchema = new mongoose.Schema(
+  {
+    originalBadge: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Badge",
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+/**
+ * @typedef {Object} Achievements
+ * @property {Array<Badge>} [badges] - The list of badges
+ */
+const achievementsSchema = new mongoose.Schema({
+  badges: {
+    type: [badgeSchema],
+    default: [],
+  },
+});
+
+/**
+ * @typedef {Object} Stats
+ * @property {number} [hoursLearned] - The number of hours learned
+ * @property {number} [hoursMentored] - The number of hours mentored
+ * @property {number} [chatMessagesSent] - The number of chat messages sent
+ * @property {number} [chatMessagesReceived] - The number of chat messages received
+ * @property {number} [videoSessions] - The number of video sessions
+ * @property {number} [averageRatings] - The average rating
+ * @property {number} [averageResponseTime] - The average response time
+ * @property {number} [averageResponseRate] - The average response rate
+ */
+const statsSchema = new mongoose.Schema({
+  hoursLearned: {
+    type: Number,
+    default: 0,
+  },
+  hoursMentored: {
+    type: Number,
+    default: 0,
+  },
+  chatMessagesSent: {
+    type: Number,
+    default: 0,
+  },
+  chatMessagesReceived: {
+    type: Number,
+    default: 0,
+  },
+  videoSessions: {
+    type: Number,
+    default: 0,
+  },
+  averageRatings: {
+    type: Number,
+    default: 0,
+  },
+  averageResponseTime: {
+    type: Number,
+    default: 0,
+  },
+  averageResponseRate: {
+    type: Number,
+    default: 0,
+  },
+});
+
+/**
  * @typedef {Object} Profile
  * @property {string} firstName - The user's first name
  * @property {string} lastName - The user's last name
@@ -250,7 +333,7 @@ const integrationsSchema = new mongoose.Schema({
  * @property {boolean} [isEmailVerified] - Whether the user's email has been verified
  * @property {boolean} [isOnboarded] - Whether the user has been onboarded
  */
-const stasusSchema = new mongoose.Schema({
+const statusSchema = new mongoose.Schema({
   isEmailVerified: {
     type: Boolean,
     default: false,
@@ -312,8 +395,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: UserOccupationValues,
     },
-    accountStatus: stasusSchema,
+    accountStatus: statusSchema,
     profile: profileSchema,
+    achievements: achievementsSchema,
+    stats: statsSchema,
     integrations: {
       type: integrationsSchema,
       private: true,
@@ -406,6 +491,9 @@ userSchema.methods = {
   },
   getYearsInClinicalPractice() {
     return this.profile?.expertise?.yearsInClinicalPractice;
+  },
+  getBadges() {
+    return this.achievements?.badges || [];
   },
   isResidencyTrained() {
     return this.profile?.education?.isResidencyTrained || false;

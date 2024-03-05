@@ -7,24 +7,24 @@ import {
   retrieveRunStatus,
   retrieveMessages,
 } from "../../controllers/chatbot.controller.js";
-import catchAsync from "../../utils/catchAsync.js";
+import responseHandler from "../../utils/responseHandler.js";
 
 const router = express.Router();
 
 router
   .route("/messages")
-  .get(auth(), catchAsync(retrieveMessages))
+  .get(auth(), responseHandler(retrieveMessages))
   .post(
     auth(),
     validate(chatbotValidation.sendMessage),
-    catchAsync(sendMessage)
+    responseHandler(sendMessage)
   );
 
 router.get(
   "/runstatus/:id",
   auth(),
   validate(chatbotValidation.retrieveRunStatus),
-  catchAsync(retrieveRunStatus)
+  responseHandler(retrieveRunStatus)
 );
 
 export default router;

@@ -1,7 +1,7 @@
 import express from "express";
 import { mentorVerificationValidation } from "../../validation/index.js";
 import validate from "../../middlewares/validate.js";
-import catchAsync from "../../utils/catchAsync.js";
+import responseHandler from "../../utils/responseHandler.js";
 import {
   submitVerificationData,
   getOrganizations,
@@ -14,13 +14,13 @@ import multer from "multer";
 
 const router = express.Router();
 
-router.get("/current-step", auth(), catchAsync(getVerificationStep));
+router.get("/current-step", auth(), responseHandler(getVerificationStep));
 
 router.post(
   "/submit-data",
   auth(),
   validate(mentorVerificationValidation.submitData),
-  catchAsync(submitVerificationData)
+  responseHandler(submitVerificationData)
 );
 
 router.post(
@@ -28,16 +28,16 @@ router.post(
   auth(),
   multer().single("file"),
   validate(mentorVerificationValidation.docUpload),
-  catchAsync(uploadDocuments)
+  responseHandler(uploadDocuments)
 );
 
-router.get("/organizations/search-url", catchAsync(getOrgSearchUrl));
+router.get("/organizations/search-url", responseHandler(getOrgSearchUrl));
 
 router.get(
   "/organizations/search",
   auth(),
   validate(mentorVerificationValidation.getOrganizations),
-  catchAsync(getOrganizations)
+  responseHandler(getOrganizations)
 );
 
 export default router;

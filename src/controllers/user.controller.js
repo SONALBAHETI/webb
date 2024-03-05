@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import catchAsync from "../utils/catchAsync.js";
+import responseHandler from "../utils/responseHandler.js";
 import { updateUser } from "../services/user.service.js";
 
 /**
@@ -7,7 +7,7 @@ import { updateUser } from "../services/user.service.js";
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const updateUserDetailsFromOnboarding = catchAsync(async (req, res) => {
+const updateUserDetailsFromOnboarding = responseHandler(async (req, res) => {
   const { occupation, objective, specialisations, interests } = req.body;
 
   // Set role based on occupation and platform objective of the new user
