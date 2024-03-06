@@ -1,5 +1,5 @@
 import Badge from "../models/badge.model.js";
-import User from "../models/user.model.js";
+import { getUserById, updateUser } from "./user.service.js";
 
 const getAllBadges = async () => {
   return await Badge.find();
@@ -23,34 +23,36 @@ const assignBadge = async (userId, badgeId) => {
   if (!badge) {
     throw new Error("Badge not found");
   }
-  const user = await User.findByIdAndUpdate(
-    userId,
-    {
-      $addToSet: {
-        "achievements.badges": {
+  let user = await getUserById(userId).select("achievements");
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user = await updateUser(userId, {
+    achievements: {
+      badges: [
+        ...user.getBadges(),
+        {
           originalBadge: badge.id,
           name: badge.name,
+          description: badge.description,
           icon: badge.icon,
         },
-      },
+      ],
     },
-    { new: true }
-  );
+  });
   return user;
 };
 
 const removeBadge = async (userId, badgeId) => {
-  const user = await User.findByIdAndUpdate(
-    userId,
-    {
-      $pull: {
-        "achievements.badges": {
-          originalBadge: badgeId,
-        },
-      },
+  let user = await getUserById(userId).select("achievements");
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user = await updateUser(userId, {
+    achievements: {
+      badges: user.getBadges().filter((b) => b.originalBadge !== badgeId),
     },
-    { new: true }
-  );
+  });
   return user;
 };
 

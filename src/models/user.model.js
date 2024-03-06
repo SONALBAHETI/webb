@@ -5,7 +5,7 @@ import { toJSON } from "./plugins/index.js";
 import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
-import { generateTags, isTagFieldModified } from "../services/user.service.js";
+import userTrigger from "../triggers/user.trigger.js";
 
 /**
  * @typedef {Object} Degree
@@ -139,6 +139,10 @@ const badgeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     icon: {
       type: String,
       required: true,
@@ -148,6 +152,8 @@ const badgeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+badgeSchema.plugin(toJSON);
 
 /**
  * @typedef {Object} Achievements
@@ -160,12 +166,14 @@ const achievementsSchema = new mongoose.Schema({
   },
 });
 
+achievementsSchema.plugin(toJSON);
+
 /**
  * @typedef {Object} Stats
  * @property {number} [hoursLearned] - The number of hours learned
  * @property {number} [hoursMentored] - The number of hours mentored
  * @property {number} [chatMessagesSent] - The number of chat messages sent
- * @property {number} [chatMessagesReceived] - The number of chat messages received
+ * @property {number} [chatMessagesRead] - The number of chat messages received
  * @property {number} [videoSessions] - The number of video sessions
  * @property {number} [averageRatings] - The average rating
  * @property {number} [averageResponseTime] - The average response time
@@ -184,7 +192,7 @@ const statsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  chatMessagesReceived: {
+  chatMessagesRead: {
     type: Number,
     default: 0,
   },
@@ -495,6 +503,12 @@ userSchema.methods = {
   getBadges() {
     return this.achievements?.badges || [];
   },
+  getStats() {
+    return this.stats || {};
+  },
+  getAchievements() {
+    return this.achievements || {};
+  },
   isResidencyTrained() {
     return this.profile?.education?.isResidencyTrained || false;
   },
@@ -503,19 +517,10 @@ userSchema.methods = {
   },
 };
 
-userSchema.pre("save", async function (next) {
-  const user = this;
-  // if user's password was updated, hash it
-  if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  // if any of the tag fields have been modified, generate new tags
-  if (user.isNew || isTagFieldModified(user)) {
-    user.profile.tags = generateTags(user);
-  }
-  next();
-});
+// plug in user trigger
+userSchema.plugin(userTrigger);
 
 const User = mongoose.model("User", userSchema);
 
+export { userSchema };
 export default User;

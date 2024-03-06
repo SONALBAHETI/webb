@@ -30,11 +30,17 @@ const getUserByEmail = async (email) => {
 /**
  * Get user by id
  * @param {ObjectId} id
- * @return {Promise<Document<User> | null>} A promise that resolves to the user document.
  */
-const getUserById = async (id) => {
+const getUserById = (id) => {
   return User.findById(id);
 };
+
+/**
+ * Retrieve a user by their Sendbird ID.
+ * @param {string} sendbirdUserId - The Sendbird ID of the user to retrieve
+ */
+const getUserBySendbirdId = (sendbirdUserId) =>
+  User.findOne({ "integrations.sendbird.userId": sendbirdUserId });
 
 /**
  * Updates a user's information.
@@ -217,4 +223,5 @@ export {
   addDegree,
   addCertificate,
   changeProfilePicture,
+  getUserBySendbirdId,
 };

@@ -5,6 +5,7 @@ import config from "../config/config.js";
 import handleWebhookAsync from "../utils/handleWebhookAsync.js";
 import chatActivity from "../activities/chat.activity.js";
 import SendbirdEvent from "../constants/sendbird.js";
+import logger from "../config/logger.js";
 
 const router = Router();
 
@@ -34,8 +35,18 @@ const verifySignature = (req, res, next) => {
 // process the webhook asynchronously and send response asap
 const sendbirdWebhook = (req) => {
   const { body: event } = req;
+  logger.info("🚀 ~ sendbirdWebhook ~ event:", event);
+  // message send event
   if (event.category === SendbirdEvent.Group.MessageSend) {
     chatActivity.messageSent(event.sender.user_id);
+  } // message read event
+  else if (event.category === SendbirdEvent.Group.MessageRead) {
+    const readUpdates = event.read_updates;
+    if (Array.isArray(readUpdates)) {
+      readUpdates.forEach((readUpdate) => {
+        chatActivity.messageRead(readUpdate.user_id);
+      });
+    }
   }
 };
 

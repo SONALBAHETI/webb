@@ -1,6 +1,5 @@
 import httpStatus from "http-status";
 import processAsync from "./processAsync.js";
-import logger from "../config/logger.js";
 
 /**
  * Handle a webhook asynchronously.
@@ -8,13 +7,7 @@ import logger from "../config/logger.js";
  * @return {function} the middleware function that will call fn, then send a 200 response
  */
 const handleWebhookAsync = (fn) => (req, res) => {
-  processAsync(() => {
-    try {
-      fn(req);
-    } catch (error) {
-      logger.error(error);
-    }
-  });
+  processAsync(() => fn(req));
   res.sendStatus(httpStatus.OK);
 };
 
