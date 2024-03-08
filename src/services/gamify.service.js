@@ -1,3 +1,4 @@
+import logger from "../config/logger.js";
 import Badge from "../models/badge.model.js";
 import { getUserById, updateUser } from "./user.service.js";
 
@@ -21,16 +22,21 @@ const findBadgeByName = async (name) => {
 const assignBadge = async (userId, badgeId) => {
   const badge = await findBadgeById(badgeId);
   if (!badge) {
-    throw new Error("Badge not found");
+    throw new Error(`Badge with id ${badgeId} not found`);
   }
   let user = await getUserById(userId).select("achievements");
   if (!user) {
-    throw new Error("User not found");
+    throw new Error(`User with id ${userId} not found`);
+  }
+  const userBadges = user.getBadges();
+  if (userBadges.some((b) => b.originalBadge === badgeId)) {
+    logger.warn(`User with id ${userId} already has this badge`);
+    return user;
   }
   user = await updateUser(userId, {
     achievements: {
       badges: [
-        ...user.getBadges(),
+        ...userBadges,
         {
           originalBadge: badge.id,
           name: badge.name,
@@ -46,7 +52,12 @@ const assignBadge = async (userId, badgeId) => {
 const removeBadge = async (userId, badgeId) => {
   let user = await getUserById(userId).select("achievements");
   if (!user) {
-    throw new Error("User not found");
+    throw new Error(`User with id ${userId} not found`);
+  }
+  const badge = user.getBadges().find((b) => b.originalBadge === badgeId);
+  if (!badge) {
+    logger.warn(`User with id ${userId} does not have this badge`);
+    return user;
   }
   user = await updateUser(userId, {
     achievements: {
