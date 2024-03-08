@@ -6,6 +6,7 @@ import { roles } from "../config/roles.js";
 import { Pronouns, Genders } from "../constants/index.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
 import userTrigger from "../triggers/user.trigger.js";
+import { Levels } from "../constants/levels.js";
 
 /**
  * @typedef {Object} Degree
@@ -163,6 +164,12 @@ const achievementsSchema = new mongoose.Schema({
   badges: {
     type: [badgeSchema],
     default: [],
+  },
+  level: {
+    type: Number,
+    min: [0, "Level must be greater than or equal to 0"],
+    max: [5, "Level must be less than or equal to 5"],
+    default: Levels.Newbie,
   },
 });
 
