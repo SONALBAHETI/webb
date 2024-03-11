@@ -1,4 +1,4 @@
-import SendbirdUserHandler from "../providers/sendbird/modules/user.js";
+import SendbirdUserHandler from "../providers/sendbird/modules/chat/user.js";
 import { getUserById, updateUser } from "./user.service.js";
 import ChatRequest from "../models/chatRequest.model.js";
 import config from "../config/config.js";
@@ -48,14 +48,14 @@ const updateChatRequest = async (chatId, userId, updateBody) => {
   return await chatRequest.save();
 };
 
-const enableChatForUser = async (userId) => {
+const enableChatAndCallsForUser = async (userId) => {
   // Create a new Sendbird user
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (user.integrations?.sendbird?.userId) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Chat is already enabled");
+  if (user.getSendbirdId()) {
+    return user;
   }
 
   // Create a new user in sendbird with a unique user_id
@@ -84,6 +84,6 @@ export {
   getChatRequestByIdAndPopulate,
   updateChatRequest,
   createChatRequest,
-  enableChatForUser,
+  enableChatAndCallsForUser,
   getChatRequests,
 };

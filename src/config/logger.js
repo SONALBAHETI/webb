@@ -19,6 +19,16 @@ const printf = (prettify) =>
       }`
   );
 
+const consoleTransport = new winston.transports.Console({
+  stderrLevels: ["error"],
+  format: winston.format.combine(winston.format.colorize(), printf(true)),
+});
+
+const fileTransport = new winston.transports.File({
+  filename: "./logs/combined.log",
+  format: winston.format.combine(winston.format.uncolorize(), printf()),
+});
+
 const logger = winston.createLogger({
   level: config.env === "development" ? "debug" : "info",
   format: winston.format.combine(
@@ -35,16 +45,8 @@ const logger = winston.createLogger({
       fillExcept: ["message", "level", "timestamp", "label"],
     })
   ),
-  transports: [
-    new winston.transports.Console({
-      stderrLevels: ["error"],
-      format: winston.format.combine(winston.format.colorize(), printf(true)),
-    }),
-    new winston.transports.File({
-      filename: "./logs/combined.log",
-      format: winston.format.combine(winston.format.uncolorize(), printf()),
-    }),
-  ],
+  transports:
+    config.env === "development" ? [consoleTransport] : [fileTransport],
 });
 
 export default logger;

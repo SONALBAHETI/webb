@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import catchAsync from "../utils/catchAsync.js";
+import responseHandler from "../utils/responseHandler.js";
 import {
   getChatRequests,
   createChatRequest,
@@ -13,7 +13,7 @@ import {
  * @param {Object} res - Express response object
  * @throws {ApiError} If chat request is not found
  */
-const getChatRequest = catchAsync(async (req, res) => {
+const getChatRequest = responseHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
   const chatRequest = await getChatRequestByIdAndPopulate(id, [
@@ -38,7 +38,7 @@ const getChatRequest = catchAsync(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns void
  */
-const listChatRequests = catchAsync(async (req, res) => {
+const listChatRequests = responseHandler(async (req, res) => {
   const userId = req.user.id;
   const chatRequests = await getChatRequests(userId);
   res.status(httpStatus.OK).send({ chatRequests: chatRequests });
@@ -50,7 +50,7 @@ const listChatRequests = catchAsync(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns void
  */
-const sendChatRequest = catchAsync(async (req, res) => {
+const sendChatRequest = responseHandler(async (req, res) => {
   const { userId: to, message } = req.body;
   const from = req.user.id;
 
@@ -63,7 +63,7 @@ const sendChatRequest = catchAsync(async (req, res) => {
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const acceptChatRequest = catchAsync(async (req, res) => {
+const acceptChatRequest = responseHandler(async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
   const chatRequest = await updateChatRequest(id, userId, {
@@ -77,7 +77,7 @@ const acceptChatRequest = catchAsync(async (req, res) => {
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const rejectChatRequest = catchAsync(async (req, res) => {
+const rejectChatRequest = responseHandler(async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
   const chatRequest = await updateChatRequest(id, userId, {

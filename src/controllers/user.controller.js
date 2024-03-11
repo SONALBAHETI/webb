@@ -1,13 +1,25 @@
 import httpStatus from "http-status";
-import catchAsync from "../utils/catchAsync.js";
+import responseHandler from "../utils/responseHandler.js";
 import { updateUser } from "../services/user.service.js";
+
+/**
+ * Retrieves the achievements of the logged in user.
+ *
+ * @param {import("express").Request} req - the request object
+ * @param {import("express").Response} res - the response object
+ */
+const getAchievements = async (req, res) => {
+  const achievements = req.user.getAchievements();
+  const badges = achievements.badges?.map((badge) => badge.toJSON());
+  res.status(httpStatus.OK).send({ achievements: { badges } });
+};
 
 /**
  * Update user details from the sign up onboarding form
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const updateUserDetailsFromOnboarding = catchAsync(async (req, res) => {
+const updateUserDetailsFromOnboarding = responseHandler(async (req, res) => {
   const { occupation, objective, specialisations, interests } = req.body;
 
   // Set role based on occupation and platform objective of the new user
@@ -47,4 +59,4 @@ const updateUserDetailsFromOnboarding = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ user }); // TODO: User.toJSON()
 });
 
-export { updateUserDetailsFromOnboarding };
+export { updateUserDetailsFromOnboarding, getAchievements };
