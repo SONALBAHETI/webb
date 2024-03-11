@@ -10,6 +10,7 @@ import {
   rejectChatRequest,
   getSendbirdCredentials,
 } from "../../controllers/chat.controller.js";
+import responseHandler from "../../utils/responseHandler.js";
 
 const router = express.Router();
 
