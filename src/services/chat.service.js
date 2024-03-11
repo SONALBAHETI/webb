@@ -12,11 +12,19 @@ const sendbirdUserHandler = new SendbirdUserHandler(
   config.sendBird.apiToken
 );
 
+/**
+ * Retrieves pending chat requests for a specified user.
+ *
+ * @param {string} userId - The ID of the user for whom to retrieve pending chat requests.
+ * @returns A promise that resolves to an array of pending chat requests with populated 'from' and 'to' fields.
+ */
 const getChatRequests = async (userId) => {
-  return ChatRequest.find({ to: userId, status: "pending" }).populate([
-    { path: "from", select: "name" },
-    { path: "to", select: "name" },
-  ]);
+  return ChatRequest.find({ to: userId, status: "pending" })
+    .populate([
+      { path: "from", select: "name profile.picture" },
+      { path: "to", select: "name" },
+    ])
+    .sort({ updatedAt: -1 });
 };
 
 const getChatRequestById = async (chatId) => {
@@ -33,6 +41,14 @@ const createChatRequest = async (chatBody) => {
   return ChatRequest.create(chatBody);
 };
 
+/**
+ * Updates a chat request with the provided chatId, userId, and updateBody.
+ *
+ * @param {string} chatId - The ID of the chat request
+ * @param {string} userId - The ID of the user
+ * @param {object} updateBody - The updated chat request body
+ * @return A promise that resolves to the saved chat request
+ */
 const updateChatRequest = async (chatId, userId, updateBody) => {
   const chatRequest = await getChatRequestById(chatId);
   if (!chatRequest) {
@@ -48,13 +64,20 @@ const updateChatRequest = async (chatId, userId, updateBody) => {
   return await chatRequest.save();
 };
 
+/**
+ * Enable chat and calls for a user by creating a new Sendbird user if not already created,
+ * associating the Sendbird user ID with the user in the database, and returning the updated user object.
+ *
+ * @param {string} userId - The ID of the user for whom chat and calls are being enabled.
+ * @returns A promise that resolves to the updated user object with Sendbird user ID and access token.
+ */
 const enableChatAndCallsForUser = async (userId) => {
   // Create a new Sendbird user
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (user.getSendbirdId()) {
+  if (user.getSendbirdCredentials().userId) {
     return user;
   }
 
