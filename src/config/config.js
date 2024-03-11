@@ -38,6 +38,12 @@ const envVarsSchema = Joi.object()
     SENDBIRD_API_TOKEN: Joi.string()
       .description("Sendbird API token")
       .required(),
+    SENDBIRD_CALLS_APP_ID: Joi.string()
+      .description("Sendbird Calls App ID")
+      .required(),
+    SENDBIRD_CALLS_API_TOKEN: Joi.string()
+      .description("Sendbird Calls API token")
+      .required(),
     OPENAI_API_KEY: Joi.string().description("OpenAI API token").required(),
     OPENAI_MENTOR_FINDER_ASSISTANT_ID: Joi.string()
       .description("OpenAI Assistant ID")
@@ -90,6 +96,8 @@ const config = {
   sendBird: {
     appId: envVars.SENDBIRD_APP_ID,
     apiToken: envVars.SENDBIRD_API_TOKEN,
+    callsAppId: envVars.SENDBIRD_CALLS_APP_ID,
+    callsApiToken: envVars.SENDBIRD_CALLS_API_TOKEN,
   },
   openAI: {
     apiKey: envVars.OPENAI_API_KEY,
@@ -109,7 +117,7 @@ const config = {
     cloudName: envVars.CLOUDINARY_CLOUD_NAME,
     apiKey: envVars.CLOUDINARY_API_KEY,
     apiSecret: envVars.CLOUDINARY_API_SECRET,
-  }
+  },
 };
 
 export default config;

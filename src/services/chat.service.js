@@ -1,4 +1,4 @@
-import SendbirdUserHandler from "../providers/sendbird/modules/user.js";
+import SendbirdUserHandler from "../providers/sendbird/modules/chat/user.js";
 import { getUserById, updateUser } from "./user.service.js";
 import ChatRequest from "../models/chatRequest.model.js";
 import config from "../config/config.js";
