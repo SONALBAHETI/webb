@@ -336,6 +336,7 @@ const integrationsSchema = new mongoose.Schema({
   },
   sendbird: {
     userId: String,
+    accessToken: String,
   },
   sheerId: {
     verificationId: String,

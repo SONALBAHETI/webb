@@ -73,6 +73,7 @@ const enableChatAndCallsForUser = async (userId) => {
     integrations: {
       sendbird: {
         userId: sendbirdUser.user_id,
+        accessToken: sendbirdUser.access_token,
       },
     },
   });
