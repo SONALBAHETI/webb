@@ -516,6 +516,9 @@ userSchema.methods = {
   getAchievements() {
     return this.achievements || {};
   },
+  getSendbirdId() {
+    return this.integrations?.sendbird?.userId;
+  },
   isResidencyTrained() {
     return this.profile?.education?.isResidencyTrained || false;
   },
