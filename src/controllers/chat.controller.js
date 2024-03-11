@@ -86,10 +86,16 @@ const rejectChatRequest = responseHandler(async (req, res) => {
   res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
 });
 
+const getSendbirdCredentials = async (req, res) => {
+  const sendbirdCredentials = await req.user.getSendbirdCredentials();
+  res.status(httpStatus.OK).send(sendbirdCredentials);
+};
+
 export {
   getChatRequest,
   listChatRequests,
   sendChatRequest,
   acceptChatRequest,
   rejectChatRequest,
+  getSendbirdCredentials,
 };
