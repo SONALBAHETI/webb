@@ -88,7 +88,7 @@ const submitOnboardingForm = async (req, res) => {
     profile = { primaryInterests };
   } else {
     role = ROLE.MENTOR;
-    profile = { practiceAreas, expertiseAreas };
+    profile = { expertise: { practiceAreas, expertiseAreas }};
   }
   await updateUser(req.user.id, {
     role,
