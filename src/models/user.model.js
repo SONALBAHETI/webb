@@ -336,6 +336,7 @@ const integrationsSchema = new mongoose.Schema({
   },
   sendbird: {
     userId: String,
+    accessToken: String,
   },
   sheerId: {
     verificationId: String,
@@ -516,8 +517,8 @@ userSchema.methods = {
   getAchievements() {
     return this.achievements || {};
   },
-  getSendbirdId() {
-    return this.integrations?.sendbird?.userId;
+  getSendbirdCredentials() {
+    return this.integrations?.sendbird || {};
   },
   isResidencyTrained() {
     return this.profile?.education?.isResidencyTrained || false;
