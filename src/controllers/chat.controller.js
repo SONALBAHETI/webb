@@ -5,6 +5,7 @@ import {
   createChatRequest,
   updateChatRequest,
   getChatRequestByIdAndPopulate,
+  acceptChatRequestAndCreateGroupChannel,
 } from "../services/chat.service.js";
 
 /**
@@ -41,7 +42,7 @@ const getChatRequest = responseHandler(async (req, res) => {
 const listChatRequests = responseHandler(async (req, res) => {
   const userId = req.user.id;
   const chatRequests = await getChatRequests(userId);
-  res.status(httpStatus.OK).send({ chatRequests: chatRequests });
+  res.status(httpStatus.OK).send({ chatRequests });
 });
 
 /**
@@ -55,7 +56,7 @@ const sendChatRequest = responseHandler(async (req, res) => {
   const from = req.user.id;
 
   const chatRequest = await createChatRequest({ from, to, message });
-  res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
+  res.status(httpStatus.OK).send({ chatRequest });
 });
 
 /**
@@ -66,10 +67,8 @@ const sendChatRequest = responseHandler(async (req, res) => {
 const acceptChatRequest = responseHandler(async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
-  const chatRequest = await updateChatRequest(id, userId, {
-    status: "accepted",
-  });
-  res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
+  const chatRequest = await acceptChatRequestAndCreateGroupChannel(id, userId);
+  res.status(httpStatus.OK).send({ chatRequest });
 });
 
 /**
@@ -83,7 +82,7 @@ const rejectChatRequest = responseHandler(async (req, res) => {
   const chatRequest = await updateChatRequest(id, userId, {
     status: "rejected",
   });
-  res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
+  res.status(httpStatus.OK).send({ chatRequest });
 });
 
 const getSendbirdCredentials = async (req, res) => {
