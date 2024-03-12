@@ -8,9 +8,13 @@ import {
   sendChatRequest,
   acceptChatRequest,
   rejectChatRequest,
+  getSendbirdCredentials,
 } from "../../controllers/chat.controller.js";
+import responseHandler from "../../utils/responseHandler.js";
 
 const router = express.Router();
+
+router.get("/credentials", auth(), responseHandler(getSendbirdCredentials));
 
 router
   .route("/requests")

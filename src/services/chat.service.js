@@ -66,13 +66,13 @@ const enableChatAndCallsForUser = async (userId) => {
     issue_access_token: true,
     profile_url: user.profile?.picture || "",
   });
-  // TODO: save access token from sendbird?
 
   // Add sendbird user id reference in the User model in database
   const updatedUser = await updateUser(userId, {
     integrations: {
       sendbird: {
         userId: sendbirdUser.user_id,
+        accessToken: sendbirdUser.access_token,
       },
     },
   });
