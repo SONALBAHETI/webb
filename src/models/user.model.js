@@ -517,6 +517,9 @@ userSchema.methods = {
   getAchievements() {
     return this.achievements || {};
   },
+  getSendbirdId() {
+    return this.integrations?.sendbird?.userId;
+  },
   getSendbirdCredentials() {
     return this.integrations?.sendbird || {};
   },

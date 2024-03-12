@@ -28,6 +28,15 @@ const getUserByEmail = async (email) => {
 };
 
 /**
+ * Retrieves users by their IDs.
+ *
+ * @param {Array<string>} userIds - An array of user IDs.
+ */
+const getUsersById = (userIds) => {
+  return User.find({ _id: { $in: userIds } });
+};
+
+/**
  * Get user by id
  * @param {ObjectId} id
  */
@@ -224,4 +233,5 @@ export {
   addCertificate,
   changeProfilePicture,
   getUserBySendbirdId,
+  getUsersById,
 };
