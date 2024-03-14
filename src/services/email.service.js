@@ -71,8 +71,36 @@ const sendVerificationEmail = async ({ to, token, redirect, context = {} }) => {
   });
 };
 
+/**
+ * Sends a reset password verification email.
+ *
+ * @param {Object} options - The options object.
+ * @param {string} options.to - The email address to send the verification email to.
+ * @param {string} options.token - The verification token.
+ * @param {string} [options.redirect] - The redirect url.
+ * @param {Object} [options.context] - The context to be passed to the email template.
+ */
+const sendResetPasswordVerificationEmail = async ({
+  to,
+  token,
+  redirect,
+  context = {},
+}) => {
+  const subject = "Reset your password";
+  // link to the reset password page of the front-end app
+  let resetPasswordVerificationLink = `${config.frontendBaseUrl}/verification/reset-password?token=${token}`;
+  if (redirect) {
+    resetPasswordVerificationLink += `&redirect=${redirect}`;
+  }
+  await sendEmail(to, subject, "resetPasswordVerificationEmail", {
+    resetLink: resetPasswordVerificationLink,
+    ...context,
+  });
+};
+
 export default {
   transport,
   sendEmail,
   sendVerificationEmail,
+  sendResetPasswordVerificationEmail,
 };

@@ -124,7 +124,7 @@ const generateAuthTokens = async (userId) => {
  * Generate a reset password token for a user with the given email.
  *
  * @param {string} email - The email of the user.
- * @return {string} The reset password token.
+ * @returns {Promise<string>} The reset password token.
  */
 const generateResetPasswordToken = async (email) => {
   const user = await getUserByEmail(email);

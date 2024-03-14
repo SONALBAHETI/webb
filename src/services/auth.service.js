@@ -146,6 +146,28 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
+/**
+ * Reset password
+ * @param {string} resetPasswordToken
+ * @param {string} newPassword
+ */
+const changePassword = async (resetPasswordToken, newPassword) => {
+  try {
+    const resetPasswordTokenDoc = await verifyToken(
+      resetPasswordToken,
+      tokenTypes.RESET_PASSWORD
+    );
+    const user = await getUserById(resetPasswordTokenDoc.user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    await updateUser(user.id, { password: newPassword });
+    await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Password reset failed");
+  }
+};
+
 export {
   loginUserWithEmailAndPassword,
   refreshAuth,
@@ -153,4 +175,5 @@ export {
   verifyGoogleIdToken,
   getOrCreateUserWithGoogle,
   verifyEmail,
+  changePassword,
 };

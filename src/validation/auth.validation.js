@@ -55,10 +55,26 @@ const verifyEmail = {
   }),
 };
 
+const resetPasswordEmail = {
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    redirect: Joi.string().required(),
+  }),
+};
+
+const resetPassword = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+    password: Joi.string().required().custom(password),
+  }),
+};
+
 export default {
   register,
   loginWithEmailAndPassword,
   refreshTokens,
   loginWithGoogle,
   verifyEmail,
+  resetPasswordEmail,
+  resetPassword,
 };

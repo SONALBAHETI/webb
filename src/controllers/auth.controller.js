@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { createUser } from "../services/user.service.js";
 import {
   generateAuthTokens,
+  generateResetPasswordToken,
   generateVerifyEmailToken,
 } from "../services/token.service.js";
 import {
@@ -10,6 +11,7 @@ import {
   logout as logoutUser,
   getOrCreateUserWithGoogle,
   verifyEmail as verifyEmailHelper,
+  changePassword,
 } from "../services/auth.service.js";
 import emailService from "../services/email.service.js";
 import express from "express";
@@ -139,8 +141,13 @@ const logout = async (req, res) => {
  */
 const sendVerificationEmail = async (req, res) => {
   const verifyEmailToken = await generateVerifyEmailToken(req.user);
-  await emailService.sendVerificationEmail(req.user.email, verifyEmailToken, {
-    firstName: req.user.getFirstName(),
+  await emailService.sendVerificationEmail({
+    to: req.user.email,
+    token: verifyEmailToken,
+    redirect: `${config.frontendBaseUrl}/onboarding`,
+    context: {
+      firstName: req.user.getFirstName(),
+    },
   });
   res.status(httpStatus.NO_CONTENT).send();
 };
@@ -155,6 +162,33 @@ const verifyEmail = async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 };
 
+/**
+ * Sends reset password email.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const sendResetPasswordEmail = async (req, res) => {
+  const { email, redirect } = req.body;
+  const verifyEmailToken = await generateResetPasswordToken(email);
+
+  await emailService.sendResetPasswordVerificationEmail({
+    to: email,
+    token: verifyEmailToken,
+    redirect,
+  });
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
+/**
+ * Resets the password of the user using token
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const resetPassword = async (req, res) => {
+  await changePassword(req.body.token, req.body.password);
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
 export default {
   register,
   loginWithEmailAndPassword,
@@ -164,4 +198,6 @@ export default {
   loginWithGoogle,
   sendVerificationEmail,
   verifyEmail,
+  sendResetPasswordEmail,
+  resetPassword,
 };
