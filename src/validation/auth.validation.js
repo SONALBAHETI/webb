@@ -49,9 +49,16 @@ const refreshTokens = {
     }),
 };
 
+const verifyEmail = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
+
 export default {
   register,
   loginWithEmailAndPassword,
   refreshTokens,
   loginWithGoogle,
+  verifyEmail,
 };

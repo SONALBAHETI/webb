@@ -1,12 +1,18 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
-import { createUser, getUserByEmail, getUserById } from "./user.service.js";
+import {
+  createUser,
+  getUserByEmail,
+  getUserById,
+  updateUser,
+} from "./user.service.js";
 import { generateAuthTokens, verifyToken } from "./token.service.js";
 import { tokenTypes } from "../config/tokens.js";
 import Token from "../models/token.model.js";
 import User from "../models/user.model.js";
 import { OAuth2Client } from "google-auth-library";
 import config from "../config/config.js";
+import logger from "../config/logger.js";
 
 /**
  * Authenticates a user with their email and password.
@@ -117,10 +123,34 @@ const logout = async (refreshToken) => {
   await Token.findOneAndDelete({ token: refreshTokenDoc.token });
 };
 
+/**
+ * Verify email
+ * @param {string} verifyEmailToken
+ * @returns {Promise}
+ */
+const verifyEmail = async (verifyEmailToken) => {
+  try {
+    const verifyEmailTokenDoc = await verifyToken(
+      verifyEmailToken,
+      tokenTypes.VERIFY_EMAIL
+    );
+    const user = await getUserById(verifyEmailTokenDoc.user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+    await updateUser(user.id, { accountStatus: { isEmailVerified: true } });
+  } catch (error) {
+    logger.error("Error verifying email", error);
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Email verification failed");
+  }
+};
+
 export {
   loginUserWithEmailAndPassword,
   refreshAuth,
   logout,
   verifyGoogleIdToken,
   getOrCreateUserWithGoogle,
+  verifyEmail,
 };

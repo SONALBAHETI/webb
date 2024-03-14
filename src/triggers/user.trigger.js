@@ -2,6 +2,7 @@ import { userSchema } from "../models/user.model.js";
 import { generateTags, isTagFieldModified } from "../services/user.service.js";
 import processAsync from "../utils/processAsync.js";
 import gamifyService from "../services/gamify.service.js";
+import bcrypt from "bcrypt";
 
 /**
  * User trigger plugin
