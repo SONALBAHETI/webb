@@ -1,13 +1,21 @@
 import httpStatus from "http-status";
 import { createUser } from "../services/user.service.js";
-import { generateAuthTokens } from "../services/token.service.js";
+import {
+  generateAuthTokens,
+  generateResetPasswordToken,
+  generateVerifyEmailToken,
+} from "../services/token.service.js";
 import {
   loginUserWithEmailAndPassword,
   refreshAuth,
   logout as logoutUser,
   getOrCreateUserWithGoogle,
+  verifyEmail as verifyEmailHelper,
+  changePassword,
 } from "../services/auth.service.js";
+import emailService from "../services/email.service.js";
 import express from "express";
+import config from "../config/config.js";
 
 /**
  * Sets the tokens as cookies in the response object.
@@ -61,11 +69,21 @@ const register = async (req, res) => {
     password,
   };
   const user = await createUser(newUser);
+  // send verification email
+  const verifyEmailToken = await generateVerifyEmailToken(user);
+  await emailService.sendVerificationEmail({
+    to: user.email,
+    token: verifyEmailToken,
+    redirect: `${config.frontendBaseUrl}/onboarding`,
+    context: {
+      firstName: user.getFirstName(),
+    },
+  });
   // generate auth token and send it to client
   const tokens = await generateAuthTokens(user.id);
   setCookies(res, tokens).status(httpStatus.CREATED).send({
-    user,
-    tokens,
+    userId: user.id,
+    accessToken: tokens.access,
   });
 };
 
@@ -116,6 +134,61 @@ const logout = async (req, res) => {
   clearCookies(res).status(httpStatus.OK).send({});
 };
 
+/**
+ * Sends verification email.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const sendVerificationEmail = async (req, res) => {
+  const verifyEmailToken = await generateVerifyEmailToken(req.user);
+  await emailService.sendVerificationEmail({
+    to: req.user.email,
+    token: verifyEmailToken,
+    redirect: `${config.frontendBaseUrl}/onboarding`,
+    context: {
+      firstName: req.user.getFirstName(),
+    },
+  });
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
+/**
+ * Verifies email using token
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const verifyEmail = async (req, res) => {
+  await verifyEmailHelper(req.body.token);
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
+/**
+ * Sends reset password email.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const sendResetPasswordEmail = async (req, res) => {
+  const { email, redirect } = req.body;
+  const verifyEmailToken = await generateResetPasswordToken(email);
+
+  await emailService.sendResetPasswordVerificationEmail({
+    to: email,
+    token: verifyEmailToken,
+    redirect,
+  });
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
+/**
+ * Resets the password of the user using token
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const resetPassword = async (req, res) => {
+  await changePassword(req.body.token, req.body.password);
+  res.status(httpStatus.NO_CONTENT).send();
+};
+
 export default {
   register,
   loginWithEmailAndPassword,
@@ -123,4 +196,8 @@ export default {
   verifyAuth,
   logout,
   loginWithGoogle,
+  sendVerificationEmail,
+  verifyEmail,
+  sendResetPasswordEmail,
+  resetPassword,
 };

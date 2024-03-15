@@ -110,6 +110,17 @@ const config = {
     apiKey: envVars.CLOUDINARY_API_KEY,
     apiSecret: envVars.CLOUDINARY_API_SECRET,
   },
+  email: {
+    smtp: {
+      host: envVars.SMTP_HOST,
+      port: envVars.SMTP_PORT,
+      auth: {
+        user: envVars.SMTP_USERNAME,
+        pass: envVars.SMTP_PASSWORD,
+      },
+    },
+    from: envVars.EMAIL_FROM,
+  },
 };
 
 export default config;
