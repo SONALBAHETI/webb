@@ -164,6 +164,7 @@ const changePassword = async (resetPasswordToken, newPassword) => {
     await updateUser(user.id, { password: newPassword });
     await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
   } catch (error) {
+    logger.error("Error changing password", error);
     throw new ApiError(httpStatus.UNAUTHORIZED, "Password reset failed");
   }
 };

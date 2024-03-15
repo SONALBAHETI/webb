@@ -88,7 +88,7 @@ const sendResetPasswordVerificationEmail = async ({
 }) => {
   const subject = "Reset your password";
   // link to the reset password page of the front-end app
-  let resetPasswordVerificationLink = `${config.frontendBaseUrl}/verification/reset-password?token=${token}`;
+  let resetPasswordVerificationLink = `${config.frontendBaseUrl}/verification/password-reset?token=${token}`;
   if (redirect) {
     resetPasswordVerificationLink += `&redirect=${redirect}`;
   }
