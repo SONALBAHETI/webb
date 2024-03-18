@@ -10,6 +10,10 @@ import { Socket } from "socket.io";
  */
 const socketsByUserId = new Map();
 
+export const getSocketsByUserId = (userId) => {
+  return socketsByUserId.get(userId) || [];
+}
+
 // Function to set cookies from socket headers
 const setCookies = (socket) => {
   // Parsing cookies from socket headers
@@ -24,7 +28,7 @@ const setCookies = (socket) => {
  * @param {Socket} socket The connected socket
  */
 const addSocket = (userId, socket) => {
-  let sockets = socketsByUserId.get(userId) || [];
+  let sockets = getSocketsByUserId(userId);
   sockets.push(socket);
   socketsByUserId.set(userId, sockets);
 };
@@ -35,7 +39,7 @@ const addSocket = (userId, socket) => {
  * @param {Socket} socket The connected socket
  */
 const removeSocket = (userId, socket) => {
-  let sockets = socketsByUserId.get(userId) || [];
+  let sockets = getSocketsByUserId(userId);
   sockets = sockets.filter((s) => s.id !== socket.id);
   if (!sockets.length) {
     socketsByUserId.delete(userId);

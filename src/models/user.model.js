@@ -454,6 +454,9 @@ userSchema.methods = {
   getFirstName() {
     return this.profile?.firstName;
   },
+  getLastName() {
+    return this.profile?.lastName;
+  },
   getProfilePicture() {
     return this.profile?.picture;
   },

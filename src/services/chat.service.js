@@ -10,6 +10,7 @@ import {
   SendbirdUserHandler,
   SendbirdMessageHandler,
 } from "../providers/sendbird/modules/chat/index.js";
+import notificationService from "./notification.service.js";
 
 /**
  * @typedef {import("../providers/sendbird/modules/chat/groupChannels.js").CreateGroupChannelOptions} CreateGroupChannelOptions
@@ -72,14 +73,16 @@ const acceptChatRequestAndCreateGroupChannel = async (
   if (!chatRequest) {
     throw new ApiError(httpStatus.NOT_FOUND, "Chat request not found");
   }
+  const to = chatRequest.to.toString();
+  const from = chatRequest.from.toString();
   // validate that chat request is sent to the receiverId
-  if (chatRequest.to.toString() !== receiverId) {
+  if (to !== receiverId) {
     throw new ApiError(
       httpStatus.UNAUTHORIZED,
       "User unauthorized to perform this action"
     );
   }
-  const userIds = [chatRequest.from.toString(), chatRequest.to.toString()];
+  const userIds = [from, to];
   // create group channel in sendbird
   const groupChannel = await createGroupChannel(userIds, {
     initialMessage: chatRequest.message,
@@ -88,7 +91,14 @@ const acceptChatRequestAndCreateGroupChannel = async (
   chatRequest.status = ChatRequestStatus.ACCEPTED;
   chatRequest.channelUrl = groupChannel.channel_url;
   // save updates
-  return await chatRequest.save();
+  const savedChatRequest = await chatRequest.save();
+  // create notification
+  await notificationService.createChatRequestAcceptedNotification(
+    from,
+    to,
+    chatRequestId
+  );
+  return savedChatRequest;
 };
 
 /**
