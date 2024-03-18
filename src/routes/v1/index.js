@@ -10,6 +10,7 @@ import onboardingRoute from "./onboarding.route.js";
 import profileRoute from "./profileSettings.route.js";
 import userMatchRoute from "./userMatch.route.js";
 import mentorVerificationRoute from "./mentorVerification.route.js";
+import appointmentRoute from "./appointment.route.js";
 
 const router = express.Router();
 
@@ -53,7 +54,11 @@ const defaultRoutes = [
   {
     path: "/verification/mentor",
     route: mentorVerificationRoute,
-  }
+  },
+  {
+    path: "/appointments",
+    route: appointmentRoute,
+  },
 ];
 
 // TODO: Add a docs route only for dev mode
