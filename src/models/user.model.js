@@ -451,6 +451,9 @@ userSchema.methods = {
     const user = this;
     return bcrypt.compare(password, user.password);
   },
+  getFirstName() {
+    return this.profile?.firstName;
+  },
   getProfilePicture() {
     return this.profile?.picture;
   },

@@ -41,4 +41,32 @@ router.get("/verify-auth", auth(), responseHandler(authController.verifyAuth));
 // logout users
 router.post("/logout", responseHandler(authController.logout));
 
+// send verification email
+router.post(
+  "/send-verification-email",
+  auth(),
+  responseHandler(authController.sendVerificationEmail)
+);
+
+// verify email
+router.post(
+  "/verify-email",
+  validate(authValidation.verifyEmail),
+  responseHandler(authController.verifyEmail)
+);
+
+// send reset password email
+router.post(
+  "/send-reset-password-email",
+  validate(authValidation.resetPasswordEmail),
+  responseHandler(authController.sendResetPasswordEmail)
+);
+
+// reset password
+router.post(
+  "/reset-password",
+  validate(authValidation.resetPassword),
+  responseHandler(authController.resetPassword)
+);
+
 export default router;
