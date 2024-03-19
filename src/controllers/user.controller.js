@@ -15,6 +15,28 @@ const getAchievements = async (req, res) => {
 };
 
 /**
+ * Checks whether user is online or not
+ *
+ * @param {import("express").Request} req - the request object
+ * @param {import("express").Response} res - the response object
+ */
+const getVisibility = async (req, res) => {
+  res.status(httpStatus.OK).send({ online: req.user.isOnline() });
+};
+
+/**
+ * Sets users visibility to online or offline
+ *
+ * @param {import("express").Request} req - the request object
+ * @param {import("express").Response} res - the response object
+ */
+const updateVisibility = async (req, res) => {
+  const { online } = req.body;
+  await updateUser(req.user.id, { availability: { online } });
+  res.status(httpStatus.OK).send({ online });
+};
+
+/**
  * Update user details from the sign up onboarding form
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
@@ -59,4 +81,9 @@ const updateUserDetailsFromOnboarding = responseHandler(async (req, res) => {
   res.status(httpStatus.OK).send({ user }); // TODO: User.toJSON()
 });
 
-export { updateUserDetailsFromOnboarding, getAchievements };
+export default {
+  updateUserDetailsFromOnboarding,
+  getAchievements,
+  getVisibility,
+  updateVisibility,
+};

@@ -19,7 +19,14 @@ const updateUserDetailsFromOnboarding = {
   }),
 };
 
+const updateVisibility = {
+  body: Joi.object().keys({
+    online: Joi.boolean().required(),
+  }),
+};
+
 export default {
   getUser,
   updateUserDetailsFromOnboarding,
+  updateVisibility,
 };
