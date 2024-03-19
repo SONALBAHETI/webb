@@ -6,6 +6,10 @@ import deepMerge from "../utils/deepMerge.js";
 import { USER_TAG_FIELDS } from "../constants/userTagFields.js";
 
 /**
+ * @typedef {import("../models/user.model.js").User} User
+ */
+
+/**
  * Create a user
  * @param {Object} userBody
  * @throws {ApiError} If email already exists
@@ -21,7 +25,7 @@ const createUser = async (userBody) => {
 /**
  * Get user by email
  * @param {string} email
- * @return {Promise<Document<User> | null>}
+ * @return {Promise<User | null>}
  */
 const getUserByEmail = async (email) => {
   return User.findOne({ email });
@@ -39,6 +43,7 @@ const getUsersById = (userIds) => {
 /**
  * Get user by id
  * @param {ObjectId} id
+ * @returns {Promise<User | null>} The user or null if not found
  */
 const getUserById = (id) => {
   return User.findById(id);
@@ -47,6 +52,7 @@ const getUserById = (id) => {
 /**
  * Retrieve a user by their Sendbird ID.
  * @param {string} sendbirdUserId - The Sendbird ID of the user to retrieve
+ * @returns {Promise<User | null>} The user or null if not found
  */
 const getUserBySendbirdId = (sendbirdUserId) =>
   User.findOne({ "integrations.sendbird.userId": sendbirdUserId });
@@ -156,7 +162,7 @@ const changeProfilePicture = async (userId, picture) => {
 /**
  * Generates tags based on user information.
  *
- * @param {import("mongoose").Document<User>} user - the user object containing information
+ * @param {User} user - the user object containing information
  * @return {Array<string>} the array of unique tags generated from the user information
  */
 const generateTags = (user) => {
@@ -209,7 +215,7 @@ const generateTags = (user) => {
 /**
  * Checks if any of the tag fields in the user object has been modified.
  *
- * @param {import("mongoose").Document} user - the user object to check
+ * @param {User} user - the user object to check
  * @return {boolean} true if any tag field has been modified, false otherwise
  */
 const isTagFieldModified = (user) => {

@@ -10,15 +10,39 @@ import express from "express";
  * @return {Promise<void>} A promise that resolves when the response is sent
  */
 const getNotifications = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user.id;
   const query = { $or: [{ user: userId }, { user: { $exists: false } }] };
   const paginationResult = await notificationService.queryNotifications(query, {
     page: req.query.page || 1,
     limit: 10,
   });
+  const docIds = paginationResult.docs.map((doc) => doc.id);
+  // mark notifications as read on retrieval
+  await notificationService.markNotificationsAsRead(docIds);
   res.status(httpStatus.OK).json(paginationResult);
+};
+
+/**
+ * Retrieves the count of unread notifications for the authorized user.
+ *
+ * @param {express.Request} req - The request object
+ * @param {express.Response} res - The response object
+ * @returns {Promise<void>} A promise that resolves when the response is sent
+ */
+const getUnreadNotificationsCount = async (req, res) => {
+  const userId = req.user.id;
+  // get unread notifications
+  const unreadNotifications = await notificationService.getUnreadNotifications(
+    userId
+  );
+  const unreadNotificationsCount = unreadNotifications.length;
+  const responseBody = {
+    unreadCount: unreadNotificationsCount,
+  };
+  res.status(httpStatus.OK).json(responseBody);
 };
 
 export default {
   getNotifications,
+  getUnreadNotificationsCount,
 };
