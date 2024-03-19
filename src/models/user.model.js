@@ -349,7 +349,7 @@ const integrationsSchema = new mongoose.Schema({
  * @property {boolean} [isEmailVerified] - Whether the user's email has been verified
  * @property {boolean} [isOnboarded] - Whether the user has been onboarded
  */
-const statusSchema = new mongoose.Schema({
+const accountStatusSchema = new mongoose.Schema({
   isEmailVerified: {
     type: Boolean,
     default: false,
@@ -359,6 +359,17 @@ const statusSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+/**
+ * @typedef {Object} AvailabilitySchema
+ * @property {boolean} [online] - Whether the user is online
+ */
+const availabilitySchema = new mongoose.Schema({
+  online: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 /**
  * @typedef {Object} UserSchema
@@ -411,7 +422,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: UserOccupationValues,
     },
-    accountStatus: statusSchema,
+    accountStatus: accountStatusSchema,
+    availability: availabilitySchema,
     profile: profileSchema,
     achievements: achievementsSchema,
     stats: statsSchema,
@@ -535,6 +547,9 @@ userSchema.methods = {
   isFellowshipTrained() {
     return this.profile?.education?.isFellowshipTrained || false;
   },
+  isOnline() {
+    return this.availability?.online || false;
+  }
 };
 
 // plug in user trigger
