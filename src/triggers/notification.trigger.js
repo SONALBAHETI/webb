@@ -15,6 +15,9 @@ const notificationTrigger = (schema) => {
       // send notification
       processAsync(async () => {
         notificationService.sendNotification(notification);
+        // mark notification as sent
+        notification.status = NotificationStatus.SENT;
+        await notification.save();
       });
     }
   });

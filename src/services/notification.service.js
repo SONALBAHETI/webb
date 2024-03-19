@@ -1,4 +1,5 @@
 import Notification, {
+  NotificationStatus,
   NotificationType,
 } from "../models/notification.model.js";
 import { getUserById } from "./user.service.js";
@@ -32,7 +33,31 @@ const sendNotification = (notification) => {
   });
 };
 
+/**
+ *
+ * @param {string} userId The user Id for which you want to retrieve notifications for
+ * @returns {Promise<Notification>} notification
+ */
+const getUnreadNotifications = async (userId) => {
+  return await Notification.find({
+    receiver: userId,
+    status: { $in: [NotificationStatus.SENT, NotificationStatus.PENDING] }, // pending or sent but not read yet
+  });
+};
 
+
+/**
+ * Marks multiple notifications as read.
+ *
+ * @param {Array<string>} notificationIds - An array of notification IDs.
+ * @returns {Promise<void>} - A promise that resolves when the update is complete.
+ */
+const markNotificationsAsRead = async (notificationIds) => {
+  await Notification.updateMany(
+    { _id: { $in: notificationIds } },
+    { status: NotificationStatus.READ }
+  );
+}
 /**
  * Creates a "ChatRequestAccepted" notification to the sender of a chat request.
  * // TODO: Move this to chat request trigger.
@@ -61,6 +86,10 @@ const createChatRequestAcceptedNotification = async (
     type: NotificationType.ChatRequestAccepted,
     metadata: {
       channelUrl: chatRequest.channelUrl,
+      from: {
+        name: sender.name,
+        image: sender.getProfilePicture(),
+      },
     },
   });
 };
@@ -88,6 +117,8 @@ const getNotificationById = (notificationId) => {
 
 export default {
   createNotification,
+  getUnreadNotifications,
+  markNotificationsAsRead,
   sendNotification,
   queryNotifications,
   getNotificationById,

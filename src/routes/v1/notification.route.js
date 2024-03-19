@@ -9,4 +9,10 @@ router
   .route("/")
   .get(auth(), responseHandler(notificationController.getNotifications));
 
+router.get(
+  "/unread/count",
+  auth(),
+  responseHandler(notificationController.getUnreadNotificationsCount)
+);
+
 export default router;

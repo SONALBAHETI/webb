@@ -12,7 +12,7 @@ const socketsByUserId = new Map();
 
 export const getSocketsByUserId = (userId) => {
   return socketsByUserId.get(userId) || [];
-}
+};
 
 // Function to set cookies from socket headers
 const setCookies = (socket) => {

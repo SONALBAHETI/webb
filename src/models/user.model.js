@@ -361,7 +361,7 @@ const statusSchema = new mongoose.Schema({
 });
 
 /**
- * @typedef {Object} User
+ * @typedef {Object} UserSchema
  * @property {string} name - The user's name
  * @property {string} email - The user's email
  * @property {string} [password] - The user's password
@@ -540,6 +540,9 @@ userSchema.methods = {
 // plug in user trigger
 userSchema.plugin(userTrigger);
 
+/**
+ * @typedef {UserSchema & mongoose.Document} User
+ */
 const User = mongoose.model("User", userSchema);
 
 export { userSchema };
