@@ -8,6 +8,7 @@ import chatbotRoute from "./chatbot.route.js";
 import notificationRoute from "./notification.route.js";
 import onboardingRoute from "./onboarding.route.js";
 import profileRoute from "./profileSettings.route.js";
+import accountSettingsRoute from "./accountSettings.route.js";
 import userMatchRoute from "./userMatch.route.js";
 import mentorVerificationRoute from "./mentorVerification.route.js";
 import appointmentRoute from "./appointment.route.js";
@@ -46,6 +47,10 @@ const defaultRoutes = [
   {
     path: "/settings/profile",
     route: profileRoute,
+  },
+  {
+    path: "/settings/account",
+    route: accountSettingsRoute,
   },
   {
     path: "/usermatch",
