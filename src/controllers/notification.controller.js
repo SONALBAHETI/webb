@@ -13,8 +13,8 @@ const getNotifications = async (req, res) => {
   const userId = req.user.id;
   const query = { $or: [{ user: userId }, { user: { $exists: false } }] };
   const paginationResult = await notificationService.queryNotifications(query, {
-    page: req.query.page || 1,
-    limit: 10,
+    page: req.query.page,
+    limit: req.query.limit,
   });
   const docIds = paginationResult.docs.map((doc) => doc.id);
   // mark notifications as read on retrieval
