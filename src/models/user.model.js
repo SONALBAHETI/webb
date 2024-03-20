@@ -157,7 +157,7 @@ const badgeSchema = new mongoose.Schema(
 badgeSchema.plugin(toJSON);
 
 /**
- * @typedef {Object} Achievements
+ * @typedef {Object} AchievementsSchema
  * @property {Array<Badge>} [badges] - The list of badges
  */
 const achievementsSchema = new mongoose.Schema({
@@ -176,7 +176,7 @@ const achievementsSchema = new mongoose.Schema({
 achievementsSchema.plugin(toJSON);
 
 /**
- * @typedef {Object} Stats
+ * @typedef {Object} StatsSchema
  * @property {number} [hoursLearned] - The number of hours learned
  * @property {number} [hoursMentored] - The number of hours mentored
  * @property {number} [chatMessagesSent] - The number of chat messages sent
@@ -369,7 +369,7 @@ const availabilitySchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-})
+});
 
 /**
  * @typedef {Object} UserSchema
@@ -381,6 +381,9 @@ const availabilitySchema = new mongoose.Schema({
  * @property {AccountStatus} [accountStatus] - The user's account status
  * @property {Profile} [profile] - The user's profile
  * @property {Object} [integrations] - The user's integrations
+ * @property {AvailabilitySchema} [availability] - The user's availability
+ * @property {AchievementsSchema} [achievements] - The user's achievements
+ * @property {StatsSchema} [stats] - The user's stats
  */
 const userSchema = new mongoose.Schema(
   {
@@ -549,7 +552,7 @@ userSchema.methods = {
   },
   isOnline() {
     return this.availability?.online || false;
-  }
+  },
 };
 
 // plug in user trigger
