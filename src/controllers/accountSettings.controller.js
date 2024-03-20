@@ -48,7 +48,6 @@ const createQuickReply = async (req, res) => {
  * @return {Promise<void>} Sends the updated quick reply in the response
  */
 const updateQuickReply = async (req, res) => {
-  console.log(req.params, req.body);
   const quickReply = await accountSettingsService.updateQuickReply(
     req.params.quickReplyId,
     req.body
