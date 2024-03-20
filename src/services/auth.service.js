@@ -102,6 +102,7 @@ const refreshAuth = async (refreshToken) => {
     const tokens = await generateAuthTokens(user.id);
     return tokens;
   } catch (error) {
+    logger.error("Failed to refresh auth tokens", error);
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
   }
 };
