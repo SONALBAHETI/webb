@@ -180,6 +180,23 @@ const sendResetPasswordEmail = async (req, res) => {
 };
 
 /**
+ * Sends reset password email when user is authenticated
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+const sendResetPasswordEmailWithAuth = async (req, res) => {
+  const { redirect } = req.body;
+  const verifyEmailToken = await generateResetPasswordToken(req.user.email);
+
+  await emailService.sendResetPasswordVerificationEmail({
+    to: req.user.email,
+    token: verifyEmailToken,
+    redirect,
+  });
+  res.status(httpStatus.NO_CONTENT).send();
+}
+
+/**
  * Resets the password of the user using token
  * @param {import("express").Request} req
  * @param {import("express").Response} res
@@ -199,5 +216,6 @@ export default {
   sendVerificationEmail,
   verifyEmail,
   sendResetPasswordEmail,
+  sendResetPasswordEmailWithAuth,
   resetPassword,
 };

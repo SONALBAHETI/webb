@@ -62,6 +62,14 @@ router.post(
   responseHandler(authController.sendResetPasswordEmail)
 );
 
+// send reset password email with auth
+router.post(
+  "/send-reset-password-email-with-auth",
+  auth(),
+  validate(authValidation.resetPasswordEmailWithAuth),
+  responseHandler(authController.sendResetPasswordEmailWithAuth)
+);
+
 // reset password
 router.post(
   "/reset-password",
