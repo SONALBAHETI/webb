@@ -1,8 +1,14 @@
 import mongoose from "mongoose";
-import { toJSON } from "./plugins.js";
+import { toJSON } from "./plugins/index.js";
+
+export const NotificationMode = {
+  IN_APP: "inAppNotifications",
+  EMAIL: "emailNotifications",
+};
 
 /**
- * @typedef {Object} NotificationTypeSettingSchema
+ * @typedef {Object} NotificationModeSettingSchema
+ * @property {Boolean} all - Whether to send all notifications
  * @param {Boolean} newMessage - Whether to send new message notifications
  * @param {Boolean} appointmentReminder - Whether to send appointment reminder notifications
  * @param {Boolean} systemUpdates - Whether to send system updates notifications
@@ -14,7 +20,11 @@ import { toJSON } from "./plugins.js";
  * @param {Boolean} promotional - Whether to send promotional notifications
  * @param {Boolean} reminders - Whether to send reminders
  */
-const notificationTypeSettingSchema = new mongoose.Schema({
+export const notificationModeSettingSchema = new mongoose.Schema({
+  all: {
+    type: Boolean,
+    default: false,
+  },
   newMessage: {
     type: Boolean,
     default: true,
@@ -60,17 +70,20 @@ const notificationTypeSettingSchema = new mongoose.Schema({
 /**
  * @typedef {Object} NotificationSettingSchema
  * @property {import("mongoose").Schema.Types.ObjectId} user - The ID of the user
- * @property {NotificationTypeSettingSchema} inAppNotifications - The in-app notifications settings
- * @property {NotificationTypeSettingSchema} emailNotifications - The email notifications settings
+ * @property {NotificationModeSettingSchema} inAppNotifications - The in-app notifications settings
+ * @property {NotificationModeSettingSchema} emailNotifications - The email notifications settings
  */
 const notificationSettingSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+    index: true,
+    unique: true,
+    private: true,
   },
-  inAppNotifications: notificationTypeSettingSchema,
-  emailNotifications: notificationTypeSettingSchema,
+  inAppNotifications: notificationModeSettingSchema,
+  emailNotifications: notificationModeSettingSchema,
 });
 
 notificationSettingSchema.plugin(toJSON);

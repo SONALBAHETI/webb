@@ -25,7 +25,7 @@ const getQuickReplyById = async (req, res) => {
     req.params.quickReplyId
   );
   res.status(httpStatus.OK).send({ quickReply });
-}
+};
 
 /**
  * Creates a new quick reply
@@ -66,10 +66,45 @@ const deleteQuickReply = async (req, res) => {
   res.status(httpStatus.OK).send({ success: true });
 };
 
+/**
+ * Get notification settings of a user
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ * @return {Promise<void>} Sends notification settings in the response
+ */
+const getNotificationSettings = async (req, res) => {
+  const notificationSettings =
+    await accountSettingsService.getNotificationSettings(req.user.id);
+  res.status(httpStatus.OK).send({ notificationSettings });
+};
+
+/**
+ * Update notification settings of a user
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ * @return {Promise<void>} Sends updated notification settings in the response
+ */
+const updateNotificationSettings = async (req, res) => {
+  const { mode, notification, enabled } = req.body;
+  const updateBody = {
+    [mode]: {
+      [notification]: enabled,
+    },
+  };
+  const notificationSettings =
+    await accountSettingsService.updateNotificationSettings(
+      req.user.id,
+      updateBody
+    );
+  res.status(httpStatus.OK).send({ notificationSettings });
+};
+
 export default {
   getQuickReplies,
   getQuickReplyById,
   createQuickReply,
   updateQuickReply,
   deleteQuickReply,
-}
+  getNotificationSettings,
+  updateNotificationSettings,
+};

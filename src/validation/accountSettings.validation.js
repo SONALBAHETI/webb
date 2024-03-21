@@ -1,4 +1,8 @@
 import Joi from "joi";
+import {
+  NotificationMode,
+  notificationModeSettingSchema,
+} from "../models/notificationSetting.model.js";
 
 // get or delete a single quick reply validation
 const quickReplyById = {
@@ -28,8 +32,26 @@ const createQuickReply = {
   }),
 };
 
+// update notification settings validation
+const updateNotificationSettings = {
+  body: Joi.object().keys({
+    mode: Joi.string()
+      .valid(...Object.values(NotificationMode))
+      .required(),
+    notification: Joi.string()
+      .valid(
+        ...Object.keys(notificationModeSettingSchema.paths).filter(
+          (path) => path !== "_id"
+        )
+      )
+      .required(),
+    enabled: Joi.boolean().required(),
+  }),
+};
+
 export default {
   quickReplyById,
   updateQuickReply,
   createQuickReply,
+  updateNotificationSettings,
 };
