@@ -1,10 +1,12 @@
 import httpStatus from "http-status";
 import QuickReply, { QuickReplyType } from "../models/quickReply.model.js";
+import NotificationSetting from "../models/notificationSetting.model.js";
+import ApiError from "../utils/ApiError.js";
+import deepMerge from "../utils/deepMerge.js";
 
 /**
  * Retrieves all the quick replies of the user
  * @param {string} userId - The ID of the user
- * @returns The list of quick replies
  */
 const getQuickRepliesByUserId = async (userId) => {
   return await QuickReply.find({ user: userId }).sort({ updatedAt: -1 });
@@ -13,7 +15,6 @@ const getQuickRepliesByUserId = async (userId) => {
 /**
  * Retrieves a single quick reply
  * @param {string} quickReplyId - The ID of the quick reply
- * @returns The quick reply
  */
 const getQuickReplyById = (quickReplyId) => {
   return QuickReply.findById(quickReplyId);
@@ -62,14 +63,63 @@ const deleteQuickReply = async (quickReplyId) => {
   await QuickReply.deleteOne({ _id: quickReplyId });
 };
 
+/**
+ * Retrieves all the notification settings of the user.
+ * If the notification settings do not exist, it creates them.
+ * @param {string} userId - The ID of the user
+ * @returns {Promise<NotificationSetting>} The notification settings query
+ */
+const getNotificationSettings = async (userId) => {
+  let notificationSettings = await NotificationSetting.findOne({ user: userId });
+  if (!notificationSettings) {
+    notificationSettings = await createDefaultNotificationSettings(userId);
+  }
+  return notificationSettings;
+};
+
+/**
+ * Create default notification settings of a user
+ * @param {string} userId - The ID of the user
+ * @returns {Promise<NotificationSetting>} The created notification settings
+ */
+const createDefaultNotificationSettings = async (userId) => {
+  const notificationSettings = new NotificationSetting({
+    user: userId,
+    inAppNotifications: {},
+    emailNotifications: {},
+  });
+  await notificationSettings.save();
+  return notificationSettings;
+};
+
+/**
+ * Update notification settings of a user
+ * @param {string} userId - The ID of the user
+ * @param {Partial<NotificationSetting>} updateBody - The update body of the notification settings
+ * @returns {Promise<NotificationSetting>} The updated notification settings
+ */
+const updateNotificationSettings = async (userId, updateBody) => {
+  let notificationSettings = await getNotificationSettings(userId);
+  if (!notificationSettings) {
+    notificationSettings = await createDefaultNotificationSettings(userId);
+  }
+  deepMerge(notificationSettings, updateBody);
+  await notificationSettings.save();
+  return notificationSettings;
+};
+
 export default {
   getQuickRepliesByUserId,
   getQuickReplyById,
   createQuickReply,
   updateQuickReply,
   deleteQuickReply,
+  getNotificationSettings,
+  updateNotificationSettings,
+  createDefaultNotificationSettings,
 };
 
 /**
- * @typedef {import("../models/quickReply.model").QuickReply} QuickReply
+ * @typedef {import("../models/quickReply.model.js").QuickReply} QuickReply
+ * @typedef {import("../models/notificationSetting.model.js").NotificationSetting} NotificationSetting
  */

@@ -11,7 +11,11 @@ const router = express.Router();
 router
   .route("/quick-replies")
   .get(auth(), responseHandler(accountSettingsController.getQuickReplies))
-  .post(auth(), validate(accountSettingsValidation.createQuickReply), responseHandler(accountSettingsController.createQuickReply));
+  .post(
+    auth(),
+    validate(accountSettingsValidation.createQuickReply),
+    responseHandler(accountSettingsController.createQuickReply)
+  );
 
 // get, update or delete a quick reply
 router
@@ -30,6 +34,19 @@ router
     auth(),
     validate(accountSettingsValidation.quickReplyById),
     responseHandler(accountSettingsController.deleteQuickReply)
+  );
+
+// get or update notification settings
+router
+  .route("/notifications")
+  .get(
+    auth(),
+    responseHandler(accountSettingsController.getNotificationSettings)
+  )
+  .patch(
+    auth(),
+    validate(accountSettingsValidation.updateNotificationSettings),
+    responseHandler(accountSettingsController.updateNotificationSettings)
   );
 
 export default router;
