@@ -99,6 +99,30 @@ const updateNotificationSettings = async (req, res) => {
   res.status(httpStatus.OK).send({ notificationSettings });
 };
 
+/**
+ * Deactivate a user's account
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ * @return {Promise<void>} Sends an OK status in the response
+ */
+const deactivateAccount = async (req, res) => {
+  await accountSettingsService.deactivateAccount(req.user.id);
+  res.status(httpStatus.OK).send({ success: true });
+};
+
+/**
+ * Schedule account deletion in 14 days
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ * @return {Promise<void>} Sends an OK status in the response
+ */
+const scheduleAccountDeletion = async (req, res) => {
+  const userId = req.user.id;
+  // Schedule account deletion in 14 days
+  await accountSettingsService.scheduleAccountDeletion(userId, 14);
+  res.status(httpStatus.OK).send({ success: true });
+};
+
 export default {
   getQuickReplies,
   getQuickReplyById,
@@ -107,4 +131,6 @@ export default {
   deleteQuickReply,
   getNotificationSettings,
   updateNotificationSettings,
+  deactivateAccount,
+  scheduleAccountDeletion,
 };

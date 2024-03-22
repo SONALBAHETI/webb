@@ -26,6 +26,8 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Incorrect email or password");
   }
+  // will only be done if user is deactivated
+  await reactivateAccount(user);
   return user;
 };
 
@@ -65,6 +67,8 @@ const getOrCreateUserWithGoogle = async (idToken) => {
   // check for existing user
   const user = await getUserByEmail(email);
   if (user) {
+    // will only be done if user is deactivated
+    await reactivateAccount(user);
     return user;
   }
   // create a new user if it doesn't exist
@@ -81,6 +85,9 @@ const getOrCreateUserWithGoogle = async (idToken) => {
       google: {
         userId,
       },
+    },
+    accountStatus: {
+      isEmailVerified: true, // since user is authenticated with Google
     },
   });
   return newUser;
@@ -170,6 +177,18 @@ const changePassword = async (resetPasswordToken, newPassword) => {
   }
 };
 
+/**
+ * Reactivate a user's account if deactivated or deletion scheduled
+ * @param {User} user
+ */
+const reactivateAccount = async (user) => {
+  if (!user.accountStatus.isActive) {
+    user.accountStatus.isActive = true;
+    user.accountStatus.deletionScheduledAt = null;
+    await user.save();
+  }
+};
+
 export {
   loginUserWithEmailAndPassword,
   refreshAuth,
@@ -178,4 +197,9 @@ export {
   getOrCreateUserWithGoogle,
   verifyEmail,
   changePassword,
+  reactivateAccount,
 };
+
+/**
+ * @typedef {import("../models/user.model.js").User} User
+ */

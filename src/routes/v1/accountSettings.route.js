@@ -49,4 +49,16 @@ router
     responseHandler(accountSettingsController.updateNotificationSettings)
   );
 
+// account deactivation and deletion
+router.delete(
+  "/deactivate",
+  auth(),
+  responseHandler(accountSettingsController.deactivateAccount)
+);
+router.delete(
+  "/delete",
+  auth(),
+  responseHandler(accountSettingsController.scheduleAccountDeletion)
+);
+
 export default router;
