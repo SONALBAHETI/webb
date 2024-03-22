@@ -11,7 +11,7 @@ import { USER_TAG_FIELDS } from "../constants/userTagFields.js";
 
 /**
  * Create a user
- * @param {Object} userBody
+ * @param {Partial<User>} userBody
  * @throws {ApiError} If email already exists
  * @return {Promise<Document<User>>}
  */

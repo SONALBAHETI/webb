@@ -346,8 +346,10 @@ const integrationsSchema = new mongoose.Schema({
 
 /**
  * @typedef {Object} AccountStatus
- * @property {boolean} [isEmailVerified] - Whether the user's email has been verified
- * @property {boolean} [isOnboarded] - Whether the user has been onboarded
+ * @property {boolean} isEmailVerified - Whether the user's email has been verified
+ * @property {boolean} isOnboarded - Whether the user has been onboarded
+ * @property {boolean} isActive - Whether the user is active
+ * @property {Date} [deletionScheduledAt] - The date at which the user's account will be deleted
  */
 const accountStatusSchema = new mongoose.Schema({
   isEmailVerified: {
@@ -358,11 +360,16 @@ const accountStatusSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  deletionScheduledAt: Date,
 });
 
 /**
  * @typedef {Object} AvailabilitySchema
- * @property {boolean} [online] - Whether the user is online
+ * @property {boolean} online - Whether the user is online
  */
 const availabilitySchema = new mongoose.Schema({
   online: {
@@ -378,7 +385,7 @@ const availabilitySchema = new mongoose.Schema({
  * @property {string} [password] - The user's password
  * @property {string} [role] - The user's role
  * @property {string} [occupation] - The user's occupation
- * @property {AccountStatus} [accountStatus] - The user's account status
+ * @property {AccountStatus} accountStatus - The user's account status
  * @property {Profile} [profile] - The user's profile
  * @property {Object} [integrations] - The user's integrations
  * @property {AvailabilitySchema} [availability] - The user's availability
@@ -425,7 +432,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: UserOccupationValues,
     },
-    accountStatus: accountStatusSchema,
+    accountStatus: {
+      type: accountStatusSchema,
+      private: true,
+      default: {},
+    },
     availability: availabilitySchema,
     profile: profileSchema,
     achievements: achievementsSchema,
@@ -552,6 +563,9 @@ userSchema.methods = {
   },
   isOnline() {
     return this.availability?.online || false;
+  },
+  isActive() {
+    return this.accountStatus?.isActive || false;
   },
 };
 

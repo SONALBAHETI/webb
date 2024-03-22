@@ -3,6 +3,7 @@ import QuickReply, { QuickReplyType } from "../models/quickReply.model.js";
 import NotificationSetting from "../models/notificationSetting.model.js";
 import ApiError from "../utils/ApiError.js";
 import deepMerge from "../utils/deepMerge.js";
+import { getUserById } from "./user.service.js";
 
 /**
  * Retrieves all the quick replies of the user
@@ -70,7 +71,9 @@ const deleteQuickReply = async (quickReplyId) => {
  * @returns {Promise<NotificationSetting>} The notification settings query
  */
 const getNotificationSettings = async (userId) => {
-  let notificationSettings = await NotificationSetting.findOne({ user: userId });
+  let notificationSettings = await NotificationSetting.findOne({
+    user: userId,
+  });
   if (!notificationSettings) {
     notificationSettings = await createDefaultNotificationSettings(userId);
   }
@@ -108,6 +111,40 @@ const updateNotificationSettings = async (userId, updateBody) => {
   return notificationSettings;
 };
 
+/**
+ * Deactivate account of a user
+ * @param {string} userId - The ID of the user
+ */
+const deactivateAccount = async (userId) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  // deactivate user
+  user.accountStatus.isActive = false;
+  await user.save();
+};
+
+/**
+ * Schedule account deletion after X days
+ * @param {string} userId - The ID of the user
+ * @param {number} days - The number of days to wait before deleting the account
+ * @throws {ApiError} If the user is not found
+ * @returns {Promise<User>} - The updated user
+ */
+const scheduleAccountDeletion = async (userId, days) => {
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  // deactivate account and
+  user.accountStatus.isActive = false;
+  user.accountStatus.deletionScheduledAt = new Date(
+    Date.now() + days * 24 * 60 * 60 * 1000
+  );
+  return await user.save();
+};
+
 export default {
   getQuickRepliesByUserId,
   getQuickReplyById,
@@ -117,9 +154,12 @@ export default {
   getNotificationSettings,
   updateNotificationSettings,
   createDefaultNotificationSettings,
+  deactivateAccount,
+  scheduleAccountDeletion,
 };
 
 /**
+ * @typedef {import("../models/user.model.js").User} User
  * @typedef {import("../models/quickReply.model.js").QuickReply} QuickReply
  * @typedef {import("../models/notificationSetting.model.js").NotificationSetting} NotificationSetting
  */
