@@ -14,7 +14,9 @@ const envVarsSchema = Joi.object()
     PORT: Joi.number().default(3000),
     FRONTEND_BASE_URL: Joi.string().description("Frontend base URL").required(),
     MONGODB_URL: Joi.string().required().description("Mongo DB url"),
-    MONGODB_ADMIN_URL: Joi.string().required().description("Mongo DB url for scheduled jobs"),
+    MONGODB_ADMIN_URL: Joi.string()
+      .required()
+      .description("Mongo DB url for scheduled jobs"),
     JWT_SECRET: Joi.string().required().description("JWT secret key"),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number()
       .default(30)
@@ -45,6 +47,9 @@ const envVarsSchema = Joi.object()
       .required(),
     GOOGLE_CLIENT_ID: Joi.string()
       .description("Google OAuth client ID")
+      .required(),
+    GOOGLE_CLIENT_SECRET: Joi.string()
+      .description("Google OAuth client secret")
       .required(),
     SHEER_ID_ACCESS_TOKEN: Joi.string()
       .description("Sheer ID Access Token")
@@ -79,7 +84,8 @@ const config = {
   frontendBaseUrl: envVars.FRONTEND_BASE_URL,
   mongoose: {
     url: envVars.MONGODB_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
-    adminUrl: envVars.MONGODB_ADMIN_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
+    adminUrl:
+      envVars.MONGODB_ADMIN_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
   },
   jwt: {
     secret: envVars.JWT_SECRET,
@@ -100,6 +106,7 @@ const config = {
   providers: {
     google: {
       clientId: envVars.GOOGLE_CLIENT_ID,
+      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
     },
   },
   sheerId: {

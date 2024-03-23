@@ -49,9 +49,17 @@ const updateNotificationSettings = {
   }),
 };
 
+// authorize google calendar sync validation
+const authorizeGoogleCalendarSync = {
+  body: Joi.object().keys({
+    code: Joi.string().required(),
+  }),
+};
+
 export default {
   quickReplyById,
   updateQuickReply,
   createQuickReply,
   updateNotificationSettings,
+  authorizeGoogleCalendarSync,
 };
