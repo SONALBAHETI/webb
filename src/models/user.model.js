@@ -310,6 +310,8 @@ profileSchema.plugin(toJSON);
 /**
  * @typedef {Object} GoogleIntegration
  * @property {string} [userId] - The Google user ID
+ * @property {string} [accessToken] - The Google access token
+ * @property {string} [refreshToken] - The Google refresh token
  */
 /**
  * @typedef {Object} SendbirdIntegration
@@ -333,6 +335,8 @@ const integrationsSchema = new mongoose.Schema({
   },
   google: {
     userId: String,
+    accessToken: String,
+    refreshToken: String,
   },
   sendbird: {
     userId: String,
@@ -387,7 +391,7 @@ const availabilitySchema = new mongoose.Schema({
  * @property {string} [occupation] - The user's occupation
  * @property {AccountStatus} accountStatus - The user's account status
  * @property {Profile} [profile] - The user's profile
- * @property {Object} [integrations] - The user's integrations
+ * @property {Integrations} integrations - The user's integrations
  * @property {AvailabilitySchema} [availability] - The user's availability
  * @property {AchievementsSchema} [achievements] - The user's achievements
  * @property {StatsSchema} [stats] - The user's stats
@@ -444,6 +448,7 @@ const userSchema = new mongoose.Schema(
     integrations: {
       type: integrationsSchema,
       private: true,
+      default: {},
     },
   },
   {

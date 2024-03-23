@@ -61,4 +61,26 @@ router.delete(
   responseHandler(accountSettingsController.scheduleAccountDeletion)
 );
 
+// google calendar sync
+router.post(
+  "/calendar-sync/google/auth",
+  auth(),
+  validate(accountSettingsValidation.authorizeGoogleCalendarSync),
+  responseHandler(accountSettingsController.authorizeGoogleCalendarSync)
+);
+
+// verify google calendar sync
+router.get(
+  "/calendar-sync/google/verify",
+  auth(),
+  responseHandler(accountSettingsController.verifyGoogleCalendarSync)
+)
+
+// remove google calendar sync
+router.delete(
+  "/calendar-sync/google",
+  auth(),
+  responseHandler(accountSettingsController.removeGoogleCalendarSync)
+)
+
 export default router;
