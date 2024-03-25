@@ -310,8 +310,9 @@ profileSchema.plugin(toJSON);
 /**
  * @typedef {Object} GoogleIntegration
  * @property {string} [userId] - The Google user ID
- * @property {string} [accessToken] - The Google access token
- * @property {string} [refreshToken] - The Google refresh token
+ * @property {string} [accessToken] - The OAuth access token
+ * @property {string} [refreshToken] - The OAuth refresh token
+ * @property {number} [expiryDate] - The OAuth expiry date
  */
 /**
  * @typedef {Object} SendbirdIntegration
@@ -337,6 +338,7 @@ const integrationsSchema = new mongoose.Schema({
     userId: String,
     accessToken: String,
     refreshToken: String,
+    expiryDate: Number, // milliseconds
   },
   sendbird: {
     userId: String,
