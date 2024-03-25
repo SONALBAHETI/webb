@@ -15,20 +15,8 @@ const authorizeGoogleCalendarSync = async (userId, code) => {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
   // exchange code for tokens
-  const googleCalendarApiHandler = GoogleCalendarAPIHandler.init();
-  const tokens = await googleCalendarApiHandler.getTokens(code);
-
-  // save access tokens in user model
-  user.integrations.google.accessToken = tokens.access_token;
-  user.integrations.google.refreshToken = tokens.refresh_token;
-  const isCalendarScopesGranted = await verifyGoogleCalendarScopes(user);
-  if (!isCalendarScopesGranted) {
-    throw new ApiError(
-      httpStatus.FORBIDDEN,
-      "Please select google calendar permissions when connecting to your google account"
-    );
-  }
-  await user.save();
+  const googleCalendarApiHandler = new GoogleCalendarAPIHandler(user);
+  await googleCalendarApiHandler.generateTokens(code);
 };
 
 const isGoogleCredentialsAvailable = (user) => {
@@ -55,30 +43,8 @@ const verifyGoogleCalendarSync = async (userId) => {
   if (!isGoogleCredentialsAvailable(user)) {
     return false;
   }
-  return await verifyGoogleCalendarScopes(user);
-};
-
-/**
- * Verify google calendar scopes for a user
- * @param {User} user
- * @returns {Promise<boolean>} A promise that resolves to true if the user has granted calendar scopes
- * and false otherwise
- */
-const verifyGoogleCalendarScopes = async (user) => {
-  const googleCalendarApiHandler = GoogleCalendarAPIHandler.init();
-  googleCalendarApiHandler.setTokens(createTokens(user));
+  const googleCalendarApiHandler = new GoogleCalendarAPIHandler(user);
   return await googleCalendarApiHandler.hasGrantedCalendarScopes();
-};
-
-/**
- * @param {User} user
- * @returns {GoogleAuthCredentials} GoogleAuthCredentials
- */
-const createTokens = (user) => {
-  return {
-    access_token: user.integrations.google.accessToken,
-    refresh_token: user.integrations.google.refreshToken,
-  };
 };
 
 /**
@@ -97,14 +63,8 @@ const removeGoogleCalendarSync = async (userId) => {
   }
 
   // revoke google calendar tokens
-  const googleCalendarApiHandler = GoogleCalendarAPIHandler.init();
-  googleCalendarApiHandler.setTokens(createTokens(user));
-  googleCalendarApiHandler.revokeCredentials();
-
-  // delete google calendar tokens from DB
-  user.integrations.google.accessToken = null;
-  user.integrations.google.refreshToken = null;
-  await user.save();
+  const googleCalendarApiHandler = new GoogleCalendarAPIHandler(user);
+  await googleCalendarApiHandler.revokeCredentials();
 };
 
 export default {
