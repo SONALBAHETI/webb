@@ -30,4 +30,13 @@ router
     responseHandler(userController.updateVisibility)
   );
 
+router
+  .route("/availability")
+  .get(auth(), responseHandler(userController.getAvailability))
+  .post(
+    auth(),
+    validate(userValidation.updateAvailability),
+    responseHandler(userController.updateAvailability)
+  );
+
 export default router;

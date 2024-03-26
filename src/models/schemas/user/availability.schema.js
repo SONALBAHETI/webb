@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import toJSON from "../../plugins/toJSON.plugin.js";
 
 /**
  * @typedef {Object} SlotSchema
@@ -44,51 +45,65 @@ const dayScheduleSchema = new mongoose.Schema({
  * @property {DayScheduleSchema} friday - The schedule for Friday
  * @property {DayScheduleSchema} saturday - The schedule for Saturday
  */
-const weeklyScheduleSchema = new mongoose.Schema({
-  sunday: {
-    type: dayScheduleSchema,
-    default: {},
+const weeklyScheduleSchema = new mongoose.Schema(
+  {
+    sunday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    monday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    tuesday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    wednesday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    thursday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    friday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
+    saturday: {
+      type: dayScheduleSchema,
+      default: {},
+    },
   },
-  monday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-  tuesday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-  wednesday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-  thursday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-  friday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-  saturday: {
-    type: dayScheduleSchema,
-    default: {},
-  },
-});
+  {
+    _id: false,
+  }
+);
 
 /**
  * @typedef {Object} AvailabilitySchema
  * @property {boolean} online - Whether the user is online
- * @property {WeeklyScheduleSchema} weeklySchedule - The weekly schedule
+ * @property {WeeklyScheduleSchema} [weeklySchedule] - The weekly schedule
+ * @property {number} [timegap] - The time gap between two consecutive sessions
+ * @property {number} [hourlyRate] - The hourly rate for online sessions
  */
 const availabilitySchema = new mongoose.Schema({
   online: {
     type: Boolean,
     default: false,
   },
-  weeklySchedule: {
-    type: weeklyScheduleSchema,
-    default: {},
-  },
+  weeklySchedule: weeklyScheduleSchema,
+  timegap: Number,
+  hourlyRate: Number,
 });
+
+// Apply the toJSON plugin to all schemas
+[
+  slotSchema,
+  weeklyScheduleSchema,
+  dayScheduleSchema,
+  availabilitySchema,
+].forEach((schema) => schema.plugin(toJSON));
 
 export default availabilitySchema;

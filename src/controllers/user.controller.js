@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import responseHandler from "../utils/responseHandler.js";
-import { updateUser } from "../services/user.service.js";
+import { setAvailability, updateUser } from "../services/user.service.js";
 
 /**
  * Retrieves the achievements of the logged in user.
@@ -81,9 +81,37 @@ const updateUserDetailsFromOnboarding = responseHandler(async (req, res) => {
   res.status(httpStatus.OK).send({ user }); // TODO: User.toJSON()
 });
 
+/**
+ * Get user's availability
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ */
+const getAvailability = async (req, res) => {
+  res.status(httpStatus.OK).send({ availability: req.user.availability });
+};
+
+/**
+ * Set user's weekly schedule.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
+ * @returns {Promise<void>} Sends an OK status in the response.
+ */
+const updateAvailability = async (req, res) => {
+  const { weeklyTimeSlots, timeGap, hourlyRate } = req.body;
+  await setAvailability({
+    weeklySchedule: weeklyTimeSlots,
+    timegap: timeGap.active ? timeGap.gap : null,
+    hourlyRate,
+    mentorId: req.user.id,
+  });
+  res.status(httpStatus.OK).send({ success: true });
+};
+
 export default {
   updateUserDetailsFromOnboarding,
   getAchievements,
   getVisibility,
   updateVisibility,
+  getAvailability,
+  updateAvailability,
 };
