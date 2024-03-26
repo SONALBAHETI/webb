@@ -107,7 +107,7 @@ const updateOpenAIThreadId = async (userId, threadId) => {
  * Adds a degree to the user's education profile.
  *
  * @param {string} userId - The ID of the user.
- * @param {import("../models/user.model.js").Degree} degree - The degree to be added to the user's education profile.
+ * @param {import("../models/user.model.js").DegreeSchema} degree - The degree to be added to the user's education profile.
  * @return A Promise that resolves to the updated user object.
  */
 const addDegree = async (userId, degree) => {
@@ -126,7 +126,7 @@ const addDegree = async (userId, degree) => {
  * Adds a certificate to the user's education profile.
  *
  * @param {string} userId - The ID of the user.
- * @param {import("../models/user.model.js").Certificate} certificate - The certificate to be added to the user's education profile.
+ * @param {import("../models/user.model.js").CertificateSchema} certificate - The certificate to be added to the user's education profile.
  * @return A Promise that resolves to the updated user object.
  */
 const addCertificate = async (userId, certificate) => {
