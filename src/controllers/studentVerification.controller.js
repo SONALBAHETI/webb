@@ -1,9 +1,9 @@
 import httpStatus from "http-status";
 import { format } from "date-fns";
-import pick from "../utils/pick.js";
-import mentorVerificationService from "../services/mentorVerification.service.js";
+import studentVerificationService from "../services/studentVerification.service.js";
 import sheerIDVerificationService from "../services/sheerIDVerification.service.js";
 import logger from "../config/logger.js";
+import pick from "../utils/pick.js";
 
 /**
  * Submits verification data and updates the verification status of the user.
@@ -13,18 +13,10 @@ import logger from "../config/logger.js";
  * @return A Promise that resolves to the current step
  */
 const submitVerificationData = async (req, res) => {
-  const data = pick(req.body, [
-    "firstName",
-    "lastName",
-    "email",
-    "birthDate",
-    "postalCode",
-    "organization",
-    "status",
-  ]);
+  const data = req.body;
   data.birthDate = format(new Date(data.birthDate), "yyyy-MM-dd");
   const sheerIdResponse =
-    await mentorVerificationService.submitVerificationData(data);
+    await studentVerificationService.submitVerificationData(data);
   await sheerIDVerificationService.updateSheerIDVerificationDataOfUser({
     userId: req.user.id,
     sheerIdData: sheerIdResponse,
@@ -40,7 +32,7 @@ const submitVerificationData = async (req, res) => {
  * @return resolves with the organization search URL sent in the response
  */
 const getOrgSearchUrl = async (_req, res) => {
-  const orgSearchUrl = await mentorVerificationService.getOrgSearchUrl();
+  const orgSearchUrl = await studentVerificationService.getOrgSearchUrl();
   res.status(httpStatus.OK).send({ orgSearchUrl });
 };
 
@@ -53,7 +45,7 @@ const getOrgSearchUrl = async (_req, res) => {
  */
 const getOrganizations = async (req, res) => {
   const { orgSearchUrl, searchTerm } = req.query;
-  const organizations = await mentorVerificationService.getOrganizations(
+  const organizations = await studentVerificationService.getOrganizations(
     orgSearchUrl,
     searchTerm
   );
@@ -75,7 +67,7 @@ const getVerificationStep = async (req, res) => {
     try {
       // retrieve verification status from sheerID
       const verificationStatus =
-        await mentorVerificationService.getVerificationStatus(
+        await studentVerificationService.getVerificationStatus(
           sheerID.verificationId
         );
 
@@ -101,7 +93,7 @@ const getVerificationStep = async (req, res) => {
   res.status(httpStatus.OK).send({ currentStep });
 };
 
-export {
+export default {
   submitVerificationData,
   getOrgSearchUrl,
   getOrganizations,

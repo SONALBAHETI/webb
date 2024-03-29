@@ -11,6 +11,8 @@ import profileRoute from "./profileSettings.route.js";
 import accountSettingsRoute from "./accountSettings.route.js";
 import userMatchRoute from "./userMatch.route.js";
 import mentorVerificationRoute from "./mentorVerification.route.js";
+import studentVerificationRoute from "./studentVerification.route.js";
+import sheerIDVerificationRoute from "./sheerIDVerification.route.js";
 import appointmentRoute from "./appointment.route.js";
 
 const router = express.Router();
@@ -57,8 +59,16 @@ const defaultRoutes = [
     route: userMatchRoute,
   },
   {
-    path: "/verification/mentor",
+    path: "/verification/identity/mentor",
     route: mentorVerificationRoute,
+  },
+  {
+    path: "/verification/identity/student",
+    route: studentVerificationRoute,
+  },
+  {
+    path: "/verification/identity",
+    route: sheerIDVerificationRoute,
   },
   {
     path: "/appointments",

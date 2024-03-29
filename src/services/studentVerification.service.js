@@ -1,19 +1,14 @@
 import config from "../config/config.js";
-import SheerIDHealthcareProfessionalVerificationHandler from "../providers/sheerID/modules/healthcareProfessionalVerification.js";
 import SheerIDOrganizationsHandler from "../providers/sheerID/modules/organizations.js";
+import SheerIDStudentVerificationHandler from "../providers/sheerID/modules/studentVerification.js";
 
-/**
- * @typedef {import("../providers/sheerID/modules/healthcareProfessionalVerification.js").SubmitDataAgainstProgramParams} SubmitDataAgainstProgramParams
- */
-
-const verificationHandler =
-  new SheerIDHealthcareProfessionalVerificationHandler(
-    config.sheerId.accessToken,
-    config.sheerId.mentorVerificationProgramId
-  );
 const organizationsHandler = new SheerIDOrganizationsHandler(
   config.sheerId.accessToken,
-  config.sheerId.mentorVerificationProgramId
+  config.sheerId.studentVerificationProgramId
+);
+const verificationHandler = new SheerIDStudentVerificationHandler(
+  config.sheerId.accessToken,
+  config.sheerId.studentVerificationProgramId
 );
 
 /**
@@ -31,7 +26,7 @@ const submitVerificationData = async (data) => {
  * Retrieves the verification status for the given verification ID.
  *
  * @param {string} verificationId - The ID of the verification
- * @return The verification status
+ * @returns {Promise<import("../providers/sheerID/modules/studentVerification.js").StudentVerificationResponse>} The verification status
  */
 const getVerificationStatus = async (verificationId) => {
   const verificationStatus = await verificationHandler.getVerificationStatus(
@@ -68,6 +63,12 @@ const getOrganizations = async (orgSearchUrl, searchTerm) => {
 export default {
   getOrganizations,
   getOrgSearchUrl,
-  submitVerificationData,
   getVerificationStatus,
-};
+  submitVerificationData,
+}
+
+/**
+ * @typedef {import("../providers/sheerID/modules/studentVerification.js").SubmitDataAgainstProgramParams} SubmitDataAgainstProgramParams
+ */
+
+

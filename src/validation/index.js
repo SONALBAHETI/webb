@@ -4,6 +4,8 @@ import chatValidation from "./chat.validation.js";
 import chatbotValidation from "./chatbot.validation.js";
 import onboardingValidation from "./onboarding.validation.js";
 import mentorVerificationValidation from "./mentorVerification.validation.js";
+import sheerIDVerificationValidation from "./sheerIDVerification.validation.js";
+import studentVerificationValidation from "./studentVerification.validation.js";
 
 export {
   authValidation,
@@ -12,4 +14,6 @@ export {
   chatbotValidation,
   onboardingValidation,
   mentorVerificationValidation,
+  sheerIDVerificationValidation,
+  studentVerificationValidation,
 };
