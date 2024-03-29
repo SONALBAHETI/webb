@@ -57,6 +57,9 @@ const envVarsSchema = Joi.object()
     SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID: Joi.string()
       .description("Sheer ID Mentor Verification Program ID")
       .required(),
+    SHEER_ID_STUDENT_VERIFICATION_PROGRAM_ID: Joi.string()
+      .description("Sheer ID Student Verification Program ID")
+      .required(),
     CLOUDINARY_CLOUD_NAME: Joi.string()
       .description("Cloudinary Cloud Name")
       .required(),
@@ -113,6 +116,8 @@ const config = {
     accessToken: envVars.SHEER_ID_ACCESS_TOKEN,
     mentorVerificationProgramId:
       envVars.SHEER_ID_MENTOR_VERIFICATION_PROGRAM_ID,
+    studentVerificationProgramId:
+      envVars.SHEER_ID_STUDENT_VERIFICATION_PROGRAM_ID,
   },
   cloudinary: {
     cloudName: envVars.CLOUDINARY_CLOUD_NAME,
