@@ -95,6 +95,7 @@ const loginWithEmailAndPassword = async (req, res) => {
   setCookies(res, tokens).status(httpStatus.OK).send({
     userId: user.id,
     accessToken: tokens.access,
+    isOnboarded: user.accountStatus.isOnboarded,
   });
 };
 
