@@ -7,14 +7,6 @@ import responseHandler from "../../utils/responseHandler.js";
 
 const router = express.Router();
 
-router
-  .route("/:userId/updateUserDetailsFromOnboarding")
-  .patch(
-    auth(),
-    validate(userValidation.updateUserDetailsFromOnboarding),
-    userController.updateUserDetailsFromOnboarding
-  );
-
 router.get(
   "/achievements",
   auth(),
