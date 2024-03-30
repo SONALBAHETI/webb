@@ -11,7 +11,9 @@ import express from "express";
  */
 const getNotifications = async (req, res) => {
   const userId = req.user.id;
-  const query = { $or: [{ user: userId }, { user: { $exists: false } }] };
+  const query = {
+    $or: [{ receiver: userId }, { receiver: { $exists: false } }],
+  };
   const paginationResult = await notificationService.queryNotifications(query, {
     page: req.query.page,
     limit: req.query.limit,

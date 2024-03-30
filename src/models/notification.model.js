@@ -30,7 +30,6 @@ export const notificationSchema = new mongoose.Schema(
     receiver: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
-      required: true,
     },
     title: { type: String, require: true },
     type: {
