@@ -9,26 +9,27 @@ import {
 import responseHandler from "../../utils/responseHandler.js";
 import { onboardingValidation } from "../../validation/index.js";
 import validate from "../../middlewares/validate.js";
+import { Permission } from "../../config/permissions.js";
 
 const router = express.Router();
 
 router.get(
   "/suggestions/primaryinterests",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(onboardingValidation.getSuggestions),
   responseHandler(getPrimaryInterestSuggestions)
 );
 
 router.get(
   "/suggestions/expertiseareas",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(onboardingValidation.getSuggestions),
   responseHandler(getExpertiseAreaSuggestions)
 );
 
 router.get(
   "/suggestions/practiceareas",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(onboardingValidation.getSuggestions),
   responseHandler(getPracticeAreaSuggestions)
 );

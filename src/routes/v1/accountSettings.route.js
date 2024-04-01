@@ -4,15 +4,19 @@ import accountSettingsController from "../../controllers/accountSettings.control
 import responseHandler from "../../utils/responseHandler.js";
 import validate from "../../middlewares/validate.js";
 import accountSettingsValidation from "../../validation/accountSettings.validation.js";
+import { Permission } from "../../config/permissions.js";
 
 const router = express.Router();
 
 // retrieve all quick replies or create new quick reply
 router
   .route("/quick-replies")
-  .get(auth(), responseHandler(accountSettingsController.getQuickReplies))
+  .get(
+    auth(Permission.ReadQuickReplies),
+    responseHandler(accountSettingsController.getQuickReplies)
+  )
   .post(
-    auth(),
+    auth(Permission.CreateQuickReplies),
     validate(accountSettingsValidation.createQuickReply),
     responseHandler(accountSettingsController.createQuickReply)
   );
@@ -21,17 +25,17 @@ router
 router
   .route("/quick-replies/:quickReplyId")
   .get(
-    auth(),
+    auth(Permission.ReadQuickReplies),
     validate(accountSettingsValidation.quickReplyById),
     responseHandler(accountSettingsController.getQuickReplyById)
   )
   .patch(
-    auth(),
+    auth(Permission.UpdateQuickReplies),
     validate(accountSettingsValidation.updateQuickReply),
     responseHandler(accountSettingsController.updateQuickReply)
   )
   .delete(
-    auth(),
+    auth(Permission.DeleteQuickReplies),
     validate(accountSettingsValidation.quickReplyById),
     responseHandler(accountSettingsController.deleteQuickReply)
   );
@@ -40,11 +44,11 @@ router
 router
   .route("/notifications")
   .get(
-    auth(),
+    auth(Permission.ReadNotificationSettings),
     responseHandler(accountSettingsController.getNotificationSettings)
   )
   .patch(
-    auth(),
+    auth(Permission.UpdateNotificationSettings),
     validate(accountSettingsValidation.updateNotificationSettings),
     responseHandler(accountSettingsController.updateNotificationSettings)
   );
@@ -52,19 +56,19 @@ router
 // account deactivation and deletion
 router.delete(
   "/deactivate",
-  auth(),
+  auth(Permission.DeactivateAccount),
   responseHandler(accountSettingsController.deactivateAccount)
 );
 router.delete(
   "/delete",
-  auth(),
+  auth(Permission.DeleteAccount),
   responseHandler(accountSettingsController.scheduleAccountDeletion)
 );
 
 // google calendar sync
 router.post(
   "/calendar-sync/google/auth",
-  auth(),
+  auth(Permission.SyncGoogleCalendar),
   validate(accountSettingsValidation.authorizeGoogleCalendarSync),
   responseHandler(accountSettingsController.authorizeGoogleCalendarSync)
 );
@@ -72,15 +76,15 @@ router.post(
 // verify google calendar sync
 router.get(
   "/calendar-sync/google/verify",
-  auth(),
+  auth(Permission.SyncGoogleCalendar),
   responseHandler(accountSettingsController.verifyGoogleCalendarSync)
-)
+);
 
 // remove google calendar sync
 router.delete(
   "/calendar-sync/google",
-  auth(),
+  auth(Permission.SyncGoogleCalendar),
   responseHandler(accountSettingsController.removeGoogleCalendarSync)
-)
+);
 
 export default router;

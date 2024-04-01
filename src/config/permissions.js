@@ -100,3 +100,5 @@ export const PermissionSets = {
     Permission.DeleteNotes,
   ]
 }
+
+export const PermissionValues = Object.values(Permission);

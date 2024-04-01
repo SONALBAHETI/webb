@@ -1,6 +1,9 @@
 import httpStatus from "http-status";
-import responseHandler from "../utils/responseHandler.js";
-import { setAvailability, updateUser } from "../services/user.service.js";
+import {
+  getUserRights,
+  setAvailability,
+  updateUser,
+} from "../services/user.service.js";
 
 /**
  * Retrieves the achievements of the logged in user.
@@ -62,10 +65,27 @@ const updateAvailability = async (req, res) => {
   res.status(httpStatus.OK).send({ success: true });
 };
 
+/**
+ * Get user rights based on user's role and permissions
+ * @param {import("express").Request} req - The request object
+ * @param {import("express").Response} res - The response object
+ */
+const getRights = async (req, res) => {
+  /** @type {User} */
+  const user = req.user;
+  const rights = getUserRights(user);
+  res.status(httpStatus.OK).send({ rights, role: user.accessControl.role });
+};
+
 export default {
   getAchievements,
   getVisibility,
   updateVisibility,
   getAvailability,
   updateAvailability,
+  getRights,
 };
+
+/**
+ * @typedef {import("../models/user.model.js").User} User
+ */

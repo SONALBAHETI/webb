@@ -1,21 +1,20 @@
 import passport from "passport";
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
-import { roleRights } from "../config/roles.js";
+import { getUserRights } from "../services/user.service.js";
 
 /**
  * A function that verifies the callback by checking for any errors,
  * information, and the existence of a user. If there are any errors or
  * missing information, it rejects with an error message. Otherwise, it checks if the user has the required
- * rights. If the user does not have the required rights and the user ID in
- * the request parameters is not the same as the user ID, it rejects with a
- * "Forbidden" error message. Otherwise, it resolves.
+ * rights. If the user does not have the required rights, it rejects with a
+ * 403 (Forbidden) error code. Otherwise, it resolves.
  *
  * @param {Object} req - The request object.
  * @param {Function} resolve - The resolve function.
  * @param {Function} reject - The reject function.
  * @param {Array} requiredRights - An array of required rights.
- * @return {void}
+ * @returns {(err: any, user: User, info: any) => Promise<void>}
  */
 const verifyCallback =
   (req, resolve, reject, requiredRights) => async (err, user, info) => {
@@ -27,11 +26,11 @@ const verifyCallback =
     req.user = user;
 
     if (requiredRights.length) {
-      const userRights = roleRights.get(user.role);
+      const userRights = getUserRights(user);
       const hasRequiredRights = requiredRights.every((requiredRight) =>
         userRights.includes(requiredRight)
       );
-      if (!hasRequiredRights && req.params.userId !== user.id) {
+      if (!hasRequiredRights) {
         return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
       }
     }
@@ -61,3 +60,7 @@ const auth =
   };
 
 export default auth;
+
+/**
+ * @typedef {import("../models/user.model.js").User} User
+ */

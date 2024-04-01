@@ -15,6 +15,7 @@ const ROLE = {
 
 /**
  * Common user permissions
+ * @type {string[]}
  * @readonly
  */
 const CommonUserPermissions = [
@@ -29,8 +30,9 @@ const CommonUserPermissions = [
 ];
 
 /**
- * Bare minimum mentor permissions, 
+ * Bare minimum mentor permissions,
  * assign this role to newly created mentors
+ * @type {string[]}
  * @readonly
  */
 const interimMentorPermissions = [
@@ -48,6 +50,7 @@ const interimMentorPermissions = [
 
 /**
  * Mentor permissions
+ * @type {string[]}
  * @readonly
  */
 const MentorPermissions = [
@@ -78,6 +81,7 @@ const MentorPermissions = [
 
 /**
  * Mentee permissions
+ * @type {string[]}
  * @readonly
  */
 const MenteePermissions = [
@@ -105,9 +109,10 @@ const MenteePermissions = [
 
 /**
  * Admin permissions
+ * @type {string[]}
  * @readonly
  */
-const AdminPermissions = [];
+const AdminPermissions = [Permission.ReadUserProfile];
 
 /**
  * All roles and their permissions

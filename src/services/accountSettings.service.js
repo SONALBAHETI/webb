@@ -15,10 +15,11 @@ const getQuickRepliesByUserId = async (userId) => {
 
 /**
  * Retrieves a single quick reply
+ * @param {string} userId - The ID of the user
  * @param {string} quickReplyId - The ID of the quick reply
  */
-const getQuickReplyById = (quickReplyId) => {
-  return QuickReply.findById(quickReplyId);
+const getQuickReply = (userId, quickReplyId) => {
+  return QuickReply.find({ _id: quickReplyId, user: userId });
 };
 
 /**
@@ -147,7 +148,7 @@ const scheduleAccountDeletion = async (userId, days) => {
 
 export default {
   getQuickRepliesByUserId,
-  getQuickReplyById,
+  getQuickReply,
   createQuickReply,
   updateQuickReply,
   deleteQuickReply,
