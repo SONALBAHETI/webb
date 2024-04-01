@@ -8,7 +8,7 @@ import { Permission } from "./permissions.js";
 const ROLE = {
   USER: "user",
   MENTEE: "mentee",
-  INTERIM_MENTOR: "interimMentor",
+  UNVERIFIED_MENTOR: "unverifiedMentor",
   MENTOR: "mentor",
   ADMIN: "admin",
 };
@@ -35,7 +35,7 @@ const CommonUserPermissions = [
  * @type {string[]}
  * @readonly
  */
-const interimMentorPermissions = [
+const unverifiedMentorPermissions = [
   Permission.SyncGoogleCalendar,
   Permission.ReadSendbirdCredentials,
   Permission.LicenseVerification,
@@ -121,7 +121,7 @@ const AdminPermissions = [Permission.ReadUserProfile];
 const allRoles = {
   user: CommonUserPermissions,
   mentee: [...MenteePermissions, ...CommonUserPermissions],
-  interimMentor: [...interimMentorPermissions, ...CommonUserPermissions],
+  unverifiedMentor: [...unverifiedMentorPermissions, ...CommonUserPermissions],
   mentor: [...MentorPermissions, ...CommonUserPermissions],
   admin: AdminPermissions,
 };
