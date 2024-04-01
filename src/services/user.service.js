@@ -4,6 +4,7 @@ import ApiError from "../utils/ApiError.js";
 import { Document } from "mongoose";
 import deepMerge from "../utils/deepMerge.js";
 import { USER_TAG_FIELDS } from "../constants/userTagFields.js";
+import { roleRights } from "../config/roles.js";
 
 /**
  * @typedef {import("../models/user.model.js").User} User
@@ -250,6 +251,18 @@ const setAvailability = async ({
   });
 };
 
+/**
+ * Get user rights based on user's role and permissions.
+ * @param {User} user - The user to get the rights for.
+ */
+const getUserRights = (user) => {
+  /** @type {string[]} */
+  const rolePermissions = roleRights.get(user.accessControl.role) || [];
+  const userPermissions = user.accessControl.permissions || [];
+  const userRights = [...rolePermissions, ...userPermissions];
+  return userRights;
+}
+
 export {
   createUser,
   getUserByEmail,
@@ -264,6 +277,7 @@ export {
   getUserBySendbirdId,
   getUsersById,
   setAvailability,
+  getUserRights,
 };
 
 /**

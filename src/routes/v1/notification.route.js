@@ -4,20 +4,21 @@ import auth from "../../middlewares/auth.js"; // Import your authentication midd
 import responseHandler from "../../utils/responseHandler.js";
 import validate from "../../middlewares/validate.js";
 import notificationValidation from "../../validation/notification.validation.js";
+import { Permission } from "../../config/permissions.js";
 
 const router = express.Router();
 
 router
   .route("/")
   .get(
-    auth(),
+    auth(Permission.ReadNotifications),
     validate(notificationValidation.getNotification),
     responseHandler(notificationController.getNotifications)
   );
 
 router.get(
   "/unread/count",
-  auth(),
+  auth(Permission.ReadNotifications),
   responseHandler(notificationController.getUnreadNotificationsCount)
 );
 
