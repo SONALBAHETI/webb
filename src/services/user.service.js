@@ -257,8 +257,8 @@ const setAvailability = async ({
  */
 const getUserRights = (user) => {
   /** @type {string[]} */
-  const rolePermissions = roleRights.get(user.accessControl.role);
-  const userPermissions = user.accessControl.permissions;
+  const rolePermissions = roleRights.get(user.accessControl.role) || [];
+  const userPermissions = user.accessControl.permissions || [];
   const userRights = [...rolePermissions, ...userPermissions];
   return userRights;
 }
