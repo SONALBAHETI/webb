@@ -22,7 +22,8 @@ const getQuickReplies = async (req, res) => {
  * @return {Promise<void>} Sends the quick reply in the response
  */
 const getQuickReplyById = async (req, res) => {
-  const quickReply = await accountSettingsService.getQuickReplyById(
+  const quickReply = await accountSettingsService.getQuickReply(
+    req.user.id,
     req.params.quickReplyId
   );
   res.status(httpStatus.OK).send({ quickReply });

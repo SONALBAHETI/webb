@@ -16,6 +16,7 @@ import {
 import emailService from "../services/email.service.js";
 import express from "express";
 import config from "../config/config.js";
+import ApiError from "../utils/ApiError.js";
 
 /**
  * Sets the tokens as cookies in the response object.
@@ -132,6 +133,9 @@ const verifyAuth = async (req, res) => {
 // logout
 const logout = async (req, res) => {
   const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
+  if (!refreshToken) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Refresh token not found");
+  }
   await logoutUser(refreshToken);
   clearCookies(res).status(httpStatus.OK).send({});
 };

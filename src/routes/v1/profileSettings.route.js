@@ -21,6 +21,7 @@ import {
 } from "../../controllers/profileSettings.controller.js";
 import profileValidation from "../../validation/profileSettings.validation.js";
 import multer from "multer";
+import { Permission } from "../../config/permissions.js";
 
 const memoryStorage = multer.memoryStorage();
 const upload = multer({ storage: memoryStorage });
@@ -28,12 +29,16 @@ const upload = multer({ storage: memoryStorage });
 const router = express.Router();
 
 // get user profile
-router.get("/user-profile", auth(), responseHandler(getUserProfile));
+router.get(
+  "/user-profile",
+  auth(Permission.ReadUserProfile),
+  responseHandler(getUserProfile)
+);
 
 // upload profile picture
 router.post(
   "/profile-picture",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   upload.single("image"),
   validate(profileValidation.uploadProfilePicture),
   responseHandler(uploadProfilePicture)
@@ -42,7 +47,7 @@ router.post(
 // suggest personal interests
 router.get(
   "/suggestions/personal-interests",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getPersonalInterestsSuggestions)
 );
@@ -50,7 +55,7 @@ router.get(
 // suggest religious affiliations
 router.get(
   "/suggestions/religious-affiliations",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getReligiousAffiliationsSuggestions)
 );
@@ -58,7 +63,7 @@ router.get(
 // suggest degrees
 router.get(
   "/suggestions/degrees",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getDegreeSuggestions)
 );
@@ -66,7 +71,7 @@ router.get(
 // suggest universities
 router.get(
   "/suggestions/universities",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getUniversitySuggestions)
 );
@@ -74,7 +79,7 @@ router.get(
 // suggest commonly treated diagnoses
 router.get(
   "/suggestions/commonly-treated-diagnoses",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getCommonlyTreatedDiagnosesSuggestions)
 );
@@ -82,7 +87,7 @@ router.get(
 // suggest board specialties
 router.get(
   "/suggestions/board-specialties",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getBoardSpecialtiesSuggestions)
 );
@@ -90,7 +95,7 @@ router.get(
 // suggest residency programs
 router.get(
   "/suggestions/residency-programs",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getResidencyProgramSuggestions)
 );
@@ -98,7 +103,7 @@ router.get(
 // suggest fellowship programs
 router.get(
   "/suggestions/fellowship-programs",
-  auth(),
+  auth(Permission.ReadSuggestions),
   validate(profileValidation.getSuggestions),
   responseHandler(getFellowshipProgramSuggestions)
 );
@@ -106,7 +111,7 @@ router.get(
 // submit identity information form
 router.post(
   "/identity-info",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   validate(profileValidation.submitIdentityInfo),
   responseHandler(submitIdentityInformation)
 );
@@ -114,7 +119,7 @@ router.post(
 // submit education form
 router.post(
   "/education",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   validate(profileValidation.educationForm),
   responseHandler(submitEducationForm)
 );
@@ -122,7 +127,7 @@ router.post(
 // add new degree to user's profile
 router.post(
   "/education/degrees",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   validate(profileValidation.addNewDegree),
   responseHandler(addNewDegree)
 );
@@ -130,7 +135,7 @@ router.post(
 // add new certificate to user's profile
 router.post(
   "/education/certificates",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   validate(profileValidation.addNewCertificate),
   responseHandler(addNewCertificate)
 );
@@ -138,7 +143,7 @@ router.post(
 // submit expertise form
 router.post(
   "/expertise",
-  auth(),
+  auth(Permission.UpdateUserProfile),
   validate(profileValidation.expertiseForm),
   responseHandler(submitExpertiseForm)
 );

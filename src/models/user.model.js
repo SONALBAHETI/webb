@@ -10,6 +10,7 @@ import profileSchema from "./schemas/user/profile.schema.js";
 import integrationsSchema from "./schemas/user/integrations.schema.js";
 import accountStatusSchema from "./schemas/user/accountStatus.schema.js";
 import availabilitySchema from "./schemas/user/availability.schema.js";
+import accessControlSchema from "./schemas/user/accessControl.schema.js";
 import userMethods from "./methods/user.methods.js";
 
 /**
@@ -24,6 +25,7 @@ import userMethods from "./methods/user.methods.js";
  * @property {IntegrationsSchema} integrations - The user's integrations
  * @property {AvailabilitySchema} [availability] - The user's availability
  * @property {AchievementsSchema} [achievements] - The user's achievements
+ * @property {AccessControlSchema} accessControl - The user's access control
  * @property {StatsSchema} [stats] - The user's stats
  * @property {number} creditBalance - The user's credit balance
  */
@@ -58,10 +60,10 @@ const userSchema = new mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
-    role: {
-      type: String,
-      enum: roles,
-      default: "user",
+    accessControl: {
+      type: accessControlSchema,
+      private: true,
+      default: {},
     },
     occupation: {
       type: String,
@@ -136,5 +138,6 @@ export default User;
  * @typedef {import("./schemas/user/availability.schema.js").DayScheduleSchema} DayScheduleSchema
  * @typedef {import("./schemas/user/availability.schema.js").WeeklyScheduleSchema} WeeklyScheduleSchema
  * @typedef {import("./schemas/user/availability.schema.js").AvailabilitySchema} AvailabilitySchema
+ * @typedef {import("./schemas/user/accessControl.schema.js").AccessControlSchema} AccessControlSchema
  * @typedef {import("./methods/user.methods.js").UserMethods} UserMethods
  */
