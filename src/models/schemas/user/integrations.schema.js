@@ -21,6 +21,12 @@ import mongoose from "mongoose";
  * @property {string} [verificationId] - The SheerID verification ID
  * @property {string} [currentStep] - The current step of the verification
  */
+/**
+ * @typedef {Object} StripeIntegration
+ * @property {string} [subscriptionId] - The Stripe subscription ID
+ * @property {string} [subscriptionStatus] - The Stripe subscription status
+ * @property {string} [customerId] - The Stripe customer ID
+ */
 
 /**
  * @typedef {Object} IntegrationsSchema
@@ -28,6 +34,7 @@ import mongoose from "mongoose";
  * @property {GoogleIntegration} [google] - The Google integration
  * @property {SendbirdIntegration} [sendbird] - The Sendbird integration
  * @property {SheerIDIntegration} [sheerId] - The SheerID integration
+ * @property {StripeIntegration} [stripe] - The Stripe integration
  */
 const integrationsSchema = new mongoose.Schema({
   openai: {
@@ -47,6 +54,12 @@ const integrationsSchema = new mongoose.Schema({
     verificationId: String,
     currentStep: String,
   },
+  // store necessary details from stripe checkout.session.completed event
+  stripe: {
+    subscriptionId: String,
+    subscriptionStatus: String, // possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused
+    customerId: String,
+  }
 });
 
 export default integrationsSchema;

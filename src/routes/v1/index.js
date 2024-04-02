@@ -14,6 +14,7 @@ import mentorVerificationRoute from "./mentorVerification.route.js";
 import studentVerificationRoute from "./studentVerification.route.js";
 import sheerIDVerificationRoute from "./sheerIDVerification.route.js";
 import appointmentRoute from "./appointment.route.js";
+import paymentRoute from "./payment.route.js";
 
 const router = express.Router();
 
@@ -74,6 +75,10 @@ const defaultRoutes = [
     path: "/appointments",
     route: appointmentRoute,
   },
+  {
+    path: "/payment",
+    route: paymentRoute,
+  }
 ];
 
 // TODO: Add a docs route only for dev mode

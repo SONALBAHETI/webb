@@ -32,6 +32,15 @@ const getUserByEmail = async (email) => {
 };
 
 /**
+ * Retrieves a user by their Stripe customer ID.
+ * @param {string} stripeCustomerId - The Stripe customer ID of the user to retrieve
+ * @returns {import("mongoose").Query<User | null>}
+ */
+const getUserByStripeCustomerId = (stripeCustomerId) => {
+  return User.findOne({ "integrations.stripe.customerId": stripeCustomerId });
+};
+
+/**
  * Retrieves users by their IDs.
  *
  * @param {Array<string>} userIds - An array of user IDs.
@@ -264,6 +273,7 @@ export {
   getUserBySendbirdId,
   getUsersById,
   setAvailability,
+  getUserByStripeCustomerId,
 };
 
 /**

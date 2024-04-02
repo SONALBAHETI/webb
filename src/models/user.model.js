@@ -25,6 +25,7 @@ import userMethods from "./methods/user.methods.js";
  * @property {AvailabilitySchema} [availability] - The user's availability
  * @property {AchievementsSchema} [achievements] - The user's achievements
  * @property {StatsSchema} [stats] - The user's stats
+ * @property {number} creditBalance - The user's credit balance
  */
 const userSchema = new mongoose.Schema(
   {
@@ -80,6 +81,10 @@ const userSchema = new mongoose.Schema(
       private: true,
       default: {},
     },
+    creditBalance: {
+      type: Number,
+      default: 0,
+    }
   },
   {
     timestamps: true,
