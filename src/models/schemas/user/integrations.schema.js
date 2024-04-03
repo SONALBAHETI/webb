@@ -26,6 +26,8 @@ import mongoose from "mongoose";
  * @property {string} [subscriptionId] - The Stripe subscription ID
  * @property {string} [subscriptionStatus] - The Stripe subscription status
  * @property {string} [customerId] - The Stripe customer ID
+ * @property {string} [connectedAccountId] - The Stripe connected account ID
+ * @property {boolean} [connectedAccountVerified] - Whether the connected account is verified
  */
 
 /**
@@ -59,6 +61,8 @@ const integrationsSchema = new mongoose.Schema({
     subscriptionId: String,
     subscriptionStatus: String, // possible values are incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid, or paused
     customerId: String,
+    connectedAccountId: String,
+    connectedAccountVerified: Boolean,
   }
 });
 

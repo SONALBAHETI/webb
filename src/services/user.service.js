@@ -42,6 +42,17 @@ const getUserByStripeCustomerId = (stripeCustomerId) => {
 };
 
 /**
+ * Retrieves a user by their Stripe connected ID.
+ * @param {string} stripeConnectedAccountId - The Stripe connected ID of the user to retrieve
+ * @returns {import("mongoose").Query<User | null>}
+ */
+const getUserByStripeConnectedAccountId = (stripeConnectedAccountId) => {
+  return User.findOne({
+    "integrations.stripe.connectedAccountId": stripeConnectedAccountId,
+  });
+};
+
+/**
  * Retrieves users by their IDs.
  *
  * @param {Array<string>} userIds - An array of user IDs.
@@ -270,7 +281,7 @@ const getUserRights = (user) => {
   const userPermissions = user.accessControl.permissions || [];
   const userRights = [...rolePermissions, ...userPermissions];
   return userRights;
-}
+};
 
 export {
   createUser,
@@ -288,6 +299,7 @@ export {
   setAvailability,
   getUserRights,
   getUserByStripeCustomerId,
+  getUserByStripeConnectedAccountId,
 };
 
 /**

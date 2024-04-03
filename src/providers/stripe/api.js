@@ -65,6 +65,19 @@ class StripeAPI {
   }
 
   /**
+   * Create customer portal session
+   * @param {string} customerId - The customer id of the logged in user
+   * @param {string} returnUrl - The return url
+   */
+  async createCustomerPortalSession(customerId, returnUrl) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: returnUrl,
+    });
+    return session;
+  }
+
+  /**
    * Construct an event from webhook's raw body and signature
    * @param {string} rawBody - The raw body
    * @param {string} signature - The signature
@@ -76,6 +89,43 @@ class StripeAPI {
       signature,
       config.stripe.webhookSecret
     );
+  }
+
+  /**
+   * Creates a connected account in stripe
+   * @param {Stripe.AccountCreateParams} options - Account create options
+   * @returns The created connected account
+   */
+  async createConnectedAccount(options) {
+    const account = await stripe.accounts.create({
+      type: "express",
+      business_type: "individual",
+      capabilities: {
+        transfers: {
+          requested: true,
+        }
+      },
+      ...options,
+    });
+    return account;
+  }
+
+  /**
+   * Creates an account link for a connected account
+   * @param {Stripe.AccountLinkCreateParams} options - Account link create options
+   */
+  async createConnectedAccountLink(options) {
+    const link = await stripe.accountLinks.create(options);
+    return link;
+  }
+
+  /**
+   * Creates a login link for a connected account
+   * @param {string} accountId - The account id
+   */
+  async createConnectedAccountLoginLink(accountId) {
+    const link = await stripe.accounts.createLoginLink(accountId);
+    return link;
   }
 }
 

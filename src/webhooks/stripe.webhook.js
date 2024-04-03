@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import logger from "../config/logger.js";
 import StripeAPI from "../providers/stripe/api.js";
 import {
+  getUserByStripeConnectedAccountId,
   getUserByStripeCustomerId,
   updateUser,
 } from "../services/user.service.js";
@@ -31,7 +32,7 @@ const handleSubscriptionCheckoutSessionCompleted = async (session) => {
   } else {
     logger.warn(
       "⚠️ ~ Stripe webhook ~ handleSubscriptionCheckoutSessionCompleted ~ user not found for customer",
-      session.customer
+      { customer: session.customer }
     );
   }
 };
@@ -50,7 +51,7 @@ const handlePaymentCheckoutSessionCompleted = async (session) => {
   } else {
     logger.warn(
       "⚠️ ~ Stripe webhook ~ handlePaymentCheckoutSessionCompleted ~ user not found for customer",
-      session.customer
+      { customer: session.customer }
     );
   }
 };
@@ -81,14 +82,43 @@ const handleCustomerSubscriptionDeleted = async (event) => {
     await updateUser(user.id, {
       integrations: {
         stripe: {
-          subscriptionStatus: subscription.status,
+          subscriptionId: null,
+          subscriptionStatus: null,
         },
       },
     });
   } else {
     logger.warn(
       "⚠️ ~ Stripe webhook ~ handleCustomerSubscriptionDeleted ~ user not found for customer",
-      subscription.customer
+      { customer: subscription.customer }
+    );
+  }
+};
+
+/**
+ * Handles stripe connected account updated event
+ * @param {import("stripe").Stripe.AccountUpdatedEvent} event
+ */
+const handleConnectedAccountUpdated = async (event) => {
+  const account = event.data.object;
+  const user = await getUserByStripeConnectedAccountId(account.id);
+  if (user) {
+    if (
+      !user.getStripeData().connectedAccountVerified &&
+      account.payouts_enabled
+    ) {
+      await updateUser(user.id, {
+        integrations: {
+          stripe: {
+            connectedAccountVerified: true,
+          },
+        },
+      });
+    }
+  } else {
+    logger.warn(
+      "⚠️ ~ Stripe webhook ~ handleConnectedAccountUpdated ~ user not found for connected account",
+      { connectedAccount: account.id }
     );
   }
 };
@@ -106,6 +136,8 @@ const processWebhook = async (req, res) => {
     await handleCheckoutSessionCompleted(event);
   } else if (event.type === "customer.subscription.deleted") {
     await handleCustomerSubscriptionDeleted(event);
+  } else if (event.type === "account.updated") {
+    await handleConnectedAccountUpdated(event);
   }
 
   return res.status(httpStatus.OK).end();

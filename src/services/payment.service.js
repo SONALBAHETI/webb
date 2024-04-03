@@ -1,4 +1,8 @@
+import Stripe from "stripe";
+import httpStatus from "http-status";
+import { ROLE } from "../config/roles.js";
 import StripeAPI from "../providers/stripe/api.js";
+import ApiError from "../utils/ApiError.js";
 import { updateUser } from "./user.service.js";
 
 const stripe = new StripeAPI();
@@ -79,6 +83,20 @@ const createCheckout = async ({
 };
 
 /**
+ * Create customer portal session in stripe
+ * @param {User} user
+ * @param {string} returnUrl - The return url from the portal back to the app
+ */
+const createCustomerPortal = async (user, returnUrl) => {
+  const { customerId } = user.getStripeData();
+  const session = await stripe.createCustomerPortalSession(
+    customerId,
+    returnUrl
+  );
+  return session;
+};
+
+/**
  * Get subscription plan of a user from stripe
  * @param {User} user - The user to get active subscription for
  * @param {import("stripe").Stripe.SubscriptionRetrieveParams} [params]
@@ -96,9 +114,79 @@ const getSubscription = async (user, params) => {
   return null;
 };
 
+/**
+ * Create connected account in stripe
+ * @param {User} user
+ */
+const createConnectedAccount = async (user) => {
+  const role = user.accessControl.role;
+  if (role !== ROLE.MENTOR) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Only verified mentors can create a payout account"
+    );
+  }
+  if (!user.email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User email is required");
+  }
+  if (user.getStripeData().connectedAccountId) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Connected account is already created"
+    );
+  }
+  const account = await stripe.createConnectedAccount({
+    email: user.email,
+    individual: {
+      first_name: user.getFirstName(),
+      last_name: user.getLastName(),
+    },
+    metadata: {
+      id: user.id,
+    },
+  });
+  return account;
+};
+
+/**
+ * Create connected account link
+ * @param {Object} options
+ * @param {string} options.accountId - The account id
+ * @param {string} options.refreshUrl - The refresh url
+ * @param {string} options.returnUrl - The return url
+ * @param {Stripe.AccountLinkCreateParams.Type} options.type - The type
+ */
+const createConnectedAccountLink = async ({
+  accountId,
+  refreshUrl,
+  returnUrl,
+  type,
+}) => {
+  const link = await stripe.createConnectedAccountLink({
+    account: accountId,
+    refresh_url: refreshUrl,
+    return_url: returnUrl,
+    type,
+  });
+  return link;
+};
+
+/**
+ * Create connected account link
+ * @param {string} accountId - The account id
+ */
+const createConnectedAccountLoginLink = async (accountId) => {
+  const link = await stripe.createConnectedAccountLoginLink(accountId);
+  return link;
+};
+
 export default {
   createCheckout,
   getSubscription,
+  createCustomerPortal,
+  createConnectedAccount,
+  createConnectedAccountLink,
+  createConnectedAccountLoginLink,
 };
 
 /**

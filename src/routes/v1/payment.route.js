@@ -21,6 +21,19 @@ router.post(
   responseHandler(paymentController.createCreditsCheckout)
 );
 
+router.post(
+  "/customer-portal",
+  auth(),
+  validate(paymentValidation.createCustomerPortal),
+  responseHandler(paymentController.createCustomerPortal)
+);
+
+router.get(
+  "/stripe/enabled",
+  auth(),
+  responseHandler(paymentController.isStripeCustomerAccountEnabled)
+);
+
 router.get(
   "/credits",
   auth(),
@@ -31,6 +44,32 @@ router.get(
   "/subscription",
   auth(),
   responseHandler(paymentController.getSubscription)
+);
+
+router.post(
+  "/stripe/connect",
+  auth(),
+  validate(paymentValidation.createStripeConnectedAccount),
+  responseHandler(paymentController.createStripeConnectedAccount)
+);
+
+router.post(
+  "/stripe/connect/onboarding",
+  auth(),
+  validate(paymentValidation.createConnectedAccountOnboardingLink),
+  responseHandler(paymentController.createConnectedAccountOnboardingLink)
+);
+
+router.post(
+  "/stripe/connect/login",
+  auth(),
+  responseHandler(paymentController.createConnectedAccountLoginLink)
+);
+
+router.get(
+  "/stripe/connect/status",
+  auth(),
+  responseHandler(paymentController.getConnectedAccountStatus)
 );
 
 export default router;
