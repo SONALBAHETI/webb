@@ -28,6 +28,7 @@ import bcrypt from "bcrypt";
  * @property {function(): object} getAchievements - Get the user's achievements
  * @property {function(): string|undefined} getSendbirdId - Get the user's Sendbird ID
  * @property {function(): object} getSendbirdCredentials - Get the user's Sendbird credentials
+ * @property {function(): StripeIntegration} getStripeData - Get the user's Stripe data
  * @property {function(): boolean} isResidencyTrained - Check if the user is residency trained
  * @property {function(): boolean} isFellowshipTrained - Check if the user is fellowship trained
  * @property {function(): boolean} isOnline - Check if the user is online
@@ -121,6 +122,9 @@ export default {
   getSendbirdCredentials() {
     return this.integrations?.sendbird || {};
   },
+  getStripeData() {
+    return this.integrations?.stripe || {};
+  },
   isResidencyTrained() {
     return this.profile?.education?.isResidencyTrained || false;
   },
@@ -137,4 +141,5 @@ export default {
 
 /**
  * @typedef {import("../schemas/user/integrations.schema.js").SheerIDIntegration} SheerIDIntegration
+ * @typedef {import("../schemas/user/integrations.schema.js").StripeIntegration} StripeIntegration
  */

@@ -65,6 +65,11 @@ export const Permission = {
   UpdateVisibility: "updateVisibility",
   ReadAvailability: "readAvailability",
   UpdateAvailability: "updateAvailability",
+
+  // Payments (Stripe)
+  ManagePayouts: "managePayouts",
+  ManageSubscriptions: "manageSubscriptions",
+  ManageCredits: "manageCredits",
 }
 
 /**

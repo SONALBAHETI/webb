@@ -33,6 +33,26 @@ const getUserByEmail = async (email) => {
 };
 
 /**
+ * Retrieves a user by their Stripe customer ID.
+ * @param {string} stripeCustomerId - The Stripe customer ID of the user to retrieve
+ * @returns {import("mongoose").Query<User | null>}
+ */
+const getUserByStripeCustomerId = (stripeCustomerId) => {
+  return User.findOne({ "integrations.stripe.customerId": stripeCustomerId });
+};
+
+/**
+ * Retrieves a user by their Stripe connected ID.
+ * @param {string} stripeConnectedAccountId - The Stripe connected ID of the user to retrieve
+ * @returns {import("mongoose").Query<User | null>}
+ */
+const getUserByStripeConnectedAccountId = (stripeConnectedAccountId) => {
+  return User.findOne({
+    "integrations.stripe.connectedAccountId": stripeConnectedAccountId,
+  });
+};
+
+/**
  * Retrieves users by their IDs.
  *
  * @param {Array<string>} userIds - An array of user IDs.
@@ -261,7 +281,7 @@ const getUserRights = (user) => {
   const userPermissions = user.accessControl.permissions || [];
   const userRights = [...rolePermissions, ...userPermissions];
   return userRights;
-}
+};
 
 export {
   createUser,
@@ -278,6 +298,8 @@ export {
   getUsersById,
   setAvailability,
   getUserRights,
+  getUserByStripeCustomerId,
+  getUserByStripeConnectedAccountId,
 };
 
 /**

@@ -69,6 +69,13 @@ const envVarsSchema = Joi.object()
     CLOUDINARY_API_SECRET: Joi.string()
       .description("Cloudinary API Secret")
       .required(),
+    STRIPE_SECRET_KEY: Joi.string().description("Stripe Secret Key").required(),
+    STRIPE_WEBHOOK_SECRET: Joi.string()
+      .description("Stripe Webhook Secret")
+      .required(),
+    STRIPE_CREDIT_PRICE_ID: Joi.string()
+      .description("Stripe Credit Price ID")
+      .required(),
   })
   .unknown();
 
@@ -134,6 +141,11 @@ const config = {
       },
     },
     from: envVars.EMAIL_FROM,
+  },
+  stripe: {
+    secretKey: envVars.STRIPE_SECRET_KEY,
+    webhookSecret: envVars.STRIPE_WEBHOOK_SECRET,
+    creditPriceId: envVars.STRIPE_CREDIT_PRICE_ID,
   },
 };
 
