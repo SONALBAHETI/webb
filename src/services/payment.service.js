@@ -123,7 +123,7 @@ const createConnectedAccount = async (user) => {
   if (role !== ROLE.MENTOR) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "Only verified mentors can create a payout account"
+      "Only verified mentors can create a connected account"
     );
   }
   if (!user.email) {
