@@ -1,5 +1,4 @@
 import httpStatus from "http-status";
-import responseHandler from "../utils/responseHandler.js";
 import {
   getChatRequests,
   createChatRequest,
@@ -15,7 +14,7 @@ import { ChatRequestStatus } from "../models/chatRequest.model.js";
  * @param {Object} res - Express response object
  * @throws {ApiError} If chat request is not found
  */
-const getChatRequest = responseHandler(async (req, res) => {
+const getChatRequest = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
   const chatRequest = await getChatRequestByIdAndPopulate(id, [
@@ -32,7 +31,7 @@ const getChatRequest = responseHandler(async (req, res) => {
     );
   }
   res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
-});
+};
 
 /**
  * Retrieve a list of pending chat requests for a user.
@@ -40,11 +39,11 @@ const getChatRequest = responseHandler(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns void
  */
-const listChatRequests = responseHandler(async (req, res) => {
+const listChatRequests = async (req, res) => {
   const userId = req.user.id;
   const chatRequests = await getChatRequests(userId);
   res.status(httpStatus.OK).send({ chatRequests });
-});
+};
 
 /**
  * Sends a chat request to another user by creating a chat request document
@@ -52,39 +51,39 @@ const listChatRequests = responseHandler(async (req, res) => {
  * @param {Object} res - The response object.
  * @returns void
  */
-const sendChatRequest = responseHandler(async (req, res) => {
+const sendChatRequest = async (req, res) => {
   const { userId: to, message } = req.body;
   const from = req.user.id;
 
   const chatRequest = await createChatRequest({ from, to, message });
   res.status(httpStatus.OK).send({ chatRequest });
-});
+};
 
 /**
  * Accepts a chat request.
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const acceptChatRequest = responseHandler(async (req, res) => {
+const acceptChatRequest = async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
   const chatRequest = await acceptChatRequestAndCreateGroupChannel(id, userId);
   res.status(httpStatus.OK).send({ chatRequest });
-});
+};
 
 /**
  * Rejects a chat request
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-const rejectChatRequest = responseHandler(async (req, res) => {
+const rejectChatRequest = async (req, res) => {
   const { id } = req.body;
   const userId = req.user.id;
   const chatRequest = await updateChatRequest(id, userId, {
     status: ChatRequestStatus.REJECTED,
   });
   res.status(httpStatus.OK).send({ chatRequest });
-});
+};
 
 const getSendbirdCredentials = async (req, res) => {
   const sendbirdCredentials = await req.user.getSendbirdCredentials();
