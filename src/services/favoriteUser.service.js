@@ -3,9 +3,10 @@ import FavoriteUser from "../models/favoriteUser.model.js";
 /**
  * Retrieves all the favorite users for a given user.
  * @param {string} userId
+ * @returns the mongoose query that can be executed with options
  */
-const getFavoriteUsers = async (userId) => {
-  const favoriteUsers = await FavoriteUser.find({ favoritedBy: userId });
+const getFavoriteUsers = (userId) => {
+  const favoriteUsers = FavoriteUser.find({ favoritedBy: userId });
   return favoriteUsers;
 };
 

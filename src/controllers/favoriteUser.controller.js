@@ -9,7 +9,16 @@ import ApiError from "../utils/ApiError.js";
  * @param {import("express").Response} res - The response object
  */
 const getFavoriteUsers = async (req, res) => {
-  const favoriteUsers = await favoriteUserService.getFavoriteUsers(req.user.id);
+  const favoriteUsers = await favoriteUserService
+    .getFavoriteUsers(req.user.id)
+    .populate({
+      path: "user",
+      select: {
+        name: 1,
+        "profile.picture": 1,
+        occupation: 1,
+      },
+    });
   return res.status(httpStatus.OK).send({ favoriteUsers });
 };
 
