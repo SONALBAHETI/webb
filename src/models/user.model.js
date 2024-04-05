@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import { toJSON } from "./plugins/index.js";
-import { roles } from "../config/roles.js";
 import { UserOccupationValues } from "../constants/onboarding.js";
 import userTrigger from "../triggers/user.trigger.js";
 import achievementsSchema from "./schemas/user/achievements.schema.js";

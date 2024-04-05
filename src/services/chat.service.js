@@ -146,7 +146,7 @@ const updateChatRequest = async (chatId, userId, updateBody) => {
 /**
  * Creates a group channel in Sendbird.
  *
- * @param {string[]} user_ids - An array of user IDs.
+ * @param {string[]} userIds - An array of user IDs.
  * @param {CreateGroupChannelOptions & { initialMessage?: string }} [options] - Options for creating the group channel.
  * @throws {ApiError} If the API request fails.
  * @returns {Promise<GroupChannel>} The created group channel.
@@ -208,6 +208,9 @@ const enableChatAndCallsForUser = async (userId) => {
     nickname: user.name,
     issue_access_token: true,
     profile_url: user.profile?.picture || "",
+    metadata: {
+      scholarnetics_user_id: user.id,
+    },
   });
 
   // Add sendbird user id reference in the User model in database
