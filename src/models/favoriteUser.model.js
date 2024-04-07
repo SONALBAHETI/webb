@@ -25,7 +25,7 @@ const favoriteUserSchema = new mongoose.Schema({
 favoriteUserSchema.plugin(toJSON);
 
 /**
- * @typedef {FavoriteUserSchema & import("mongoose").Document} FavoriteUser
+ * @typedef {import("mongoose").HydratedDocument<FavoriteUserSchema>} FavoriteUser
  * @type {import("mongoose").Model<FavoriteUserSchema, {}, {}, {}, FavoriteUser>}
  */
 const FavoriteUser = mongoose.model("FavoriteUser", favoriteUserSchema);
