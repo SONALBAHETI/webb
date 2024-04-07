@@ -15,7 +15,7 @@ import notificationService from "./notification.service.js";
 /**
  * @typedef {import("../providers/sendbird/modules/chat/groupChannels.js").CreateGroupChannelOptions} CreateGroupChannelOptions
  * @typedef {import("../providers/sendbird/modules/chat/groupChannels.js").GroupChannel} GroupChannel
- * @typedef {import("../models/chatRequest.model.js").ChatRequest} ChatRequest
+ * @typedef {import("../models/chatRequest.model.js").ChatRequestSchema} ChatRequestSchema
  */
 
 const { appId, apiToken } = config.sendBird;
@@ -46,10 +46,24 @@ const getChatRequestById = (chatId) => {
   return ChatRequest.findById(chatId);
 };
 
-const getChatRequestByIdAndPopulate = async (chatId, populate) => {
-  return ChatRequest.findById(chatId).populate(populate);
+/**
+ * Retrieves a pending chat request for a specified user.
+ * @param {string} from - The ID of the user who sent the chat request.
+ * @param {string} to - The ID of the user who received the chat request.
+ * @returns the mongo query
+ */
+const getPendingChatRequestByUserId = (from, to) => {
+  return ChatRequest.findOne({
+    from,
+    to,
+    status: ChatRequestStatus.PENDING,
+  });
 };
 
+/**
+ * Creates a new chat request.
+ * @param {ChatRequestSchema} chatBody - The chat request body.
+ */
 const createChatRequest = async (chatBody) => {
   // TODO: Validate the user ids in the chat request (from, to)
   // Create a new chat request
@@ -61,7 +75,6 @@ const createChatRequest = async (chatBody) => {
  * @param {string} chatRequestId - The ID of the chat request.
  * @param {string} receiverId - The ID of the receiver of the chat request.
  * @throws {ApiError} If the chat request is not found or the user is not authorized.
- * @returns {Promise<ChatRequest>} The updated chat request.
  */
 const acceptChatRequestAndCreateGroupChannel = async (
   chatRequestId,
@@ -125,7 +138,7 @@ const sendInitialGroupChannelTextMessage = async (
  *
  * @param {string} chatId - The ID of the chat request
  * @param {string} userId - The ID of the user
- * @param {Partial<ChatRequest>} updateBody - The updated chat request body
+ * @param {Partial<ChatRequestSchema>} updateBody - The updated chat request body
  * @return A promise that resolves to the saved chat request
  */
 const updateChatRequest = async (chatId, userId, updateBody) => {
@@ -227,7 +240,7 @@ const enableChatAndCallsForUser = async (userId) => {
 
 export {
   getChatRequestById,
-  getChatRequestByIdAndPopulate,
+  getPendingChatRequestByUserId,
   updateChatRequest,
   createChatRequest,
   enableChatAndCallsForUser,

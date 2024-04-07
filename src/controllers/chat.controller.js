@@ -3,21 +3,22 @@ import {
   getChatRequests,
   createChatRequest,
   updateChatRequest,
-  getChatRequestByIdAndPopulate,
   acceptChatRequestAndCreateGroupChannel,
+  getChatRequestById,
+  getPendingChatRequestByUserId,
 } from "../services/chat.service.js";
 import { ChatRequestStatus } from "../models/chatRequest.model.js";
 
 /**
  * Get chat request by ID and populate from/to fields
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {import("express").Request} req - Express request object
+ * @param {import("express").Response} res - Express response object
  * @throws {ApiError} If chat request is not found
  */
 const getChatRequest = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
-  const chatRequest = await getChatRequestByIdAndPopulate(id, [
+  const chatRequest = await getChatRequestById(id).populate([
     { path: "from", select: "name profile.picture" },
     { path: "to", select: "name" },
   ]);
@@ -25,19 +26,27 @@ const getChatRequest = async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Chat request not found");
   }
   if (chatRequest.to._id.toString() !== userId.toString()) {
-    throw new ApiError(
-      httpStatus.UNAUTHORIZED,
-      "You're unauthorized to perform this action"
-    );
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Forbidden");
   }
-  res.status(httpStatus.OK).send({ chatRequest: chatRequest.toJSON() });
+  res.status(httpStatus.OK).send({ chatRequest });
+};
+
+/**
+ * Get pending chat request sent to user
+ * @param {import("express").Request} req - Express request object
+ * @param {import("express").Response} res - Express response object
+ */
+const getPendingChatRequestSentToUser = async (req, res) => {
+  const { toUserId } = req.params;
+  const loggedInUserId = req.user.id;
+  const chatRequest = await getPendingChatRequestByUserId(loggedInUserId, toUserId);
+  res.status(httpStatus.OK).send({ chatRequest });
 };
 
 /**
  * Retrieve a list of pending chat requests for a user.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns void
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
  */
 const listChatRequests = async (req, res) => {
   const userId = req.user.id;
@@ -47,9 +56,8 @@ const listChatRequests = async (req, res) => {
 
 /**
  * Sends a chat request to another user by creating a chat request document
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns void
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
  */
 const sendChatRequest = async (req, res) => {
   const { userId: to, message } = req.body;
@@ -61,8 +69,8 @@ const sendChatRequest = async (req, res) => {
 
 /**
  * Accepts a chat request.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
  */
 const acceptChatRequest = async (req, res) => {
   const { id } = req.body;
@@ -73,8 +81,8 @@ const acceptChatRequest = async (req, res) => {
 
 /**
  * Rejects a chat request
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
+ * @param {import("express").Request} req - The request object.
+ * @param {import("express").Response} res - The response object.
  */
 const rejectChatRequest = async (req, res) => {
   const { id } = req.body;
@@ -92,6 +100,7 @@ const getSendbirdCredentials = async (req, res) => {
 
 export {
   getChatRequest,
+  getPendingChatRequestSentToUser,
   listChatRequests,
   sendChatRequest,
   acceptChatRequest,
