@@ -6,7 +6,11 @@ import {
 } from "../providers/openai/services/suggestions.js";
 import { getOrUpdateSuggestionsHelper } from "../services/suggestion.service.js";
 import { updateUser } from "../services/user.service.js";
-import { UserObjectives, UserOccupations } from "../constants/onboarding.js";
+import {
+  PrimaryRoles,
+  UserObjectives,
+  UserOccupations,
+} from "../constants/onboarding.js";
 import { ROLE } from "../config/roles.js";
 import { SuggestionTypes } from "../models/suggestion.model.js";
 
@@ -75,7 +79,10 @@ const submitOnboardingForm = async (req, res) => {
     primaryAreasOfPractice: practiceAreas,
     areasOfExpertise: expertiseAreas,
   } = req.body;
-  let role, profile;
+
+  let role;
+  /** @type {ProfileSchema} */
+  let profile;
 
   const isHealthcareStudent =
     userOccupation === UserOccupations.HEALTHCARE_STUDENT;
@@ -85,10 +92,18 @@ const submitOnboardingForm = async (req, res) => {
 
   if (isHealthcareStudent || (isHealthcareProfessional && isFindAMentor)) {
     role = ROLE.MENTEE;
-    profile = { primaryInterests };
+    profile = {
+      primaryInterests,
+      primaryRole: isHealthcareStudent
+        ? PrimaryRoles.STUDENT
+        : PrimaryRoles.CLINICIAN,
+    };
   } else {
     role = ROLE.UNVERIFIED_MENTOR;
-    profile = { expertise: { practiceAreas, expertiseAreas } };
+    profile = {
+      expertise: { practiceAreas, expertiseAreas },
+      primaryRole: PrimaryRoles.EDUCATOR,
+    };
   }
   await updateUser(req.user.id, {
     accessControl: { role },
@@ -105,3 +120,7 @@ export {
   getPracticeAreaSuggestions,
   submitOnboardingForm,
 };
+
+/**
+ * @typedef {import("../models/schemas/user/profile.schema.js").ProfileSchema} ProfileSchema
+ */
