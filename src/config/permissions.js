@@ -70,6 +70,12 @@ export const Permission = {
   ManagePayouts: "managePayouts",
   ManageSubscriptions: "manageSubscriptions",
   ManageCredits: "manageCredits",
+
+  // Feedback
+  CreateUserReports: "createUserReports",
+  ReadUserReports: "readUserReports",
+  UpdateUserReports: "updateUserReports",
+  DeleteUserReports: "deleteUserReports",
 }
 
 /**

@@ -80,6 +80,7 @@ const MentorPermissions = [
   Permission.ReadVisibility,
   Permission.UpdateVisibility,
   Permission.ManagePayouts,
+  Permission.CreateUserReports,
 ];
 
 /**
@@ -110,6 +111,7 @@ const MenteePermissions = [
   Permission.SubmitEducationInformation,
   Permission.ManageSubscriptions,
   Permission.ManageCredits,
+  Permission.CreateUserReports,
 ];
 
 /**
