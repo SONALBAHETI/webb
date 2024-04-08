@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
-import { getUserMatchById } from "../services/userMatch.service.js";
+import userMatchService from "../services/userMatch.service.js";
+import ApiError from "../utils/ApiError.js";
 
 /**
  * Get user match by ID
@@ -9,11 +10,9 @@ import { getUserMatchById } from "../services/userMatch.service.js";
  */
 const getUserMatch = async (req, res) => {
   const { id } = req.params;
-  const userMatch = await getUserMatchById(id);
+  const userMatch = await userMatchService.getUserMatchById(id);
   if (!userMatch) {
-    return res
-      .status(httpStatus.NOT_FOUND)
-      .send({ message: "User match not found" });
+    throw new ApiError(httpStatus.NOT_FOUND, "User match not found");
   }
   return res.status(httpStatus.OK).send({ userMatch });
 };

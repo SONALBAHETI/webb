@@ -26,9 +26,16 @@ const getChatRequest = {
   }),
 };
 
+const getPendingChatRequestSentToUser = {
+  params: Joi.object().keys({
+    toUserId: Joi.string().custom(objectId),
+  }),
+}
+
 export default {
   sendChatRequest,
   acceptChatRequest,
   rejectChatRequest,
   getChatRequest,
+  getPendingChatRequestSentToUser,
 };

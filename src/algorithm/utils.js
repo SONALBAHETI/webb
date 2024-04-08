@@ -41,6 +41,7 @@ export const getStringMatchScore = (str1, str2, weight) => {
   if (str1 == str2) {
     return weight;
   }
+  // if the string is a substring of the other string, return half of the weight
   if (createMatchRegex(str1).test(str2)) {
     return weight / 2;
   }

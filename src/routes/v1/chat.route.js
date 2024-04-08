@@ -9,6 +9,7 @@ import {
   acceptChatRequest,
   rejectChatRequest,
   getSendbirdCredentials,
+  getPendingChatRequestSentToUser,
 } from "../../controllers/chat.controller.js";
 import responseHandler from "../../utils/responseHandler.js";
 import { Permission } from "../../config/permissions.js";
@@ -35,6 +36,13 @@ router.get(
   auth(Permission.ReadChatRequests),
   validate(chatValidation.getChatRequest),
   responseHandler(getChatRequest)
+);
+
+router.get(
+  "/requests/to/:toUserId",
+  auth(Permission.ReadChatRequests),
+  validate(chatValidation.getPendingChatRequestSentToUser),
+  responseHandler(getPendingChatRequestSentToUser)
 );
 
 router.post(

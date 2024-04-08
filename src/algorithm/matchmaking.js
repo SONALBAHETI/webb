@@ -5,14 +5,15 @@ import {
   getArrayMatchScore,
   getStringMatchScore,
 } from "./utils.js";
-import { createUserMatch as insertUserMatch } from "../services/userMatch.service.js";
+import userMatchService from "../services/userMatch.service.js";
+import { ROLE } from "../config/roles.js";
 
 /**
  * Scores mentors based on the given inquiry, taking into account various matching criteria.
  *
- * @param {Array<import("mongoose").Document>} mentors - The array of mentors to be scored
+ * @param {Array<User>} mentors - The array of mentors to be scored
  * @param {Object} inquiry - The inquiry object containing the criteria for scoring
- * @return {Array<{ score: number, mentor: import("mongoose").Document }>} An array of scored mentors
+ * @return {Array<AlgorithmMatch>} An array of scored mentors
  */
 export const scoreMentorsByInquiry = (mentors, inquiry) => {
   const scoredMentors = mentors.map((mentor) => {
@@ -21,14 +22,14 @@ export const scoreMentorsByInquiry = (mentors, inquiry) => {
     // calculate score based on degrees
     score += getArrayMatchScore(
       inquiry.degrees,
-      mentor.getDegrees(),
+      mentor.getDegrees().map((degree) => degree.name),
       WEIGHTS.DEGREES
     );
 
     // calculate score by matching areas of interest with mentor's areas of practice
     score += getArrayMatchScore(
       inquiry.areasOfInterest,
-      mentor.getPracticeAreas(),
+      mentor.getExpertiseAreas(),
       WEIGHTS.PRIMARY_AREAS_OF_PRACTICE
     );
 
@@ -56,7 +57,7 @@ export const scoreMentorsByInquiry = (mentors, inquiry) => {
     // calculate score by matching certificates
     score += getArrayMatchScore(
       inquiry.certificates,
-      mentor.getCertifications(),
+      mentor.getCertifications().map((certificate) => certificate.name),
       WEIGHTS.CERTIFICATES
     );
 
@@ -154,7 +155,7 @@ export const scoreMentorsByInquiry = (mentors, inquiry) => {
 const createRegexSearchArray = (inquiry) => {
   const regexSearchArray = [];
 
-  // add non-array string fields - gender, ethnicity, primary role, identiy, and pronouns 
+  // add non-array string fields - gender, ethnicity, primary role, identiy, and pronouns
   // to search array
   [
     inquiry.gender,
@@ -168,8 +169,8 @@ const createRegexSearchArray = (inquiry) => {
     }
   });
 
-  // add string array fields - degrees, certificates, personal interests, board specialities, areas of interest, 
-  // areas of expertise, commonly treated diagnoses, tags, and religious affiliations 
+  // add string array fields - degrees, certificates, personal interests, board specialities, areas of interest,
+  // areas of expertise, commonly treated diagnoses, tags, and religious affiliations
   // to search array
   [
     inquiry.degrees,
@@ -201,6 +202,12 @@ const createRegexSearchArray = (inquiry) => {
 const aggregateSearchMentors = async (regexSearchArray) => {
   // aggregation pipeline
   const mentorsAggregationResult = await User.aggregate([
+    // filters out non-mentor users
+    {
+      $match: {
+        "accessControl.role": ROLE.MENTOR,
+      },
+    },
     // creates a separate document for each array item (with same _id)
     { $unwind: "$profile.tags" },
     // filters out documents where tags are not in the search array
@@ -270,9 +277,12 @@ const matchMentors = async (inquiry) => {
   const totalScoredMentors = scoredMentors.map((scoredMentor) => {
     return {
       ...scoredMentor,
-      score:
+      score: Math.min(
+        // this is the weighted score calculated based on the number of tags matched and weights of each field
         scoredMentor.score +
-        mentorQueryScoreMap.get(scoredMentor.mentor._id.toString()) * 10,
+          mentorQueryScoreMap.get(scoredMentor.mentor._id.toString()) * 100, // score is less than 1 so multiply by 100
+        100
+      ), // make sure score is between 0 and 100
     };
   });
 
@@ -287,7 +297,7 @@ const matchMentors = async (inquiry) => {
  * Create user match document based on matched mentors.
  *
  * @param {string} requestedBy - The ID of the user requesting the match
- * @param {array} matchedMentors - The array of matched mentors with their scores
+ * @param {Array<AlgorithmMatch>} matchedMentors - The array of matched mentors with their scores
  * @return A promise that resolves to the created user match
  */
 const createUserMatch = async (requestedBy, matchedMentors) => {
@@ -304,7 +314,12 @@ const createUserMatch = async (requestedBy, matchedMentors) => {
       // TODO: Add remaining fields
     });
   });
-  return await insertUserMatch({ requestedBy, matches });
+  return await userMatchService.createUserMatch({ requestedBy, matches });
 };
 
 export { matchMentors, createUserMatch };
+
+/**
+ * @typedef {import("../models/user.model.js").User} User
+ * @typedef {{ score: number, mentor: User }} AlgorithmMatch
+ */

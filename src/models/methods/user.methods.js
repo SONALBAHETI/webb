@@ -8,14 +8,14 @@ import bcrypt from "bcrypt";
  * @property {function(): string|undefined} getProfilePicture - Get the user's profile picture
  * @property {function(): string|undefined} getThreadId - Get the user's OpenAI thread ID
  * @property {function(): SheerIDIntegration|undefined} getSheerIdStatus - Get the user's SheerID integration
- * @property {function(): string[]} getDegrees - Get the user's degrees
+ * @property {function(): DegreeSchema[]} getDegrees - Get the user's degrees
  * @property {function(): string|undefined} getPrimaryRole - Get the user's primary role
  * @property {function(): string|undefined} getGender - Get the user's gender
  * @property {function(): string|undefined} getPronouns - Get the user's pronouns
  * @property {function(): string|undefined} getEthnicity - Get the user's ethnicity
  * @property {function(): string|undefined} getIdentity - Get the user's identity
  * @property {function(): string[]} getReligiousAffiliations - Get the user's religious affiliations
- * @property {function(): string[]} getCertifications - Get the user's certifications
+ * @property {function(): CertificateSchema[]} getCertifications - Get the user's certifications
  * @property {function(): string[]} getCommonlyTreatedDiagnoses - Get the user's commonly treated diagnoses
  * @property {function(): string[]} getBoardSpecialties - Get the user's board specialties
  * @property {function(): string[]} getExpertiseAreas - Get the user's expertise areas
@@ -142,4 +142,6 @@ export default {
 /**
  * @typedef {import("../schemas/user/integrations.schema.js").SheerIDIntegration} SheerIDIntegration
  * @typedef {import("../schemas/user/integrations.schema.js").StripeIntegration} StripeIntegration
+ * @typedef {import("../schemas/user/degree.schema.js").DegreeSchema} DegreeSchema
+ * @typedef {import("../schemas/user/certificate.schema.js").CertificateSchema} CertificateSchema
  */
