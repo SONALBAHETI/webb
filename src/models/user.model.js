@@ -11,16 +11,17 @@ import accountStatusSchema from "./schemas/user/accountStatus.schema.js";
 import availabilitySchema from "./schemas/user/availability.schema.js";
 import accessControlSchema from "./schemas/user/accessControl.schema.js";
 import userMethods from "./methods/user.methods.js";
+import agreementsSchema from "./schemas/user/agreements.schema.js";
 
 /**
  * @typedef {Object} UserSchema
  * @property {string} name - The user's name
  * @property {string} email - The user's email
  * @property {string} [password] - The user's password
- * @property {string} role - The user's role
  * @property {string} [occupation] - The user's occupation
  * @property {AccountStatusSchema} accountStatus - The user's account status
  * @property {ProfileSchema} [profile] - The user's profile
+ * @property {AgreementsSchema} agreements - The user's agreements
  * @property {IntegrationsSchema} integrations - The user's integrations
  * @property {AvailabilitySchema} [availability] - The user's availability
  * @property {AchievementsSchema} [achievements] - The user's achievements
@@ -70,6 +71,11 @@ const userSchema = new mongoose.Schema(
     },
     accountStatus: {
       type: accountStatusSchema,
+      private: true,
+      default: {},
+    },
+    agreements: {
+      type: agreementsSchema,
       private: true,
       default: {},
     },
@@ -139,4 +145,5 @@ export default User;
  * @typedef {import("./schemas/user/availability.schema.js").AvailabilitySchema} AvailabilitySchema
  * @typedef {import("./schemas/user/accessControl.schema.js").AccessControlSchema} AccessControlSchema
  * @typedef {import("./methods/user.methods.js").UserMethods} UserMethods
+ * @typedef {import("./schemas/user/agreements.schema.js").AgreementsSchema} AgreementsSchema
  */

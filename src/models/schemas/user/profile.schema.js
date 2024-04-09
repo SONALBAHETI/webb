@@ -54,24 +54,28 @@ const profileSchema = new mongoose.Schema({
   state: String,
   postalCode: String,
   funFact: String,
-  identity: String,
-  ethnicity: String,
+  identity: {
+    type: String,
+    private: true,
+  },
+  ethnicity: {
+    type: String,
+    private: true,
+  },
   personalInterests: {
     type: [String],
     default: [],
-    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
   primaryInterests: {
     type: [String],
     default: [],
-    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
   religiousAffiliations: {
     type: [String],
     default: [],
-    index: true,
+    private: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
   education: educationSchema,

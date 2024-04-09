@@ -11,7 +11,6 @@ const getSuggestions = {
  */
 const submitIdentityInfo = {
   body: Joi.object().keys({
-    // picture: Joi.string().optional(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     email: Joi.string().email().required(),
@@ -26,6 +25,7 @@ const submitIdentityInfo = {
     identity: Joi.string().optional().allow(""),
     ethnicity: Joi.string().optional().allow(""),
     religiousAffiliations: Joi.array().items(Joi.string()).default([]),
+    shareExtraDetailsForMatchmaking: Joi.boolean().optional().default(false),
   }),
 };
 

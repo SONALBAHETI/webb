@@ -21,6 +21,7 @@ import {
 import { SuggestionTypes } from "../models/suggestion.model.js";
 import { boardSpecialties } from "../constants/boardSpecialties.js";
 import storageService from "../services/storage.service.js";
+import { ROLE } from "../config/roles.js";
 
 /**
  * Handles the upload of user's profile picture.
@@ -170,13 +171,33 @@ const getBoardSpecialtiesSuggestions = async (req, res) => {
 
 /**
  * Get user profile and email from the request object and send it as a JSON response with the OK status.
+ * This is meant to be used in the settings page only and not on the public profile pages.
+ * It returns some private fields.
  *
  * @param {import("express").Request} req - The request object
  * @param {import("express").Response} res - The response object
  */
 const getUserProfile = async (req, res) => {
-  const { profile, email } = req.user;
-  return res.status(httpStatus.OK).json({ profile: profile.toJSON(), email });
+  /** @type {import("../models/user.model.js").User} */
+  const user = req.user;
+  const {
+    profile,
+    email,
+    agreements: { shareExtraDetailsForMatchmaking },
+  } = user;
+
+  let userProfile = profile.toJSON();
+
+  // add some private fields because this is a private settings route
+  userProfile.identity = profile.identity;
+  userProfile.ethnicity = profile.ethnicity;
+  userProfile.religiousAffiliations = profile.religiousAffiliations;
+
+  return res.status(httpStatus.OK).json({
+    profile: userProfile,
+    email,
+    shareExtraDetailsForMatchmaking,
+  });
 };
 
 /**
@@ -185,10 +206,13 @@ const getUserProfile = async (req, res) => {
  * @param {import("express").Response} res - The response object
  */
 const submitIdentityInformation = async (req, res) => {
-  const profile = pick(req.body, [
+  /** @type {import("../models/user.model.js").User} */
+  const user = req.user;
+
+  /** @type {Partial<import("../models/schemas/user/profile.schema.js").ProfileSchema>} */
+  let profile = pick(req.body, [
     "firstName",
     "lastName",
-    // "picture", // TODO: Add profile picture
     "pronouns",
     "gender",
     "dateOfBirth",
@@ -202,7 +226,29 @@ const submitIdentityInformation = async (req, res) => {
     "religiousAffiliations",
   ]);
 
-  await updateUser(req.user.id, { profile, email: req.body.email });
+  const { email, shareExtraDetailsForMatchmaking } = req.body;
+
+  // remove extra details if they are not being shared
+  if (!shareExtraDetailsForMatchmaking) {
+    profile.identity = undefined;
+    profile.ethnicity = undefined;
+    profile.religiousAffiliations = [];
+  }
+
+  // remove postal code if the user is not a mentor
+  if (
+    user.accessControl.role !== ROLE.MENTOR ||
+    user.accessControl.role !== ROLE.UNVERIFIED_MENTOR
+  ) {
+    profile.postalCode = undefined;
+  }
+
+  await updateUser(user.id, {
+    profile,
+    email,
+    agreements: { shareExtraDetailsForMatchmaking },
+  });
+
   return res.status(httpStatus.OK).json({
     success: true,
   });
