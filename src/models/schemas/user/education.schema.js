@@ -28,12 +28,10 @@ const educationSchema = new mongoose.Schema({
   },
   residencyPrograms: {
     type: [String],
-    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
   fellowshipPrograms: {
     type: [String],
-    index: true,
     set: (value) => value?.map((i) => i.toLowerCase()),
   },
 });
