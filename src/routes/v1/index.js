@@ -16,6 +16,7 @@ import sheerIDVerificationRoute from "./sheerIDVerification.route.js";
 import appointmentRoute from "./appointment.route.js";
 import paymentRoute from "./payment.route.js";
 import favoriteUserRoute from "./favoriteUser.route.js";
+import feedbackRoute from "./feedback.route.js";
 
 const router = express.Router();
 
@@ -84,6 +85,10 @@ const defaultRoutes = [
     path: "/payment",
     route: paymentRoute,
   },
+  {
+    path: "/feedback",
+    route: feedbackRoute,
+  }
 ];
 
 // TODO: Add a docs route only for dev mode
